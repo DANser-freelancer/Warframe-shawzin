@@ -21,14 +21,21 @@
 	<h3>Rules:</h3>
 	<ul id='rules'>
 		<li>Shawzin has a concrete set of notes for each scale, you must select your <a href="https://docs.google.com/document/d/1VvlM4IQr8bfUV8pCJMVNRaG6piJTR9_t-xq7wQaxpho/edit" target="_blank">musical scale</a> accordingly.</li>
-		<li>If the note you want is not present in this scale you must choose the closest note or skip it (choose the scale with most matching notes).</li>
+		<li>If the note you want is not present in this scale you must choose the closest note or skip it<br>
+			(try to correlate the highest notes and work off of that).
+		</li>
 		<li>The structure of the notes is this: (1-4096)+(L/M/H)+(C/D/E/F/G/A/B)+[S]("[]" means optional).</li>
 		<li>(L/M/H) stands for low/mid/high, [S] stands for sharp.</li>
-		<li>To play a combination of notes in the same moment you must write them using '+' with only one timing indication (25lg+mds,55mf...) and in ascending order,<br> only maximum of 3 notes can be played at the same time, not all notes can be played together.</li>
+		<li>To play a combination of notes in the same moment you must write them using '+'<br>
+			with only one timing indication (25lg+mds,55mf...) and in ascending order,<br>
+			only maximum of 3 notes can be played at the same time, not all notes can be played together.
+		</li>
 		<li>Each note must be separated by a comma (2LD, 34HCs,...).</li>
 		<li>You must add number (1-4096) before each note to indicate it's position on the timeline, the first note must start at position 1.</li>
-		<li>Shawzin has 4 16th of a second per beat 4 beats per measure, in other words you can play 16 consecutive notes in one second,<br> max length of the track is therefore 8min 32sec.<br>
-		Note: these are really small notes so if your music seems to run too fast try enabling slow mode in your shawzin.</li>
+		<li>Shawzin has 4 16th of a second per beat 4 beats per measure, in other words you can play 16 consecutive notes in one second,<br> 
+			max length of the track is therefore 8min 32sec.<br>
+			Note: these are really small notes so if your music seems to run too fast try enabling slow mode in your shawzin.
+		</li>
 		<li>The input field is case insensitive, you can write "lD" or "Ld" or "ld".</li>
 	</ul>
 	<select name="scale" id="scale-selector">
