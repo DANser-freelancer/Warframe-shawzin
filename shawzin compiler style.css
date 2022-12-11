@@ -17,24 +17,43 @@ body {
 	font-size: 20px;
 	color: black;
 }
+h1, h3, p {
+	margin-right: 5px;
+	margin-left: 5px;
+	margin-top: 15px;
+	margin-bottom: 15px;
+}
 li {
 	font-weight: 500;
 	margin: 4px;
+}
+input, select {
+	font: inherit;
+	background-color: white;
 }
 input {
 	padding: 5px;
 	margin: 10px;
 	font-size: 15px;
+	border: 3px solid black;
+}
+input:hover {
+	background-color: deepskyblue;
+}
+input:active {
+	background-color: steelblue;
 }
 select {
 	padding: 5px;
 	margin: 10px;
 	font-size: 15px;
+	border: 3px solid black;
 }
 textarea {
 	padding: 5px;
 	margin: 5px;
 	font-size: 20px;
+	border: 3px solid black;
 }
 #scale-display {
 	background-image: linear-gradient(to right, yellow, red);
