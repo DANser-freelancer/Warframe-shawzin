@@ -55,6 +55,9 @@ textarea {
 	font-size: 20px;
 	border: 3px solid black;
 }
+#credit{
+	font-size: 15px;
+}
 #scale-display {
 	background-image: linear-gradient(to right, yellow, red);
 	max-width: 620px;
