@@ -60,6 +60,7 @@ let showScaleClicks = 0;
 let WrongNote = false;
 
 translateBtn.addEventListener('click', translateNotes);
+translateBtn.addEventListener('click', errorStyle);
 copyBtn.addEventListener('click', copyCode);
 showScaleBtn.addEventListener('click', showScale);
 scaleSelector.addEventListener('click', changeScale);
@@ -74,39 +75,36 @@ function translateNotes() {
 	finalCode.splice(0, 999999);
 	let notes = notesInput.value.split(',');
 	for (let i=0; i<notes.length; i++) {
-		let timing = Number(notes[i].match(findTimingRegex)[0]) - 1;
-		let note = notes[i].toLowerCase().match(findNoteRegex)[0];
-		convertNote(note, i+1);
+		let timing = false; 
+		let note = false; 
+		try {
+			timing = Number(notes[i].match(findTimingRegex)[0]) - 1;
+			note = notes[i].toLowerCase().match(findNoteRegex)[0];
+		} finally {
+			if (timing != false && note != false) {
+				WrongNote = false;
+			} else {
+				WrongNote = true;
+				errorStyle;
+				alert("Error: Timing or note #"+(i+1)+" is incorrect/missing.");
+			}
+		}
 		if (WrongNote === true) {
 			break;
 		}
-		convertTiming(timing);
+		convertNote(note, i+1);
+		convertTiming(timing, i+1);
 	}
 	finalCode.unshift(Number(scaleSelector.value) + 1);
 	console.log(finalCode);
-	if (WrongNote === false) {
-		translateBtn.style.border = "revert-layer";
-		copyBtn.style.disabled = false;
-	} else {
-		translateBtn.style.border = "3px dashed red";
-		copyBtn.style.disabled = true;
-	}
-	if (copyBtn.style.disabled === true || WrongNote === true) {
-		copyBtn.style.border = "3px dotted black";
-		copyBtn.style.background = "grey";
-	} else {
-		copyBtn.style.border = "revert-layer";
-		copyBtn.style.background = "revert-layer";
-		copyBtn.style.border = "3px solid green";
-	}
 }
 
-
 //Converts timing into shawzin code: ranges from [AA-AZ, Aa-Az, A0-A9, A+, A/] to [/A-/Z, /a-/z, /0-/9, /+, //]
-function convertTiming(timing) {
-	console.log("this is testing timing "+timing);
+function convertTiming(timing, position) {
 	if (timing === -1) {
-		alert('Error: start note position from 1');
+		WrongNote = true;
+		errorStyle;
+		alert('Error: start first note position from 1.');
 	} else if (timing < 64 && timing > -1) {
 		finalCode.push(timingConvertRules[Math.floor(timing/64)]+timingConvertRules[timing]);
 	} else if (timing < 64*2 && timing > -1) {
@@ -235,9 +233,14 @@ function convertTiming(timing) {
 		finalCode.push(timingConvertRules[Math.floor(timing/64)]+timingConvertRules[timing-64*62]);
 	} else if (timing < 64*64 && timing > -1) {
 		finalCode.push(timingConvertRules[Math.floor(timing/64)]+timingConvertRules[timing-64*63]);
-	} else { alert('Wrong timeline position, range must be 1-4096.') }
+	} else { 
+		WrongNote = true;
+		errorStyle;
+		alert("Error: Wrong timeline position, note #"+position+" range must be 1-4096.") 
+	}
 }
 
+//Checks and converts note, if impossible throws error
 function convertNote(note, position) {
 	if (note.includes('+')) {
 		console.log('includes plus');
@@ -248,11 +251,12 @@ function convertNote(note, position) {
 				finalCode.push(multiResult);
 				WrongNote = false;
 			} else {
-				throw new NoteDoesntExist("Notes #" + position + " can't be played together.");
+				throw new NoteDoesntExist("Error: Notes #" + position + " can't be played together.");
 			}
 		} catch (error) {
-			alert(error);
 			WrongNote = true;
+			errorStyle;
+			alert(error);
 		}
 	} else {
 		let result = noteConvertRules[scaleSelector.value][note];
@@ -264,12 +268,14 @@ function convertNote(note, position) {
 				throw new NoteDoesntExist("Note #" + position + " doesn't exist on this scale.");
 			}
 		} catch (error) {
-		alert(error);
-		WrongNote = true;
+			WrongNote = true;
+			errorStyle;
+			alert(error);
 		}
 	}
 }
 
+//Shows\hides scale
 function showScale() {
 	showScaleClicks+=1;
 	if (showScaleClicks % 2 === 0) {
@@ -281,6 +287,7 @@ function showScale() {
 	}	
 } 
 
+//Changes scale key-value pairs
 function changeScale() {
 	if (scaleSelector.value === '0') {
 		scaleNotes.innerText = 'HDS | HC | MAS | MG | MF | MDS | MC | LAS | LG | LF | LDS | LC';
@@ -301,6 +308,7 @@ function changeScale() {
 	}
 }
 
+//Copies final code to clipboard
 function copyCode() {
 	result = finalCode.join('');
 	if (copyBtn.style.disabled === false) {
@@ -308,6 +316,23 @@ function copyCode() {
 	} 
 }
 
+//Style changes if error occurs.
+function errorStyle() {
+	if (WrongNote === false) {
+		translateBtn.style.border = "revert-layer";
+		copyBtn.style.disabled = false;
+		copyBtn.style.border = "revert-layer";
+		copyBtn.style.background = "revert-layer";
+		copyBtn.style.border = "3px solid green";
+	} else if (copyBtn.style.disabled === true || WrongNote === true) {
+		copyBtn.style.border = "3px dotted black";
+		copyBtn.style.background = "grey";
+		translateBtn.style.border = "3px dashed red";
+		copyBtn.style.disabled = true;
+	}
+}
+
+//Custom errors
 function NoteDoesntExist(message) {
 	const error = new Error(message);
 	return error;
