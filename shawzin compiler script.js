@@ -5,6 +5,7 @@ const scaleSelector = document.getElementById('scale-selector');
 const showScaleBtn = document.getElementById('show-scale');
 const scaleDisplay = document.getElementById('scale-display');
 const scaleNotes = document.getElementById('scale-notes');
+copyBtn.style.disabled = true;
 const findTimingRegex = /[0-9]+/;
 const findNoteRegex = /\D+/i;
 const findDoubleNoteRegex = /[a-z]+[+]+[a-z]+/i;
@@ -63,6 +64,11 @@ copyBtn.addEventListener('click', copyCode);
 showScaleBtn.addEventListener('click', showScale);
 scaleSelector.addEventListener('click', changeScale);
 
+if (copyBtn.style.disabled === true) {
+	copyBtn.style.border = "3px dotted black";
+	copyBtn.style.background = "grey";
+}
+
 //Translates each note after a comma.
 function translateNotes() {
 	finalCode.splice(0, 999999);
@@ -78,6 +84,20 @@ function translateNotes() {
 	}
 	finalCode.unshift(Number(scaleSelector.value) + 1);
 	console.log(finalCode);
+	if (WrongNote === false) {
+		translateBtn.style.border = "revert-layer";
+		copyBtn.style.disabled = false;
+	} else {
+		translateBtn.style.border = "3px dashed red";
+		copyBtn.style.disabled = true;
+	}
+	if (copyBtn.style.disabled === true || WrongNote === true) {
+		copyBtn.style.border = "3px dotted black";
+		copyBtn.style.background = "grey";
+	} else {
+		copyBtn.style.border = "revert-layer";
+		copyBtn.style.background = "revert-layer";
+	}
 }
 
 
@@ -282,7 +302,9 @@ function changeScale() {
 
 function copyCode() {
 	result = finalCode.join('');
-	navigator.clipboard.writeText(result);
+	if (copyBtn.style.disabled === false) {
+		navigator.clipboard.writeText(result);
+	} 
 }
 
 function NoteDoesntExist(message) {
