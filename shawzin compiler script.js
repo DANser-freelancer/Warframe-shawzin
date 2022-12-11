@@ -97,6 +97,7 @@ function translateNotes() {
 	} else {
 		copyBtn.style.border = "revert-layer";
 		copyBtn.style.background = "revert-layer";
+		copyBtn.style.border = "3px solid green";
 	}
 }
 
