@@ -56,7 +56,10 @@ textarea {
 	border: 3px solid black;
 }
 #credit{
+	position: relative;
 	font-size: 15px;
+	top: 40px;
+	left: 20px;
 }
 #scale-display {
 	background-image: linear-gradient(to right, yellow, red);
