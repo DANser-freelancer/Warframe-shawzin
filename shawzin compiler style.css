@@ -103,6 +103,9 @@ a:link {
 	body {
 		font-size: 10px;
 	}
+	textarea {
+		resize: both;
+	}
 }
 
 
