@@ -12,7 +12,7 @@ const findNoteRegex = /\D+/i;
 const findDoubleNoteRegex = /[a-z]+[+]+[a-z]+/i;
 const findTripleNoteRegex = /[a-z]+[+]+[a-z]+[+]+[a-z]+/i;
 let database;
-fetch("music codes database.json")
+fetch("./music codes database.json")
 	.then((resp) => {
 		return resp.json();
 	})
