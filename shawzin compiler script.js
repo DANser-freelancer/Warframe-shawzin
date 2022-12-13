@@ -84,7 +84,7 @@ function translateNotes() {
 			timing = Number(notes[i].match(findTimingRegex)[0]) - 1;
 			note = notes[i].toLowerCase().match(findNoteRegex)[0];
 		} finally {
-			if (timing != false && note != false) {
+			if (timing !== false && note !== false) {
 				WrongNote = false;
 			} else {
 				WrongNote = true;
