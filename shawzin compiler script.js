@@ -11,6 +11,15 @@ const findTimingRegex = /[0-9]+/;
 const findNoteRegex = /\D+/i;
 const findDoubleNoteRegex = /[a-z]+[+]+[a-z]+/i;
 const findTripleNoteRegex = /[a-z]+[+]+[a-z]+[+]+[a-z]+/i;
+let database;
+fetch("/music codes database.json")
+	.then((resp) => {
+		return resp.json();
+	})
+	.then((data) => {
+		database = data;
+		console.log(database);
+	});
 copyBtn.style.disabled = true;
 const timingConvertRules = 
 ['A','B','C','D','E','F','G','H','I','J','K','L','M',
@@ -293,21 +302,21 @@ function showScale() {
 //Changes scale key-value pairs
 function changeScale() {
 	if (scaleSelector.value === '0') {
-		scaleNotes.innerText = 'HDS | HC | MAS | MG | MF | MDS | MC | LAS | LG | LF | LDS | LC';
+		scaleNotes.innerText = 'LC - LDS - LF - LG - LAS - MC - MDS - MF - MG - MAS - HC - HDS';
 	} else if (scaleSelector.value === '1') {
-		scaleNotes.innerText = 'HD | HC | MA | MG | ME | MD | MC | LA | LG | LE | LD | LC';
+		scaleNotes.innerText = 'LC - LD - LE - LG - LA - MC - MD - ME - MG - MA - HC - HD';
 	} else if (scaleSelector.value === '2') {
-		scaleNotes.innerText = 'LB | LAS | LA | LGS | LG | LFS | LF | LE | LDS | LD | LCS | LC';
+		scaleNotes.innerText = 'LC - LCS - LD - LDS - LE - LF - LFS - LG - LGS - LA - LAS - LB';
 	} else if (scaleSelector.value === '3') {
-		scaleNotes.innerText = 'MAS | MG | MFS | MF | MDS | MC | LAS | LG | LFS | LF | LDS | LC';
+		scaleNotes.innerText = 'LC - LDS - LF - LFS - LG - LAS - MC - MDS - MF - MFS - MG - MAS';
 	} else if (scaleSelector.value === '4') {
-		scaleNotes.innerText = 'MG | MF | ME | MD | MC | LB | LA | LG | LF | LE | LD | LC';
+		scaleNotes.innerText = 'LC - LD - LE - LF - LG - LA - LB - MC - MD - ME - MF - MG';
 	} else if (scaleSelector.value === '5') {
-		scaleNotes.innerText = 'MG | MF | MDS | MD | MC | LAS | LGS | LG | LF | LDS | LD | LC';
+		scaleNotes.innerText = 'LC - LD - LDS - LF - LG - LGS - LAS - MC - MD - MDS - MF - MG';
 	} else if (scaleSelector.value === '6') {
-		scaleNotes.innerText = 'HCS | HC | MA | MFS | MF | MCS | MC | LAS | LFS | LF | LCS | LC';
+		scaleNotes.innerText = 'LC - LCS - LF - LFS - LAS - MC - MCS - MF - MFS - MA - HC - HCS';
 	} else if (scaleSelector.value === '6') {
-		scaleNotes.innerText = 'MG | MF | ME | MCS | MC | LAS | LGS | LG | LF | LE | LCS | LC';
+		scaleNotes.innerText = 'LC - LCS - LE - LF - LG - LGS - LAS - MC - MCS - ME - MF - MG';
 	}
 }
 
