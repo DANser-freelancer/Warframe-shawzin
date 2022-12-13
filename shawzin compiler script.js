@@ -5,11 +5,13 @@ const scaleSelector = document.getElementById('scale-selector');
 const showScaleBtn = document.getElementById('show-scale');
 const scaleDisplay = document.getElementById('scale-display');
 const scaleNotes = document.getElementById('scale-notes');
-copyBtn.style.disabled = true;
+const bugReportBtn = document.getElementById('bug-report-btn');
+const bugReportInput = document.getElementById('bug-report-text');
 const findTimingRegex = /[0-9]+/;
 const findNoteRegex = /\D+/i;
 const findDoubleNoteRegex = /[a-z]+[+]+[a-z]+/i;
 const findTripleNoteRegex = /[a-z]+[+]+[a-z]+[+]+[a-z]+/i;
+copyBtn.style.disabled = true;
 const timingConvertRules = 
 ['A','B','C','D','E','F','G','H','I','J','K','L','M',
 'N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
@@ -64,6 +66,7 @@ translateBtn.addEventListener('click', errorStyle);
 copyBtn.addEventListener('click', copyCode);
 showScaleBtn.addEventListener('click', showScale);
 scaleSelector.addEventListener('click', changeScale);
+bugReportBtn.addEventListener('click', reportBug);
 
 if (copyBtn.style.disabled === true) {
 	copyBtn.style.border = "3px dotted black";
@@ -314,6 +317,38 @@ function copyCode() {
 	if (copyBtn.style.disabled === false) {
 		navigator.clipboard.writeText(result);
 	} 
+}
+
+//Reports bug.
+function reportBug () {
+	let date = new Date(Date.now());
+	let myText = `Bug report:%0A ${date.toLocaleString()} %0A - ${bugReportInput.value}`;
+	//%0A === <br>
+	let token = "5794288074:AAEi6L7a9EbbGhEK46FRG9FyyhwQ6oove_I";
+	let chatId = "-852303288";
+	let url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${myText}`;
+	let api = new XMLHttpRequest();
+	if (bugReportInput.value != undefined && bugReportInput.value != '') {
+		//Happens when request state changes AKA when it's run,
+		//api.readyState 4 means request completed,
+		//api.status 200 means request was successful.
+		api.onreadystatechange = () => {
+			if (api.readyState == 4) {
+				if (api.status == 200) {
+					bugReportBtn.style.border = "revert-layer";
+					bugReportBtn.style.border = "3px solid green";
+				} else {
+					bugReportBtn.style.border = "revert-layer";
+					bugReportBtn.style.border = "3px dashed red";
+					alert(`Unable to send bug report, error ${api.status}.`);
+				}
+			} 
+		}
+		api.open("GET", url, true);
+		api.send();
+	} else {
+		alert("Bug report field is empty.");
+	}
 }
 
 //Style changes if error occurs.
