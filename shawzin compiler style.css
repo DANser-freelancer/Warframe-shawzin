@@ -84,7 +84,7 @@ footer {
 }
 #scale-display {
 	background-image: linear-gradient(to right, yellow, red);
-	max-width: 620px;
+	max-width: 650px;
 	padding: 10px;
 	margin: 5px;
 	transition: opacity 0.5s;
@@ -102,6 +102,9 @@ a:link {
 @media screen and (max-width: 500px) {
 	body {
 		font-size: 10px;
+	}
+	#scale-display p {
+		font-size: 15px;
 	}
 }
 
