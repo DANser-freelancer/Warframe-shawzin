@@ -77,7 +77,7 @@ databaseCopyBtn.addEventListener('click', copyDatabase);
 
 //Onloads
 copyBtn.style.disabled = true;
-async () => {
+async function populate () {
     const requestURL = 'https://github.com/DANser-freelancer/Warframe-shawzin/blob/main/music%20codes%20database.json';
     const request = new Request(requestURL);
     const response = await fetch(request);
@@ -412,3 +412,4 @@ function NoteDoesntExist(message) {
 	return error;
 }
 NoteDoesntExist.prototype = Object.create(Error.prototype);
+populate();
