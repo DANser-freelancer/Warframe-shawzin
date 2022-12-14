@@ -1,3 +1,4 @@
+
 //Global variables
 const translateBtn = document.getElementById('translate');
 const notesInput = document.getElementById('notes-input');
@@ -14,7 +15,7 @@ const findTimingRegex = /[0-9]+/;
 const findNoteRegex = /\D+/i;
 const findDoubleNoteRegex = /[a-z]+[+]+[a-z]+/i;
 const findTripleNoteRegex = /[a-z]+[+]+[a-z]+[+]+[a-z]+/i;
-const database = data;
+let database;
 let finalCode = [];
 let showScaleClicks = 0;
 let WrongNote = false;
@@ -76,6 +77,13 @@ databaseCopyBtn.addEventListener('click', copyDatabase);
 
 //Onloads
 copyBtn.style.disabled = true;
+async () => {
+    const requestURL = 'https://github.com/DANser-freelancer/Warframe-shawzin/blob/main/music%20codes%20database.json';
+    const request = new Request(requestURL);
+    const response = await fetch(request);
+    const dataText = await response.text();
+    database = JSON.parse(dataText);
+}
 window.onload = () => { 
 	if (copyBtn.style.disabled === true) {
 	copyBtn.style.border = "3px dotted black";
