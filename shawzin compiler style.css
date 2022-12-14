@@ -66,6 +66,21 @@ footer {
 	display: flex;
     flex-direction: column;
 }
+.database {
+	margin-top: 20px;
+}
+.database p {
+	margin-bottom: 0px;
+}
+.database option {
+	white-space: nowrap;
+}
+.bug-report {
+	margin-top: 70px;
+}
+.bug-report p {
+	margin-bottom: 0px;
+}
 .foot {
 	position: sticky;
 	flex-grow: 1;
