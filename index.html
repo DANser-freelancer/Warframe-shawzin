@@ -77,6 +77,17 @@
 	</div>
 </footer>
 </body>
-<script type="text/javascript" src="database.json"></script>
+<script type="text/javascript" src="database.json">
+	 async function populate() {
+
+      const requestURL = 'https://github.com/DANser-freelancer/Warframe-shawzin/blob/main/music%20codes%20database.json';
+      const request = new Request(requestURL);
+
+      const response = await fetch(request);
+      const dataText = await response.text();
+
+      const data = JSON.parse(superHeroesText);
+  	}
+</script>
 <script type="application/javascript" src="shawzin compiler script.js"></script>
 </html>
