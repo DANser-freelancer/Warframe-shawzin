@@ -1,3 +1,4 @@
+//Global variables
 const translateBtn = document.getElementById('translate');
 const notesInput = document.getElementById('notes-input');
 const copyBtn = document.getElementById('copy-code');
@@ -7,12 +8,17 @@ const scaleDisplay = document.getElementById('scale-display');
 const scaleNotes = document.getElementById('scale-notes');
 const bugReportBtn = document.getElementById('bug-report-btn');
 const bugReportInput = document.getElementById('bug-report-text');
+const databaseSelector = document.getElementById('database-selector');
+const databaseCopyBtn = document.getElementById('copy-database');
 const findTimingRegex = /[0-9]+/;
 const findNoteRegex = /\D+/i;
 const findDoubleNoteRegex = /[a-z]+[+]+[a-z]+/i;
 const findTripleNoteRegex = /[a-z]+[+]+[a-z]+[+]+[a-z]+/i;
-let database;
-copyBtn.style.disabled = true;
+const database = data;
+let finalCode = [];
+let showScaleClicks = 0;
+let WrongNote = false;
+//I cal this stuff 'rules', it translates input notes into shawzin code according to key - value pairs
 const timingConvertRules = 
 ['A','B','C','D','E','F','G','H','I','J','K','L','M',
 'N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
@@ -58,21 +64,31 @@ lashc:'q', lasmfhc:'6', mcmfs:'c', mfshcs:'0', mchcs:'s', mcmfshcs:'8'},
 lgmf:'q', lgmcmf:'6', lgsmcs:'c', mcsmg:'0', lgsmg:'s', lgsmcsmg:'8'},
 ]
 Object.freeze(multiNoteConvertRules);
-let finalCode = [];
-let showScaleClicks = 0;
-let WrongNote = false;
 
+//Event listeners
 translateBtn.addEventListener('click', translateNotes);
 translateBtn.addEventListener('click', errorStyle);
 copyBtn.addEventListener('click', copyCode);
 showScaleBtn.addEventListener('click', showScale);
 scaleSelector.addEventListener('click', changeScale);
 bugReportBtn.addEventListener('click', reportBug);
+databaseCopyBtn.addEventListener('click', copyDatabase);
 
-if (copyBtn.style.disabled === true) {
+//Onloads
+copyBtn.style.disabled = true;
+window.onload = () => { 
+	if (copyBtn.style.disabled === true) {
 	copyBtn.style.border = "3px dotted black";
 	copyBtn.style.background = "grey";
-}
+	}
+	for (let i=0; i<databaseSelector.length; i++) {
+		databaseSelector[i].innerText = 
+		`${database[i].name} - 
+		${database[i].band} - 
+		${database[i].line} - 
+		${database[i].finished}`;
+	}
+};
 
 //Translates each note after a comma.
 function translateNotes() {
@@ -291,7 +307,7 @@ function showScale() {
 	}	
 } 
 
-//Changes scale key-value pairs
+//Changes scale display
 function changeScale() {
 	if (scaleSelector.value === '0') {
 		scaleNotes.innerText = 'LC - LDS - LF - LG - LAS - MC - MDS - MF - MG - MAS - HC - HDS';
@@ -320,10 +336,24 @@ function copyCode() {
 	} 
 }
 
+//Copies song code from database
+function copyDatabase() {
+	databaseCode = database[databaseSelector.value].code;
+	if (databaseCode != undefined) {
+		navigator.clipboard.writeText(databaseCode);
+		databaseCopyBtn.style.border = "revert-layer";
+		databaseCopyBtn.style.background = "revert-layer";
+		databaseCopyBtn.style.border = "3px solid green";
+	} else {
+		databaseCopyBtn.style.border = "3px dotted black";
+		databaseCopyBtn.style.background = "grey";
+	}
+}
+
 //Reports bug.
 function reportBug () {
 	let date = new Date(Date.now());
-	let myText = `Bug report:%0A ${date.toLocaleString()} %0A - ${bugReportInput.value}`;
+	let myText = `REPORT:%0A ${date.toLocaleString()} %0A - ${bugReportInput.value}`;
 	//%0A === <br>
 	let token = "5794288074:AAEi6L7a9EbbGhEK46FRG9FyyhwQ6oove_I";
 	let chatId = "-852303288";
@@ -341,7 +371,7 @@ function reportBug () {
 				} else {
 					bugReportBtn.style.border = "revert-layer";
 					bugReportBtn.style.border = "3px dashed red";
-					alert(`Unable to send bug report, error ${api.status}.`);
+					alert(`Unable to send bug report, error ${api.status}.\nTry there: https://discord.gg/VyjFwKn8AY`);
 				}
 			} 
 		}
@@ -352,7 +382,7 @@ function reportBug () {
 	}
 }
 
-//Style changes if error occurs.
+//Style changes if error occurs
 function errorStyle() {
 	if (WrongNote === false) {
 		translateBtn.style.border = "revert-layer";
