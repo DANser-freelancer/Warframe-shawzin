@@ -3,6 +3,10 @@ html {
 	display: flex;
     flex-direction: column;
 }
+#big-favicon {
+	position: relative;
+	max-width: 100px;
+}
 body {
     flex-grow: 1;
     display: grid;
