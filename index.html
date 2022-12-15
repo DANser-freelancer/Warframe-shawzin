@@ -2,7 +2,8 @@
 <html>
 <head>
 	<title>Shawzin music compiler</title>
-	<link rel="stylesheet" type="text/css" href="shawzin compiler style.css">
+	<link rel="icon" type="image/png" href="AristeiShawzinIcon.png">
+	<link rel="stylesheet" type="text/css" href="style.css">
 	<meta name="http-equiv" content="content-security-policy">
 	<meta charset="utf-8">
 	<meta name="keywords" content="shawzin, compiler, music, song, warframe, notes">
@@ -16,6 +17,7 @@
 <body>
 <article class="body">
 	<div name="body-div">
+	<img src="AristeiShawzinIcon.png" id="big-favicon">
 	<h1>Shawzin music compiler</h1>
 	<p>Hi, this app will translate musical notes into shawzin code that you can paste in your favourite sawzin and play.</p>
 	<h3>Rules:</h3>
@@ -59,8 +61,6 @@
 	<div class="database">
 		<p>Here you can copy song codes from our database:</p>
 		<select name="Database selector" id="database-selector">
-			<option value="0"></option>
-			<option value="1"></option>
 		</select>
 		<input type="button" id="copy-database" value="Copy song code">
 	</div>
@@ -77,6 +77,5 @@
 	</div>
 </footer>
 </body>
-
-<script type="application/javascript" src="shawzin compiler script.js"></script>
+<script type="application/javascript" src="script.js"></script>
 </html>
