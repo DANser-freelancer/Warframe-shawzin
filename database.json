@@ -12,5 +12,34 @@
 		"line": "*undefined*",
 		"code": "6BAAKAIKARKAcMAgRAmMAoKAsKAwBA3CA4EA8JBBJBJJBRCBZEBdKBhKBlJBmEBpCBuBByBB+BCCKCKKCSKCeMCiRCoMCrKCvKCzBC6CC7EC/JDEJDLJDUCDcEDgKDkKDoJDqEDtCDxBD2BEGCETEEXJEfKEnMErKEwJE0EE5BFBCFJCFRCFVBFeBFiBFmCFqBGMCGYEGcJGkKGsMGwKG0JG5EG9BHGCHOJHWEHeCHnBHv",
 		"finished": "*unfinished*"
+	},
+	{
+		"name": "His Song",
+		"band": "Undertale",
+		"line": "*undefined*",
+		"code": "5KAAUAHSAOKAURAbRAmSAxBA7KBDSBJKBPRBWRBhSBrCB0KB8UCCSCIKCPRCVRCfSCpECyKC5SDAhDJUDSSDdUDp",
+		"finished": "*unfinished*"
+	},
+	{
+		"name": "Theme",
+		"band": "Crash Bandicoot",
+		"line": "*undefined*",
+		"code": "4BAABAJCAMEAQRAVMAdKAkCAtEAwKA0EA4KA8BBBBBJCBMEBQRBUMBcKBjCBrEBwKB0EB4KB8ECAECHECdKChKClKCpKC4JC8EDBEDIEDUKDYCDcBDg",
+		"finished": "*unfinished*"
+	},
+	{
+		"name": "Pumped up Kicks",
+		"band": "Foster The People",
+		"line": "*undefined*",
+		"code": "5MAAKAGKAKKANJASCAaCAdJAiJApJAxCA4CA8JBAJBIJBQKBbKBiMBpKBsJBwMB8KCEKCIKCLJCPCCYCCcJChJCoJCwCC4CC7JC/JDHJDOKDZKDgMDnKDqJDv",
+		"finished": "*unfinished*"
+	},
+	{
+		"name": "Sweden",
+		"band": "C418",
+		"line": "*undefined*",
+		"code": "5aAAEAhMAiKAwxA/MBhSBwUB4cCAJCghCwkC4yC/aEASEREEfMEgKEvxFBMFgSFvUF3cGAJGgkGwhG4yHAaH/EIfKIgMIwxI/MJghJwUJ4cJ/JKgSKwRK4yLAaL/EMfMMgKMwxNAMNgSNwUN4cN/JOhhOwkO4yO/",
+		"finished": "*unfinished*"
 	}
 ]
+	
