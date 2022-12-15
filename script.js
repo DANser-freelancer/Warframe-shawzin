@@ -4,7 +4,6 @@ let database;
 async function fetchDatabase() {
 	const response = await fetch('database.json');
 	database = await response.json(); 
-	console.log(database);
 	for (let i=0; i<database.length; i++) {
 		let opt = document.createElement('option');
 		opt.value = i;
