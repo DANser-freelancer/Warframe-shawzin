@@ -40,6 +40,76 @@
 		"line": "*undefined*",
 		"code": "5aAAEAhMAiKAwxA/MBhSBwUB4cCAJCghCwkC4yC/aEASEREEfMEgKEvxFBMFgSFvUF3cGAJGgkGwhG4yHAaH/EIfKIgMIwxI/MJghJwUJ4cJ/JKgSKwRK4yLAaL/EMfMMgKMwxNAMNgSNwUN4cN/JOhhOwkO4yO/",
 		"finished": "*unfinished*"
+	},
+	{
+	"name": "Opening",
+	"band": "Shrek The Movie",
+	"line": "*undefined*",
+	"code": "2EAAJAFKAKKAkJApEAuEBIJBOKBTMBcKBkJByEB3ECRJCXKCbBC3BC/CDWBDeEDhJDp",
+	"finished": "*unfinished*"
+	},
+	{
+	"name": "Theme",
+	"band": "Neon Genesis Evangelion",
+	"line": "*undefined*",
+	"code": "1BAACALEAWCAdEAlEArEAvKA2KA7JBAJBHJBVKBfMBoEBvEB4KCAKCFKCKKCRKCWMCe",
+	"finished": "*unfinished*"
+	},
+	{
+	"name": "Song of Storms",
+	"band": "Legend of Zelda: Ocarina of Time",
+	"line": "*undefined*",
+	"code": "6BAAEADSAIBAWEAaSAdUAuhA5UA9hBBUBFSBJKBNKBdBBkEBsJBwKB0KCFBCMECTJCXCCbBCtECxSC0BDCEDGSDJUDZhDjUDnhDrUDvSDzKD3KEHBEPEEXJEcKEgKExBE6",
+	"finished": "*unfinished*"
+	},
+	{
+	"name": "Leaves from the Vine",
+	"band": "Uncle Iroh (Avatar)",
+	"line": "*undefined*",
+	"code": "6RAARAQMAXKAcRBARBHMBPKBXJBwKB4KCAKCIJCPECUKC4KDAKDIJDQEDURD4REIMEPKEURE4RFAMFIKFQKFwKGAJGIEGNKG4KHBJHIEHQ",
+	"finished": "*finished*"
+	},
+	{
+		"name": "Ballad of the Windfish",
+		"band": "Legend of Zelda: Link’s Awakening",
+		"line": "*undefined*",
+		"code": "6JAAKAHMAOJAuKA1MA8JBaKBgMBmKBtEB0BCFJCMJCoKCvMC1EDOMDWUDiSD+REFSEMkEtiE3UFAUFLhFXkFyiF7UGEUGMSGTUGaiGhUGqRHNkHWiHqUH7SIJ",
+		"finished": "*finished*"
+	},
+	{
+		"name": "One final effort",
+		"band": "Halo 3",
+		"line": "*undefined*",
+		"code": "4kAAiALhAOSAjUArBA8KBeMBnJBqBB6KCLMCjJCqiC4kDXiEDhETSEhUEx",
+		"finished": "*unfinished*"
+	},
+	{
+		"name": "Through the Fire and the Flames",
+		"band": "Dragonforce",
+		"line": "*undefined*",
+		"code": "1CAACACBAECAGCAIBAKCAMBAOCAQCASBATCAVCAYBAaCAbBAdJAfJAhCAjJAlJAnCAqJAsCAtJAvJAyCAzJA1JA3CA5JA7KA9EA/EBCBBDEBFEBIBBKEBMBBNEBPEBSBBUEBWEBYBBaEBcBBdCBfCBiBBjCBlCBnBBqCBsBBuCBvBBxCBzJB2KB3JB5KB7MB+",
+		"finished": "*unfinished*"
+	},
+	{
+		"name": "Through the Fire and the Flames - Intro",
+		"band": "Dragonforce",
+		"line": "*undefined*",
+		"code": "6BAACACEAFBAHCAJEAMJAOEARSATBAWMAYBAbKAdBAgCAiEAkBAnCApEArBAuCAwEAyJA1EA3SA6BA8MA/BBBKBEBBGCBJEBLhBNhBPhBQhBRSBTSBVhBWhBYhBZhBaSBcSBdhBfhBhSBiSBkhBlhBnhBohBpSBrSBshBuhBwhBxhBySB0SB1hB3hB4SB6SB8kB9kB/kCAkCBSCDSCEkCGkCHkCJkCKSCMSCNkCPkCQSCSSCTkCVkCXkCYkCZSCbSCckCekCfkChkCiSCkSClkCnkCoSCqSCr",
+		"finished": "*unfinished*"
+	},
+	{
+		"name": "Concerning Hobbits",
+		"band": "The Fellowship of the Ring",
+		"line": "*undefined*",
+		"code": "5BAACAIZAQKAgcAvCBHxBPZBsBCHECPKCWxCeSCuRC8KDTZDapD5BEICEQZEXKEmcE1CFOZFXBGAEGHKGPxGXMG/KHHEHZpHiBIBCIPxIepI5ZJV",
+		"finished": "*unfinished*"
+	},
+	{
+		"name": "Megalovania",
+		"band": "Undertale",
+		"line": "*undefined*",
+		"code": "4RAARACkAEiAJhAQUAVSAaRAeSAgUAiRAlRAnkAqiAuhA1UA6SA+RBDSBFUBHRBKRBMkBOiBShBZUBeSBiRBnSBpUBrRBuRBwkBziB4hB/UCESCJRCNSCPUCRRCURCWkCZiCehClUCqSCuRCzSC1UC3RC5RC8kC+iDDhDKUDOSDTRDXSDYUDaRDdRDfkDiiDmhDtUDySD2RD7SD8UD+",
+		"finished": "*unfinished*"
 	}
 ]
 	
