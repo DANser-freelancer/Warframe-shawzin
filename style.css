@@ -92,7 +92,6 @@ footer {
 	place-items: center;
 	min-width: 100%;
 	font-family: 'Montserrat', sans-serif, 'PT Serif', serif;
-	font-size: 20px;
 	color: black;
 	background-image: linear-gradient(to bottom, lightgray, grey);
 	min-height: 60px;
@@ -104,6 +103,7 @@ footer {
 #scale-display {
 	background-image: linear-gradient(to right, yellow, red);
 	max-width: 650px;
+	min-width: 400px;
 	padding: 10px;
 	margin: 5px;
 	transition: opacity 0.5s;
@@ -119,10 +119,13 @@ a:link {
 	color: blue;
 }
 @media screen and (max-width: 500px) {
-	body {
-		font-size: 10px;
+	.body {
+		font-size: 15px;
 	}
 	#scale-display p {
+		font-size: 15px;
+	}
+	#credit {
 		font-size: 15px;
 	}
 }
