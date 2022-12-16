@@ -16,6 +16,10 @@ async function fetchDatabase() {
 	}
 }
 fetchDatabase();
+let testTheToken = BUG_REPORT_TOKEN;
+if (testTheToken == "5794288074:AAEi6L7a9EbbGhEK46FRG9FyyhwQ6oove_I") {
+console.log("it works");
+}
 
 //Global variables
 const translateBtn = document.getElementById('translate');
