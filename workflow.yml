@@ -30,4 +30,4 @@ jobs:
         env: 
           BUG_REPORT_TOKEN: ${{ secrets.BUG_REPORT_TO }}
         if:  env.BUG_REPORT_TOKEN != 'TrustNobody'
-        run: echo "I was wrong thinking the GitHub secret was 'TrustNobody'!"
+        run: echo "I was wrong thinking the GitHub secret was 'TrusNobody'!"
