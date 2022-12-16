@@ -21,7 +21,7 @@ jobs:
       - name: Step 2 - GitHub Action if statement (true)
         env: 
           BUG_REPORT_TOKEN: ${{ secrets.BUG_REPORT_TO }}
-        if:  env.BUG_REPORT_TOKEN == 'TrustNo1'
+        if:  env.BUG_REPORT_TOKEN == '5794288074:AAEi6L7a9EbbGhEK46FRG9FyyhwQ6oove_I'
         run: echo "I know what the secret token is!"
 
       # A GitHub Actions if statement with a secret environment variable
@@ -30,4 +30,4 @@ jobs:
         env: 
           BUG_REPORT_TOKEN: ${{ secrets.BUG_REPORT_TO }}
         if:  env.BUG_REPORT_TOKEN != 'TrustNobody'
-        run: echo "I was wrong thinking the GitHub secret was 'TrusNobody'!"
+        run: echo "I was wrong thinking the GitHub secret was 'TrustNobody'!"
