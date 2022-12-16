@@ -1,26 +1,4 @@
 
-//Fetch database
-let database;
-async function fetchDatabase() {
-	const response = await fetch('database.json');
-	database = await response.json(); 
-	for (let i=0; i<database.length; i++) {
-		let opt = document.createElement('option');
-		opt.value = i;
-		opt.innerText =
-		`${database[i].name} - 
-		${database[i].band} - 
-		${database[i].line} - 
-		${database[i].finished}`;
-		databaseSelector.appendChild(opt);
-	}
-}
-fetchDatabase();
-let testTheToken = BUG_REPORT_TOKEN;
-if (testTheToken == "5794288074:AAEi6L7a9EbbGhEK46FRG9FyyhwQ6oove_I") {
-console.log("it works");
-}
-
 //Global variables
 const translateBtn = document.getElementById('translate');
 const notesInput = document.getElementById('notes-input');
@@ -98,13 +76,30 @@ databaseCopyBtn.addEventListener('click', copyDatabase);
 
 //Onloads
 copyBtn.style.disabled = true;
-
 window.onload = () => { 
 	if (copyBtn.style.disabled === true) {
 	copyBtn.style.border = "3px dotted black";
 	copyBtn.style.background = "grey";
 	}
 };
+
+//Fetch database
+let database;
+async function fetchDatabase() {
+	const response = await fetch('database.json');
+	database = await response.json(); 
+	for (let i=0; i<database.length; i++) {
+		let opt = document.createElement('option');
+		opt.value = i;
+		opt.innerText =
+		`${database[i].name} - 
+		${database[i].band} - 
+		${database[i].line} - 
+		${database[i].finished}`;
+		databaseSelector.appendChild(opt);
+	}
+}
+fetchDatabase();
 
 //Translates each note after a comma.
 function translateNotes() {
