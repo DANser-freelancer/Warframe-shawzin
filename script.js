@@ -93,8 +93,7 @@ async function fetchDatabase() {
 		opt.value = i;
 		opt.innerText =
 		`${database[i].name} - 
-		${database[i].band} - 
-		${database[i].line} - 
+		${database[i].band} -  
 		${database[i].finished}`;
 		databaseSelector.appendChild(opt);
 	}
