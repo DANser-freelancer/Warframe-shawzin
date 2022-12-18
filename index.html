@@ -26,8 +26,11 @@
 		<li>If the note you want is not present in this scale you must choose the closest note or skip it<br>
 			(try to correlate the highest notes and work off of that).
 		</li>
-		<li>The structure of the notes is this: (1-4096)+(L/M/H)+(C/D/E/F/G/A/B)+[S]("[]" means optional).</li>
-		<li>(L/M/H) stands for low/mid/high, [S] stands for sharp.</li>
+		<li>The structure of the notes is this: (1-4096)+(L/M/H)+(C/D/E/F/G/A/B)+[S]("[]" means optional). 
+		</li>
+		<li>(L/M/H) stands for low/mid/high, [S] stands for sharp.<br>
+			Circle symbols are just indication of note being ◉/not being ◎ on the line.
+		</li>
 		<li>To play a combination of notes in the same moment you must write them using '+'<br>
 			with only one timing indication (25lg+mds,55mf...) and in ascending order,<br>
 			only maximum of 3 notes can be played at the same time, not all notes can be played together.
@@ -49,14 +52,28 @@
 		<option value="5">Minor</option>
 		<option value="6">Hirajoshi</option>
 		<option value="7">Phrygian</option>
+		<option value="8">Yo</option>
 	</select>
-	<textarea name="notes-input" id="notes-input" placeholder="Copy or write your notes here" cols="25" rows ="5" maxlength="32768" wrap="soft" autofocus required></textarea><br>
+	<textarea name="notes-input" id="notes-input" placeholder="Copy or write your notes here" cols="35" rows ="5" maxlength="32768" wrap="soft" autofocus required></textarea><br>
 	<input type="button" name="show-scale" id="show-scale" value="Hide scale">
 	<input type="button" name="translate" id="translate" value="Translate into code">
 	<input type="button" name="copy-code" id="copy-code" value="Copy code">
 	<div  id="scale-display"> 
-		<p id="scale-notes">LC - LDS - LF - LG - LAS - MC - MDS - MF - MG - MAS - HC - HDS</p> 
-		<p>Low =====================================>> High</p>
+		<p id="scale-notes">
+		--------------------------------------------(HDS◉)---<br>												
+		----------------------------------------(HC◎)<br>
+		------------------------------------(MAS◉)-----------<br>								
+		--------------------------------(MG◎)<br>
+		----------------------------(MF◉)--------------------<br>
+		------------------------(MDS◎)<br>
+		--------------------(MC◉)----------------------------<br>										
+		----------------(LAS◎)<br>
+		------------(LG◉)------------------------------------<br>		
+		--------(LF◎)<br>		
+		----(LDS◉)-------------------------------------------<br>
+		(LC◎)<br>
+		</p> 
+		<p>Low ============================>> High</p>
 	</div>
 	<div class="database">
 		<p>Here you can copy song codes from our database:</p>
@@ -67,7 +84,7 @@
 	<div class="bug-report">
 		<p>Write a suggestion with prefix "suggestion:" or bug report with prefix "bug:"</p>
 		<input type="button" name="bug-report" id="bug-report-btn" value="Send a report">
-		<input type="text" name="bug-report-text" id="bug-report-text" size ="40" maxlength="5000" placeholder="Write about the bug/suggestions">
+		<input type="text" name="bug-report-text" id="bug-report-text" size ="45" maxlength="5000" placeholder="Write about the bug/suggestions">
 	</div>
 	</div>
 </article>
