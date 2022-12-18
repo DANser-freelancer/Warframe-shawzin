@@ -1,4 +1,4 @@
-
+require('dotenv').config();
 //Global variables
 const translateBtn = document.getElementById('translate');
 const notesInput = document.getElementById('notes-input');
