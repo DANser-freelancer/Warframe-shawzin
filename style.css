@@ -101,7 +101,7 @@ footer {
 	font-size: 18px;
 }
 #scale-display {
-	background-image: linear-gradient(to right, yellow, red);
+	background-image: linear-gradient(to right, red, yellow);
 	max-width: 650px;
 	min-width: 400px;
 	padding: 10px;
