@@ -91,10 +91,7 @@ async function fetchDatabase() {
 	for (let i=0; i<database.length; i++) {
 		let opt = document.createElement('option');
 		opt.value = i;
-		opt.innerText =
-		`${database[i].name} - 
-		${database[i].band} -  
-		${database[i].finished}`;
+		opt.innerText = `${database[i].name} - ${database[i].band}`;
 		databaseSelector.appendChild(opt);
 	}
 }
@@ -365,7 +362,7 @@ function reportBug () {
 	let date = new Date(Date.now());
 	let myText = `REPORT:%0A ${date.toLocaleString()} %0A - ${bugReportInput.value}`;
 	//%0A === <br>
-	let token = "5794288074:AAEi6L7a9EbbGhEK46FRG9FyyhwQ6oove_I";
+	let token = `5794288074:AAEi6L7a9EbbGhEK46FRG9FyyhwQ6oove_I`;
 	let chatId = "-852303288";
 	let url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${myText}`;
 	let api = new XMLHttpRequest();
