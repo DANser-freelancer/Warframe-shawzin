@@ -21,6 +21,7 @@ body {
 	padding: 40px;
 	margin: 40px;
 	margin-bottom: 0px;
+	margin-top: 0px;
 	font-family: 'Montserrat', sans-serif, 'PT Serif', serif;
 	font-size: 20px;
 	color: black;
@@ -33,7 +34,7 @@ h1, h3, p {
 }
 li {
 	font-weight: 500;
-	margin: 4px;
+	margin: 15px;
 }
 input, select {
 	font: inherit;
@@ -101,12 +102,32 @@ footer {
 	font-size: 18px;
 }
 #scale-display {
-	background-image: linear-gradient(to right, red, yellow);
-	max-width: 650px;
+	background-image: linear-gradient(to right, orangered, yellow);
+	max-width: fit-content;
 	min-width: 400px;
 	padding: 10px;
 	margin: 5px;
-	transition: opacity 0.5s;
+	overflow: hidden;
+}
+@keyframes fade-out {
+	0% {
+		opacity: 1;
+		max-height: 500px;
+	}
+	100% {
+		opacity: 0;
+		max-height: 0px;
+	}
+}
+@keyframes fade-in {
+	0% {
+		opacity: 0;
+		max-height: 0px;
+	}
+	100% {
+		opacity: 1;
+		max-height: 1000px;
+	}
 }
 #scale-display p {
 	margin: auto;
