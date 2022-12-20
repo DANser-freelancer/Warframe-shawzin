@@ -2,6 +2,7 @@ html {
     min-height: 100%; 
 	display: flex;
     flex-direction: column;
+    scroll-behavior: smooth;
 }
 #big-favicon {
 	position: relative;
@@ -19,6 +20,8 @@ body {
 .body {
 	max-width: 100%;
 	padding: 40px;
+	padding-left: 200px;
+	padding-right: 200px;
 	margin: 40px;
 	margin-bottom: 0px;
 	margin-top: 0px;
@@ -101,7 +104,15 @@ footer {
 	position: relative;
 	font-size: 18px;
 }
+#note-displays {
+	display: flex;
+}
+#note-lengths {
+	max-width: 500px;
+	flex: 1;
+}
 #scale-display {
+	flex: 1;
 	background-image: linear-gradient(to right, orangered, yellow);
 	max-width: fit-content;
 	min-width: 400px;
@@ -142,12 +153,19 @@ a:link {
 @media screen and (max-width: 500px) {
 	.body {
 		font-size: 15px;
+		padding: 40px;
 	}
 	#scale-display p {
 		font-size: 15px;
 	}
+	#note-displays {
+		display: initial;
+	}
 	#credit {
 		font-size: 15px;
+	}
+	#note-lengths {
+		max-width: 450px;
 	}
 }
 
