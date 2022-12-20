@@ -123,7 +123,8 @@ function translateNotes() {
 	finalCode.splice(0, 999999);
 	let notes = notesInput.value.split(',');
 	for (let i=0; i<notes.length; i++) {
-		notes[i] = notes[i].split(' ').join('');
+		notes[i] = notes[i].replace(/\s+/gi, '');
+		notes[i] = notes[i].replace(/\n+/gi, '');
 		if (notes[i].match(missingSeparatorRegex) != null) {
 			WrongNote = true;
 			errorStyle;
@@ -303,7 +304,6 @@ function convertTiming(timing, position) {
 //Checks and converts note, if impossible throws error
 function convertNote(note, position) {
 	if (note.includes('+')) {
-		console.log('includes plus');
 		try {
 			let multiNote = note.split('+').join('');
 			let multiResult = multiNoteConvertRules[scaleSelector.value][multiNote];
