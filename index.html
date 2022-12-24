@@ -17,13 +17,14 @@
 <body>
 <article class="body">
 	<div name="body-div">
-	<a href="https://discord.gg/VyjFwKn8AY"><img src="AristeiShawzinIcon.png" id="big-favicon" alt="Shawzin icon" title="Made by DANser-freelancer, click to check out discord 'Warframe Musicians'"></a>
+	<a href="https://discord.gg/VyjFwKn8AY"><img src="AristeiShawzinIcon.png" id="big-favicon" alt="Shawzin icon" title="Made by DANser-freelancer, click to check out discord 'Warframe Musicians'" target="_blank"></a>
 	<h1>Shawzin music compiler</h1>
 	<p>Hi, this app will translate musical notes into shawzin code that you can copy&paste to play your favourite shawzin.</p>
 	<h3>Rules:</h3>
 	<ul id='rules'>
 		<li>
-			Shawzin has a concrete set of notes for each scale, you must select your <a href="https://docs.google.com/document/d/1VvlM4IQr8bfUV8pCJMVNRaG6piJTR9_t-xq7wQaxpho/edit" target="_blank">musical scale</a> accordingly.</li>
+			Shawzin has a concrete set of notes for each scale, you must select your musical scale accordingly.
+		</li>
 		<li>
 			Try to correlate the highest notes and work with that, use the "Transpose notes" feature, 
 			click on the field to transpose, line 2 is where you would find the clef.
@@ -51,7 +52,7 @@
 			The input field is case insensitive, you can write "lD" or "Ld" or "ld". Also you can use spaces and newlines. 
 		</li>
 		<li>
-			The database shows name of the song + name of the band + approximate length of the track, *it may vary if you activate slow mode.
+			The database shows name of the song + name of the band + approximate length of the track, *it may vary if you enable slow mode. When searching for a song wrtite name/band and click on the field to search.
 		</li>
 	</ul>
 	<textarea name="notes-input" id="notes-input" placeholder="Write your notes here" cols="45" rows ="5" maxlength="32768" wrap="soft" autofocus required></textarea><br>
@@ -87,6 +88,7 @@
 	</div>
 	<div class="database">
 		<p>Here you can copy song codes from our database:</p>
+		<input type="text" name="database-search-bar" id="database-search-bar" size="30" maxlength="100" placeholder="Search for name/band of the song" title="Click on the field to search">
 		<select name="Database selector" id="database-selector">
 		</select>
 		<input type="button" id="copy-database" value="Copy code">
@@ -100,7 +102,7 @@
 </article>
 <footer>
 	<div class="foot">
-		<a id="credit" href="https://docs.google.com/document/d/1VvlM4IQr8bfUV8pCJMVNRaG6piJTR9_t-xq7wQaxpho/edit">Credit to everybody here for gathering info!</a>
+		<a id="credit" href="https://docs.google.com/document/d/1VvlM4IQr8bfUV8pCJMVNRaG6piJTR9_t-xq7wQaxpho/edit" target="_blank">Credit to everybody here for gathering info!</a>
 	</div>
 </footer>
 </body>
