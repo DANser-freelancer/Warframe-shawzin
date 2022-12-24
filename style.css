@@ -84,7 +84,7 @@ footer {
 	white-space: nowrap;
 }
 .bug-report {
-	margin-top: 70px;
+	margin-top: 150px;
 }
 .bug-report p {
 	margin-bottom: 0px;
@@ -153,7 +153,12 @@ a:link {
 @media screen and (max-width: 500px) {
 	.body {
 		font-size: 15px;
-		padding: 40px;
+		margin: 40px;
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+	#scale-display {
+		min-width: 400px;
 	}
 	#scale-display p {
 		font-size: 15px;
