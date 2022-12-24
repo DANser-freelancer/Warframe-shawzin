@@ -14,6 +14,7 @@ const databaseCopyBtn = document.getElementById('copy-database');
 const transpositionIndex = document.getElementById('transposition-index');
 const noteLengths = document.getElementById('note-lengths');
 const noteLengthSelector = document.getElementById('note-length-selector');
+const databaseSearchBar = document.getElementById('database-search-bar');
 const findTimingRegex = /[0-9]+/;
 const findNoteRegex = /\D+/i;
 const findDoubleNoteRegex = /[a-z]+[+]+[a-z]+/i;
@@ -86,6 +87,7 @@ scaleSelector.addEventListener('click', changeScale);
 bugReportBtn.addEventListener('click', reportBug);
 databaseCopyBtn.addEventListener('click', copyDatabase);
 transpositionIndex.addEventListener('click', transposeNotes);
+databaseSearchBar.addEventListener('click', searchDatabase);
 
 //Onloads
 copyBtn.style.disabled = true;
@@ -97,28 +99,7 @@ window.onload = () => {
 	changeScale();
 };
 
-//Fetch database
-let database;
-async function fetchDatabase() {
-	const response = await fetch('database.json');
-	database = await response.json(); 
-	for (let i=0; i<database.length; i++) {
-		let lastTimingLetters = database[i].code.slice(-2).split('');
-		let beats = timingConvertRules.indexOf(lastTimingLetters[0])*64 + timingConvertRules.indexOf(lastTimingLetters[1]);
-		let seconds = Math.floor(beats/16);
-		let minutes = Math.floor(seconds/60);
-		let extraSeconds = seconds % 60;
-		extraSeconds = extraSeconds < 10 ? "0" + extraSeconds : extraSeconds;
- 		let runtime = `${minutes}:${extraSeconds}`;
-		let opt = document.createElement('option');
-		opt.value = i;
-		opt.innerText = `${database[i].name} - ${database[i].band} - ~${runtime}`;
-		databaseSelector.appendChild(opt);
-	}
-}
-fetchDatabase();
-
-//Translates each note after a comma.
+//Translates notes and timings from the main input field
 function translateNotes() {
 	finalCode.splice(0, 999999);
 	let notes = notesInput.value.split(',');
@@ -301,7 +282,7 @@ function convertTiming(timing, position) {
 	}
 }
 
-//Checks and converts note, if impossible throws error
+//Checks and converts note
 function convertNote(note, position) {
 	if (note.includes('+')) {
 		try {
@@ -333,6 +314,30 @@ function convertNote(note, position) {
 			alert(error);
 		}
 	}
+}
+
+//Style changes if translation error occurs
+function errorStyle() {
+	if (WrongNote === false) {
+		translateBtn.style.border = "revert-layer";
+		copyBtn.style.disabled = false;
+		copyBtn.style.border = "revert-layer";
+		copyBtn.style.background = "revert-layer";
+		copyBtn.style.border = "3px solid green";
+	} else if (copyBtn.style.disabled === true || WrongNote === true) {
+		copyBtn.style.border = "3px dotted black";
+		copyBtn.style.background = "grey";
+		translateBtn.style.border = "3px dashed red";
+		copyBtn.style.disabled = true;
+	}
+}
+
+//Copies final code to clipboard
+function copyCode() {
+	result = finalCode.join('');
+	if (copyBtn.style.disabled === false) {
+		navigator.clipboard.writeText(result);
+	} 
 }
 
 //Transposes notes by moving the lines number and updates the scale display
@@ -535,29 +540,79 @@ function changeScale() {
 	}
 }
 
-//Copies final code to clipboard
-function copyCode() {
-	result = finalCode.join('');
-	if (copyBtn.style.disabled === false) {
-		navigator.clipboard.writeText(result);
+//Fetch database
+let database;
+async function fetchDatabase() {
+	const response = await fetch('database.json');
+	database = await response.json(); 
+	for (let i=0; i<database.length; i++) {
+		//Calculates length of the song
+		let lastTimingLetters = database[i].code.slice(-2).split('');
+		let beats = timingConvertRules.indexOf(lastTimingLetters[0])*64 + timingConvertRules.indexOf(lastTimingLetters[1]);
+		let seconds = Math.floor(beats/16);
+		let minutes = Math.floor(seconds/60);
+		let extraSeconds = seconds % 60;
+		extraSeconds = extraSeconds < 10 ? "0" + extraSeconds : extraSeconds;
+ 		let runtime = `${minutes}:${extraSeconds}`;
+ 		//For each song creates an option element and appends it to the database selector
+		let opt = document.createElement('option');
+		opt.value = i;
+		opt.innerText = `${database[i].name} - ${database[i].band} - ~${runtime}`;
+		databaseSelector.appendChild(opt);
+	}
+}
+fetchDatabase();
+
+//Searches for a name/band of the songs in the database
+function searchDatabase() {
+	if (databaseSearchBar.value.match(/\S/ig) == null || databaseSearchBar.value == null) {
+		return;
+	}
+	let matches = 0;
+	databaseSelector.innerHTML = `<option></option>`;
+	databaseSelector.remove(0);
+	for (let i=0; i<database.length; i++) {
+		if (database[i].name.toLowerCase().includes(databaseSearchBar.value.toLowerCase()) || database[i].band.toLowerCase().includes(databaseSearchBar.value.toLowerCase())) {
+			matches++;
+			//Calculates length of the song
+			let lastTimingLetters = database[i].code.slice(-2).split('');
+			let beats = timingConvertRules.indexOf(lastTimingLetters[0])*64 + timingConvertRules.indexOf(lastTimingLetters[1]);
+			let seconds = Math.floor(beats/16);
+			let minutes = Math.floor(seconds/60);
+			let extraSeconds = seconds % 60;
+			extraSeconds = extraSeconds < 10 ? "0" + extraSeconds : extraSeconds;
+ 			let runtime = `${minutes}:${extraSeconds}`;
+ 			//For each song creates an option element and appends it to the database selector
+			let opt = document.createElement('option');
+			opt.value = i;
+			opt.innerText = `${database[i].name} - ${database[i].band} - ~${runtime}`;
+			databaseSelector.appendChild(opt);
+		}
+	}
+	if (matches<=0) {
+		databaseSelector.innerHTML = `<option>No results</option>`;
 	} 
 }
 
 //Copies song code from database
 function copyDatabase() {
-	databaseCode = database[databaseSelector.value].code;
-	if (databaseCode != undefined) {
-		navigator.clipboard.writeText(databaseCode);
-		databaseCopyBtn.style.border = "revert-layer";
-		databaseCopyBtn.style.background = "revert-layer";
-		databaseCopyBtn.style.border = "3px solid green";
-	} else {
-		databaseCopyBtn.style.border = "3px dotted black";
-		databaseCopyBtn.style.background = "grey";
+	let databaseCode;
+	try {
+		databaseCode = database[databaseSelector.value].code;
+	} finally {
+		if (databaseCode != undefined) {
+			navigator.clipboard.writeText(databaseCode);
+			databaseCopyBtn.style.border = "revert-layer";
+			databaseCopyBtn.style.background = "revert-layer";
+			databaseCopyBtn.style.border = "3px solid green";
+		} else {
+			databaseCopyBtn.style.border = "3px dotted black";
+			databaseCopyBtn.style.background = "grey";
+		}
 	}
 }
 
-//Reports bug.
+//Reports bug
 function reportBug () {
 	let date = new Date(Date.now());
 	let myText = `REPORT:%0A ${date.toLocaleString()} %0A - ${bugReportInput.value}`;
@@ -586,22 +641,6 @@ function reportBug () {
 		api.send();
 	} else {
 		alert(`Bug report field is empty.`);
-	}
-}
-
-//Style changes if error occurs
-function errorStyle() {
-	if (WrongNote === false) {
-		translateBtn.style.border = "revert-layer";
-		copyBtn.style.disabled = false;
-		copyBtn.style.border = "revert-layer";
-		copyBtn.style.background = "revert-layer";
-		copyBtn.style.border = "3px solid green";
-	} else if (copyBtn.style.disabled === true || WrongNote === true) {
-		copyBtn.style.border = "3px dotted black";
-		copyBtn.style.background = "grey";
-		translateBtn.style.border = "3px dashed red";
-		copyBtn.style.disabled = true;
 	}
 }
 
