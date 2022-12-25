@@ -1,5 +1,6 @@
 # Warframe-shawzin
-This is a shawzin "translator" that will convert written notes into shawzin code, currently up and running at: https://danser-freelancer.github.io/Warframe-shawzin/  
+This is a shawzin "translator" that will convert written notes into shawzin code, currently up and running at:  
+https://danser-freelancer.github.io/Warframe-shawzin/  
 Made by me (with javascript) after attempting to have somewhat of a decent song on shawzin and feeling like my life energy was completely sucked out.  
 I have all the musical scales, quality of life features, clear rules, bug support, and a database of codes.  
 I have created a discord server for code requests and Warframe music fans in general https://discord.gg/VyjFwKn8AY.  
