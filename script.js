@@ -1,4 +1,4 @@
-
+console.log
 //Global variables
 const translateBtn = document.getElementById('translate');
 const notesInput = document.getElementById('notes-input');
@@ -366,7 +366,6 @@ function transposeNotes() {
 			} else {
 				transposedLines.unshift(last);
 			}
-			console.log('popping ' + last);
 		} else if (transpositionIndex.value>0) {
 			let first = transposedLines.shift();
 			if (typeof first === 'number' && first === -1) {
@@ -376,7 +375,6 @@ function transposeNotes() {
 			} else {
 				transposedLines.push(first);
 			}
-			console.log('shifting ' + first);
 		} else { return; }
 	}
 	changeScale();
