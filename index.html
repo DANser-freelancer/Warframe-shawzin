@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
 <head>
@@ -108,3 +109,115 @@
 </body>
 <script type="application/javascript" src="script.js"></script>
 </html>
+=======
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Shawzin music compiler</title>
+	<link rel="icon" type="image/png" href="AristeiShawzinIcon.png">
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<meta name="http-equiv" content="content-security-policy">
+	<meta charset="utf-8">
+	<meta name="keywords" content="shawzin, compiler, music, song, warframe, notes">
+	<meta name="description" content="Online shawzin music compiler, translates any music you want into shawzin code">
+	<meta name="application-name" content="Shawzin music compiler">
+	<meta name="author" content="DANser-freelancer">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style> @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&family=PT+Serif&display=swap'); 
+	</style>
+</head>
+<body>
+<article class="body">
+	<div name="body-div">
+	<a href="https://discord.gg/VyjFwKn8AY"><img src="AristeiShawzinIcon.png" id="big-favicon" alt="Shawzin icon" title="Made by DANser-freelancer, click to check out discord 'Warframe Musicians'" target="_blank"></a>
+	<h1>Shawzin music compiler</h1>
+	<p>Hi, this app will translate musical notes into shawzin code that you can copy&paste to play your favourite shawzin.</p>
+	<h3>Rules:</h3>
+	<ul id='rules'>
+		<li>
+			Shawzin has a concrete set of notes for each scale, you must select your musical scale accordingly.
+		</li>
+		<li>
+			Try to correlate the highest notes and work with that, use the "Transpose notes" feature, 
+			click on the field to transpose, line 2 is where you would find the clef.
+		</li>
+		<li>
+			The structure of the notes is this: (1-4096)+(L/M/H)+(C/D/E/F/G/A/B)+[S]("[]" means optional).
+			(L/M/H) stands for low/mid/high, [S] stands for sharp.
+		</li>
+		<li>
+			Each note must be separated by a comma (2LD, 34HCs,...).
+		</li>
+		<li>
+			You must add number (1-4096) before each note to indicate it's position on the timeline, you can start from any position.
+		</li>
+		<li>
+			To play a combination of notes in the same moment you must write them using '+'
+			with only one timing indication (25lg+mds,55mf...) and in ascending order,
+			only maximum of 3 notes can be played at the same time, not all notes can be played together.
+		</li>
+		<li>
+			Shawzin can only play 1/16 notes with 4/4 musical time, in other words you can play 16 consecutive notes in one second, max length of the track is therefore 8min 32sec. 
+			If you will only need 1/4 or 1/8 notes you can change all or neither of them using the "Choose note duration" feature, this will essentially add space between your notes as if they were longer. These are really small notes so if your music seems to run too fast try enabling slow mode in your shawzin.
+		</li>
+		<li>
+			The input field is case insensitive, you can write "lD" or "Ld" or "ld". Also you can use spaces and newlines. 
+		</li>
+		<li>
+			The database shows name of the song + name of the band + approximate length of the track, *it may vary if you enable slow mode. When searching for a song wrtite name/band and click on the field to search.
+		</li>
+	</ul>
+	<textarea name="notes-input" id="notes-input" placeholder="Write your notes here" cols="45" rows ="5" maxlength="32768" wrap="soft" autofocus required></textarea><br>
+	<input type="button" name="translate" id="translate" value="Translate into code">
+	<input type="button" name="copy-code" id="copy-code" value="Copy code"><br>
+	<label>Choose a scale:</label>
+	<select name="Scale" id="scale-selector">
+		<option value="0">Pentatonic Minor</option>
+		<option value="1">Pentatonic Major</option>
+		<option value="2">Chromatic</option>
+		<option value="3">Hexatonic</option>
+		<option value="4">Major</option>
+		<option value="5">Minor</option>
+		<option value="6">Hirajoshi</option>
+		<option value="7">Phrygian</option>
+		<option value="8">Yo</option>
+	</select>
+	<label>Choose note duration:</label>
+	<select id="note-length-selector">
+		<option value="4">1/4</option>
+		<option value="2">1/8</option>
+		<option value="1">1/16</option>
+	</select><br>
+	<label>Transpose notes:</label><input type="number" name="transposition-index" id="transposition-index" max="12" min="-12" value="0" title="Click on the field to transpose the scale.">
+	<input type="button" name="show-scale" id="show-scale" value="Hide scale">
+	<div id="note-displays">
+		<div  id="scale-display"> 
+			<p id="scale-notes">
+			</p> 
+			<p>Low ============================>> High</p>
+		</div>
+		<img id="note-lengths" src="note-lengths-diagram.jpg">
+	</div>
+	<div class="database">
+		<p>Here you can copy song codes from our database:</p>
+		<input type="text" name="database-search-bar" id="database-search-bar" size="30" maxlength="100" placeholder="Search for name/band of the song" title="Click on the field to search">
+		<select name="Database selector" id="database-selector">
+		</select>
+		<input type="button" id="copy-database" value="Copy code">
+	</div>
+	<div class="bug-report">
+		<p>Write a suggestion with prefix "suggestion:" or bug report with prefix "bug:"</p>
+		<input type="button" name="bug-report" id="bug-report-btn" value="Send a report">
+		<input type="text" name="bug-report-text" id="bug-report-text" size ="50" maxlength="5000" placeholder="Write about the bug/suggestions">
+	</div>
+	</div>
+</article>
+<footer>
+	<div class="foot">
+		<a id="credit" href="https://docs.google.com/document/d/1VvlM4IQr8bfUV8pCJMVNRaG6piJTR9_t-xq7wQaxpho/edit" target="_blank">Credit to everybody here for gathering info!</a>
+	</div>
+</footer>
+</body>
+<script type="application/javascript" src="script.js"></script>
+</html>
+>>>>>>> 364f03f322417e5df4fecd44eb5191547d7e7857
