@@ -652,4 +652,3 @@ function NoteDoesntExist(message) {
 	return error;
 }
 NoteDoesntExist.prototype = Object.create(Error.prototype);
-
