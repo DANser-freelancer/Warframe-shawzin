@@ -1,6 +1,4 @@
 
-import * as dotenv from 'dotenv'; 
-dotenv.config();
 console.log(process.env.TELEGRAM_TOKEN);
 //Global variables
 const translateBtn = document.getElementById('translate');
