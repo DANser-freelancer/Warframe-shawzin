@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 
 require('dotenv').config();
 console.log(process.env.TELEGRAM_TOKEN);
@@ -1308,4 +1308,4 @@ function NoteDoesntExist(message) {
 	return error;
 }
 NoteDoesntExist.prototype = Object.create(Error.prototype);
->>>>>>> 364f03f322417e5df4fecd44eb5191547d7e7857
+
