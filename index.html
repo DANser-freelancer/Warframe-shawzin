@@ -3,7 +3,7 @@
 <html>
 <head>
 	<title>Shawzin music compiler</title>
-	<link rel="icon" type="image/png" href="AristeiShawzinIcon.png">
+	<link rel="icon" type="image/png" href="images/AristeiShawzinIcon.png">
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<meta name="http-equiv" content="content-security-policy">
 	<meta charset="utf-8">
@@ -12,13 +12,13 @@
 	<meta name="application-name" content="Shawzin music compiler">
 	<meta name="author" content="DANser-freelancer">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<style> @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&family=PT+Serif&display=swap'); 
-	</style>
+	<style> @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&family=PT+Serif&display=swap');</style>
+	<script type="module" src="script.js"></script>
 </head>
 <body>
 <article class="body">
 	<div name="body-div">
-	<a href="https://discord.gg/VyjFwKn8AY"><img src="AristeiShawzinIcon.png" id="big-favicon" alt="Shawzin icon" title="Made by DANser-freelancer, click to check out discord 'Warframe Musicians'" target="_blank"></a>
+	<a href="https://discord.gg/VyjFwKn8AY"><img src="images/AristeiShawzinIcon.png" id="big-favicon" alt="Shawzin icon" title="Made by DANser-freelancer, click to check out discord server 'Warframe Musicians'" target="_blank"></a>
 	<h1>Shawzin music compiler</h1>
 	<p>Hi, this app will translate musical notes into shawzin code that you can copy&paste to play your favourite shawzin.</p>
 	<h3>Rules:</h3>
@@ -44,6 +44,7 @@
 			To play a combination of notes in the same moment you must write them using '+'
 			with only one timing indication (25lg+mds,55mf...) and in ascending order,
 			only maximum of 3 notes can be played at the same time, not all notes can be played together.
+			<sup>*working on implementing my latest findings to be able to play any combination of notes.</sup>
 		</li>
 		<li>
 			Shawzin can only play 1/16 notes with 4/4 musical time, in other words you can play 16 consecutive notes in one second, max length of the track is therefore 8min 32sec. 
@@ -53,7 +54,10 @@
 			The input field is case insensitive, you can write "lD" or "Ld" or "ld". Also you can use spaces and newlines. 
 		</li>
 		<li>
-			The database shows name of the song + name of the band + approximate length of the track, *it may vary if you enable slow mode. When searching for a song wrtite name/band and click on the field to search.
+			The database shows name of the song + name of the band + approximate length of the track. <sup>*It may vary if you enable slow mode.</sup> When searching for a song - wrtite name/band and click on the field to search.
+		</li>
+		<li>
+			Click on the logo (top of the page) to join discord server for Warframe musical stuff.
 		</li>
 	</ul>
 	<textarea name="notes-input" id="notes-input" placeholder="Write your notes here" cols="45" rows ="5" maxlength="32768" wrap="soft" autofocus required></textarea><br>
@@ -85,7 +89,7 @@
 			</p> 
 			<p>Low ============================>> High</p>
 		</div>
-		<img id="note-lengths" src="note-lengths-diagram.jpg">
+		<img id="note-lengths" src="images/note-lengths-diagram.jpg">
 	</div>
 	<div class="database">
 		<p>Here you can copy song codes from our database:</p>
@@ -94,19 +98,37 @@
 		</select>
 		<input type="button" id="copy-database" value="Copy code">
 	</div>
-	<div class="bug-report">
-		<p>Write a suggestion with prefix "suggestion:" or bug report with prefix "bug:"</p>
-		<input type="button" name="bug-report" id="bug-report-btn" value="Send a report">
-		<input type="text" name="bug-report-text" id="bug-report-text" size ="50" maxlength="5000" placeholder="Write about the bug/suggestions">
+	<div class="sheet-music-1">
+		<p><sup>*WIP</sup>Interactable note sheet:</p>
+		<div class="sheet-music-2">
+			<div id="player-buttons-container">
+				<img src="images/player-buttons-play.png" id="player-Play-button" class="player-buttons">
+				<select id="shawzins-select">
+					<option value="CorbuShawzin">Corbu Shawzin (Electric Guitar, Overdrive)</option>
+					<option value="KiraShawzin">Kira Shawzin (Synth Guitar)</option>
+					<option value="NarmerShawzin">Narmer Shawzin (Electric Guitar, Distortion)</option>
+					<option value="NelumboShawzin">Nelumbo Shawzin (Acoustic Guitar)</option>
+					<option value="TiamatShawzin">Tiamat Shawzin (Bass Guitar)</option>
+					<option value="VoidsSongShawzin">Voids Song Shawzin (Acapella)</option>
+					<option value="AristeiPrimeShawzin">Aristei Prime Shawzin (Harp)</option>
+					<option value="Other">Other (Shamisen)</option>
+				</select>
+			</div>
+			<div id="note-sheet-container">
+				<table id="note-sheet"></table>
+			</div>
+			<sup>*All sound files are created&owned by Digital Extremes.</sup>
+		</div>
 	</div>
 	</div>
 </article>
 <footer>
 	<div class="foot">
-		<a id="credit" href="https://docs.google.com/document/d/1VvlM4IQr8bfUV8pCJMVNRaG6piJTR9_t-xq7wQaxpho/edit" target="_blank">Credit to everybody here for gathering info!</a>
+		<a href="https://docs.google.com/document/d/1VvlM4IQr8bfUV8pCJMVNRaG6piJTR9_t-xq7wQaxpho/edit" target="_blank">Credit to everybody here for gathering info!</a>
+		<a href="https://docs.google.com/spreadsheets/d/1Zd0L6b1W8ic7s9b8DKJHDBNRB-Z0tdwQEhvQl6axFCU/edit?usp=sharing" target="_blank">Some of my own research, finally a complete set of keys.</a>
+		<p>If you wish to report a bug or give a suggestion please open an <a href="https://github.com/DANser-freelancer/Warframe-shawzin/issues" target="_blank">issue</a> on GitHub.</p>
 	</div>
 </footer>
 </body>
-<script type="module" src="script.js"></script>
 </html>
 

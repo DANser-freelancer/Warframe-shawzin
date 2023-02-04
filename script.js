@@ -7,20 +7,23 @@ const scaleSelector = document.getElementById('scale-selector');
 const showScaleBtn = document.getElementById('show-scale');
 const scaleDisplay = document.getElementById('scale-display');
 const scaleNotes = document.getElementById('scale-notes');
-const bugReportBtn = document.getElementById('bug-report-btn');
-const bugReportInput = document.getElementById('bug-report-text');
 const databaseSelector = document.getElementById('database-selector');
 const databaseCopyBtn = document.getElementById('copy-database');
 const transpositionIndex = document.getElementById('transposition-index');
 const noteLengths = document.getElementById('note-lengths');
 const noteLengthSelector = document.getElementById('note-length-selector');
 const databaseSearchBar = document.getElementById('database-search-bar');
+const noteSheet = document.getElementById('note-sheet');
+const noteSheetHeader = document.getElementById('sheet-header-table');
+const playerPlayBtn = document.getElementById('player-Play-button');
+const shawzinsSelect = document.getElementById('shawzins-select');
 const findTimingRegex = /[0-9]+/;
 const findNoteRegex = /\D+/i;
 const findDoubleNoteRegex = /[a-z]+[+]+[a-z]+/i;
 const findTripleNoteRegex = /[a-z]+[+]+[a-z]+[+]+[a-z]+/i;
 const missingSeparatorRegex = /[0-9]+[a-z]+[0-9]+[a-z]+/i;
 let finalCode = [];
+let noteSheetArr = [];
 let showScaleClicks = 0;
 let WrongNote = false;
 
@@ -84,10 +87,10 @@ translateBtn.addEventListener('click', errorStyle);
 copyBtn.addEventListener('click', copyCode);
 showScaleBtn.addEventListener('click', showScale);
 scaleSelector.addEventListener('click', changeScale);
-bugReportBtn.addEventListener('click', reportBug);
 databaseCopyBtn.addEventListener('click', copyDatabase);
 transpositionIndex.addEventListener('click', transposeNotes);
 databaseSearchBar.addEventListener('click', searchDatabase);
+playerPlayBtn.addEventListener('click', playTrack);
 
 //Onloads
 copyBtn.style.disabled = true;
@@ -97,6 +100,7 @@ window.onload = () => {
 	copyBtn.style.background = "grey";
 	}
 	changeScale();
+	updateNoteSheet(100);
 };
 
 //Translates notes and timings from the main input field
@@ -292,7 +296,7 @@ function convertNote(note, position) {
 				finalCode.push(multiResult);
 				WrongNote = false;
 			} else {
-				throw new NoteDoesntExist(`Error: Notes #${position} can't be played together.`);
+				throw new CustomError(`Error: Notes #${position} can't be played together.`);
 			}
 		} catch (error) {
 			WrongNote = true;
@@ -306,7 +310,7 @@ function convertNote(note, position) {
 				finalCode.push(result);
 				WrongNote = false;
 			} else {
-				throw new NoteDoesntExist(`Note #${position} doesn't exist on this scale.`);
+				throw new CustomError(`Note #${position} doesn't exist on this scale.`);
 			}
 		} catch (error) {
 			WrongNote = true;
@@ -334,7 +338,7 @@ function errorStyle() {
 
 //Copies final code to clipboard
 function copyCode() {
-	result = finalCode.join('');
+	let result = finalCode.join('');
 	if (copyBtn.style.disabled === false) {
 		navigator.clipboard.writeText(result);
 	} 
@@ -610,41 +614,75 @@ function copyDatabase() {
 	}
 }
 
-//Reports bug
-function reportBug () {
-	let date = new Date(Date.now());
-	let myText = `REPORT:%0A ${date.toLocaleString()} %0A - ${bugReportInput.value}`;
-	//%0A === <br>
-	let token = `5794288074:AAEi6L7a9EbbGhEK46FRG9FyyhwQ6oove_I`;
-	let chatId = "-852303288";
-	let url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${myText}`;
-	let api = new XMLHttpRequest();
-	if (bugReportInput.value != undefined && bugReportInput.value != '') {
-		//Happens when request state changes AKA when it's run,
-		//api.readyState 4 means request completed,
-		//api.status 200 means request was successful.
-		api.onreadystatechange = () => {
-			if (api.readyState == 4) {
-				if (api.status == 200) {
-					bugReportBtn.style.border = "revert-layer";
-					bugReportBtn.style.border = "3px solid green";
-				} else {
-					bugReportBtn.style.border = "revert-layer";
-					bugReportBtn.style.border = "3px dashed red";
-					alert(`Unable to send bug report, error ${api.status}.\nTry there: https://discord.gg/VyjFwKn8AY`);
-				}
-			} 
+//Generates interactable note sheet
+function updateNoteSheet(noteLength) {
+	noteSheetArr = [];
+	for (let y=0; y < 12; y++) {
+		let newTR = document.createElement('tr');
+		newTR.id = `tr-${y}`;
+		newTR.className = `sheet-table-rows`;
+		noteSheet.appendChild(newTR);
+		noteSheetArr.push([]);	
+		for (let x=0; x<noteLength; x++) {
+			let newTD = document.createElement('td');
+			newTD.id = `td-${x}-tr-${y}`;
+			newTD.className = `sheet-table-cells`;
+			if (x === 0) {
+				newTD.innerText = `${y+1}`;
+				newTD.style.padding = "5px";
+				newTD.style.color = "red";
+				newTD.style.fontSize = "25px";
+				newTD.style.fontFamily = "Arial";
+				newTD.style.textAlign = "center";
+				newTD.style.fontWeight = "bold";
+			}
+			if (x !== 0) {
+				newTD.addEventListener('click', updateNoteCell);
+				noteSheetArr[y].push(0);
+			}
+			if (x%8 === 0) {
+				newTD.style.borderRight = "3px solid rgb(57, 0, 233)";
+			} else if (x%4 === 0) {
+				newTD.style.borderRight = "1px solid rgb(25, 0, 103)"
+			}
+			newTR.appendChild(newTD);
 		}
-		api.open("GET", url, true);
-		api.send();
+	}
+	//console.log(noteSheetArr);
+}
+
+//Updates note sheet cells
+function updateNoteCell(event) {
+	let cell = event.target;
+	let cellY = cell.id.match(/(?<=tr-)\d+/i)[0];
+	let cellX = cell.id.match(/(?<=td-)\d+/i)[0]-1;
+	//console.log(cellY);
+	//console.log(cellX); 
+	if (cell.style.background != "rgb(10, 10, 10)") {
+		//Note ON
+		cell.style.background = "rgb(10, 10, 10)";
+		noteSheetArr[cellY][cellX] = 1;
 	} else {
-		alert(`Bug report field is empty.`);
+		//Note OFF
+		cell.style.background = "revert-layer";
+		noteSheetArr[cellY][cellX] = 0;
 	}
 }
 
+//Starts playing interactable note sheet
+function playTrack(event) {
+	//console.log(noteSheetArr);
+	if (event.target.src.includes(`images/player-buttons-play.png`)) {
+		event.target.src = `images/player-buttons-pause.png`;
+	} else {
+		event.target.src = `images/player-buttons-play.png`;
+	}
+	//LOOPS WITH PROMISES AND PROMISE.ALL
+}
+
 //Custom errors
-function NoteDoesntExist(message) {
+function CustomError(message) {
 	const error = new Error(message);
 	return error;
 }
-NoteDoesntExist.prototype = Object.create(Error.prototype);
+CustomError.prototype = Object.create(Error.prototype);

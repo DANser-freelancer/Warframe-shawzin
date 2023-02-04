@@ -1,3 +1,4 @@
 .env
 .vs/
-
+.gitignore
+npm_modules/

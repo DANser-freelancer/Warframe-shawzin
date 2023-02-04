@@ -1,13 +1,10 @@
 
+/*General components*/
 html {
     min-height: 100%; 
 	display: flex;
     flex-direction: column;
     scroll-behavior: smooth;
-}
-#big-favicon {
-	position: relative;
-	max-width: 100px;
 }
 body {
     flex-grow: 1;
@@ -75,38 +72,24 @@ footer {
 	display: flex;
     flex-direction: column;
 }
-.database {
-	margin-top: 20px;
+sup {
+	font-size: 18px; 
+	font-family: Calibri, serif;
+	font-style: italic;
+	padding: 6px;
+	-webkit-text-stroke: 0.5px black;
 }
-.database p {
-	margin-bottom: 0px;
-}
-.database option {
-	white-space: nowrap;
-}
-.bug-report {
-	margin-top: 150px;
-}
-.bug-report p {
-	margin-bottom: 0px;
-}
-.foot {
-	position: sticky;
-	flex-grow: 1;
-    display: grid;
-	place-items: center;
-	min-width: 100%;
-	font-family: 'Montserrat', sans-serif, 'PT Serif', serif;
-	color: black;
-	background-image: linear-gradient(to bottom, lightgray, grey);
-	min-height: 60px;
-}
-#credit{
+
+/*Favicon-logo*/
+#big-favicon {
 	position: relative;
-	font-size: 18px;
+	max-width: 100px;
 }
+
+/*Note display and reference*/
 #note-displays {
 	display: flex;
+	justify-content: flex-start;
 }
 #note-lengths {
 	max-width: 500px;
@@ -145,16 +128,125 @@ footer {
 	margin: auto;
 	padding: auto;
 }
+
+/*Database of codes*/
+.database {
+	margin-top: 20px;
+}
+.database p {
+	margin-bottom: 0px;
+}
+.database option {
+	white-space: nowrap;
+}
+
+/*Note sheet*/
+.sheet-music-1 p {
+	margin-bottom: 5px;
+}
+.sheet-music-1 {
+	margin-top: 60px;
+}
+.sheet-music-2 {
+	display: flex;
+	flex-direction: column;
+}
+#note-sheet-container {
+	flex: 1;
+	max-width: 1200px;
+	min-width: 400px;
+	max-height: fit-content;
+	overflow-y: hidden;
+	overflow-x: scroll;
+	border: 7px solid;
+ 	border-image-slice: 1;
+	border-image-source: linear-gradient(to right, #261C63, #4433AF);
+	box-shadow: 0px 0px 10px 5px rgba(31, 28, 99, 1.0);
+}
+#note-sheet {	
+	border-spacing: 0px;
+	border-collapse: collapse;
+}
+.sheet-table-cells {
+	padding-top: 30px;
+	padding-left: 35px;
+	border-top: 1px solid rgb(25, 0, 103);
+	border-bottom: 1px solid rgb(25, 0, 103);
+	background: whitesmoke;
+}
+.sheet-table-cells:hover {
+	background: rgba(100, 100, 100, 0.9) !important;
+}
+.sheet-table-rows:hover .sheet-table-cells {
+	background: rgba(204, 204, 204, 0.6);
+}
+
+/*Player block*/
+#player-buttons-container {
+	width: fit-content;
+	min-height: 80px;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	background-color: purple;
+	padding: 10px 40px 10px 40px;
+	margin: 10px;
+	border-radius: 15px;
+	border: 3px solid black;
+}
+#player-Play-button {
+	flex: 1;
+	max-width: 70px;
+}
+#shawzins-select {
+	font-size: 18px;
+	-webkit-text-stroke: 0.4px black;
+}
+.player-buttons:active {
+	max-width: 60px !important;
+	margin: 5px;
+}
+
+/*Footer wit credit to people*/
+.foot {
+	position: sticky;
+	flex-grow: 1;
+    display: grid;
+	place-items: center;
+	min-width: 100%;
+	font-family: 'Montserrat', sans-serif, 'PT Serif', serif;
+	color: black;
+	background-image: linear-gradient(to bottom, lightgray, grey);
+	height: fit-content;
+	margin-top: 120px;
+}
+.foot p {
+	margin: 5px;
+	font-size: 18px;
+}
+.foot a {
+	font-size: 18px;
+	margin: 5px;
+}
+#credit{
+	position: relative;
+	font-size: 18px;
+}
+
+/*Links color*/
 a:visited {
 	color: blueviolet;
 }
 a:link {
 	color: blue;
 }
+
+/*Phone screen*/
 @media screen and (max-width: 500px) {
 	.body {
 		font-size: 15px;
-		margin: 40px;
+		margin: 30px;
 		padding-left: 20px;
 		padding-right: 20px;
 	}
