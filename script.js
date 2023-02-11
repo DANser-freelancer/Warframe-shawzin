@@ -350,7 +350,7 @@ function transposeNotes() {
 	//Input checks
 	let transposedLines = linesForTransposition.slice();
 	if (transpositionIndex.value == 0) {
-		return;
+		changeScale(linesForTransposition);
 	}
 	if (transpositionIndex.value > 12) {
 		transpositionIndex.value = 12;
