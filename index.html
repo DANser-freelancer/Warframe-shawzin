@@ -7,7 +7,7 @@
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<meta name="http-equiv" content="content-security-policy">
 	<meta charset="utf-8">
-	<meta name="keywords" content="shawzin, compiler, music, song, warframe, notes">
+	<meta name="keywords" content="shawzin, compiler, music, song, warframe, notes, note, sahzin, songs, wrframe, translate, translator, translating, compose, compositor, composing, frame, composin">
 	<meta name="description" content="Online shawzin music compiler, translates any music you want into shawzin code">
 	<meta name="application-name" content="Shawzin music compiler">
 	<meta name="author" content="DANser-freelancer">
@@ -20,41 +20,45 @@
 	<div name="body-div">
 	<a href="https://discord.gg/VyjFwKn8AY"><img src="images/AristeiShawzinIcon.png" id="big-favicon" alt="Shawzin icon" title="Made by DANser-freelancer, click to check out discord server 'Warframe Musicians'" target="_blank"></a>
 	<h1>Shawzin music compiler</h1>
-	<p>Hi, this app will translate musical notes into shawzin code that you can copy&paste to play your favourite shawzin.</p>
+	<p>Hi, this app will translate musical notes into shawzin code that you can copy&paste to play your favourite shawzin.<br>
+	<code>Made by DANser#6915 (discord).</code></p>
 	<h3>Rules:</h3>
 	<ul id='rules'>
 		<li>
-			Shawzin has a concrete set of notes for each scale, you must select your musical scale accordingly.
+			Shawzin has a concrete set of notes for each scale, you cannot transition over to the other scale mid-play as you would do with a piano for example.
 		</li>
 		<li>
 			Try to correlate the highest notes and work with that, use the "Transpose notes" feature, 
 			click on the field to transpose, line 2 is where you would find the clef.
 		</li>
 		<li>
-			The structure of the notes is this: (1-4096)+(L/M/H)+(C/D/E/F/G/A/B)+[S]("[]" means optional).
-			(L/M/H) stands for low/mid/high, [S] stands for sharp.
+			The structure of the notes is this: (1-4096)+(A/B/C/D/E/F/G/H/I/J/K/L).
 		</li>
 		<li>
-			Each note must be separated by a comma (2LD, 34HCs,...).
+			Each note must be separated by a comma (2A, 34F,...).
 		</li>
 		<li>
 			You must add number (1-4096) before each note to indicate it's position on the timeline, you can start from any position.
 		</li>
 		<li>
 			To play a combination of notes in the same moment you must write them using '+'
-			with only one timing indication (25lg+mds,55mf...) and in ascending order,
-			only maximum of 3 notes can be played at the same time, not all notes can be played together.
-			<sup>*working on implementing my latest findings to be able to play any combination of notes.</sup>
+			with only one timing indication, and with no repeating notes.<br> 
+			Ex. (25A+B+C, ...)✔️|||(25C+A+B, ...)✔️|||(25C+A+B+B, ...)❌|||(25A,25B,25C, ...)❌|||(25A+25B+25C, ...)❌.<br>
+			Unfortunately not all notes can be played together, more info <a href="https://docs.google.com/spreadsheets/d/1Zd0L6b1W8ic7s9b8DKJHDBNRB-Z0tdwQEhvQl6axFCU/edit?usp=sharing" target="_blank">here</a>.
+			<sup>*now more notes can be played together, working on a feature for near full combination of notes.</sup>
 		</li>
 		<li>
 			Shawzin can only play 1/16 notes with 4/4 musical time, in other words you can play 16 consecutive notes in one second, max length of the track is therefore 8min 32sec. 
 			If you will only need 1/4 or 1/8 notes you can change all or neither of them using the "Choose note duration" feature, this will essentially add space between your notes as if they were longer. These are really small notes so if your music seems to run too fast try enabling slow mode in your shawzin.
 		</li>
 		<li>
-			The input field is case insensitive, you can write "lD" or "Ld" or "ld". Also you can use spaces and newlines. 
+			The input field is case insensitive, you can write "A" or "a". Also you can use spaces and newlines, and you can resize it. 
 		</li>
 		<li>
-			The database shows name of the song + name of the band + approximate length of the track. *It may vary if you enable slow mode. When searching for a song - wrtite name/band and click on the field to search.
+			The database shows name of the song + name of the band + approximate length of the track<sup>*(It may vary if you enable slow mode)</sup>. When searching for a song - write song/band name and click on the field to search.
+		</li>
+		<li>
+			Check this <a href="https://docs.google.com/document/d/1VvlM4IQr8bfUV8pCJMVNRaG6piJTR9_t-xq7wQaxpho/edit" target="_blank">Shawzin documentation</a> to see the note relations. 
 		</li>
 		<li>
 			Click on the logo (top of the page) to join discord server for Warframe musical stuff.
@@ -104,8 +108,8 @@
 			<div id="player-buttons-container">
 				<img src="images/player-buttons-play.png" id="player-Play-button" class="player-buttons">
 				<select id="shawzins-select">
-					<option value="CorbuShawzin">Corbu Shawzin (Electric Guitar, Overdrive)</option>
 					<option value="KiraShawzin">Kira Shawzin (Synth Guitar)</option>
+					<option value="CorbuShawzin">Corbu Shawzin (Electric Guitar, Overdrive)</option>
 					<option value="NarmerShawzin">Narmer Shawzin (Electric Guitar, Distortion)</option>
 					<option value="NelumboShawzin">Nelumbo Shawzin (Acoustic Guitar)</option>
 					<option value="TiamatShawzin">Tiamat Shawzin (Bass Guitar)</option>
@@ -113,6 +117,7 @@
 					<option value="AristeiPrimeShawzin">Aristei Prime Shawzin (Harp)</option>
 					<option value="Other">Other (Shamisen)</option>
 				</select>
+				<img src="" id="shawzin-pic">
 			</div>
 			<div id="note-sheet-container">
 				<table id="note-sheet"></table>

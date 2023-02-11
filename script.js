@@ -1,4 +1,28 @@
-console.log
+//Dev tools
+function FUNC_LIST() {
+	let list = `
+	Onloads - line 92
+	translateNotes() - line 105
+	convertTiming(timing, position) - line 148
+	convertNote(note, position) - line 290
+	errorStyle() - line 325
+	copyCode() - line 341
+	transposeNotes() - line 349
+	showScale() - line 389
+	changeScale(transposedLines) - line 407
+	fetchDatabase() - line 425 *async
+	searchDatabase() - line 447
+	copyDatabase() - line 478
+	updateShawzinPic() - line 496
+	updateNoteSheet(noteLength) - line 501
+	updateNoteCell(event) - line 537
+	playTrack(event) - line 555
+	CustomError(message) - line 565
+	`;
+	console.log(list);
+}
+window.FUNC_LIST = FUNC_LIST; //Makes it accesible through console.
+
 //Global variables
 const translateBtn = document.getElementById('translate');
 const notesInput = document.getElementById('notes-input');
@@ -17,6 +41,7 @@ const noteSheet = document.getElementById('note-sheet');
 const noteSheetHeader = document.getElementById('sheet-header-table');
 const playerPlayBtn = document.getElementById('player-Play-button');
 const shawzinsSelect = document.getElementById('shawzins-select');
+const shawzinPic = document.getElementById('shawzin-pic');
 const findTimingRegex = /[0-9]+/;
 const findNoteRegex = /\D+/i;
 const findDoubleNoteRegex = /[a-z]+[+]+[a-z]+/i;
@@ -35,62 +60,34 @@ const timingConvertRules =
 'n','o','p','q','r','s','t','u','v','w','x','y','z',
 '0','1','2','3','4','5','6','7','8','9','+','/'];
 Object.freeze(timingConvertRules);
-const noteConvertRules = [
-{lc:'B', lds:'C', lf:'E', lg:'J', las:'K', mc:'M',
-mds:'R', mf:'S', mg:'U', mas:'h', hc:'i', hds:'k'},
-{lc:'B', ld:'C', le:'E', lg:'J', la:'K', mc:'M', 
-md:'R', me:'S', mg:'U', ma:'h', hc:'i', hd:'k'},
-{lc:'B', lcs:'C', ld:'E', lds:'J', le:'K', lf:'M', 
-lfs:'R', lg:'S', lgs:'U', la:'h', las:'i', lb:'k'},
-{lc:'B', lds:'C', lf:'E', lfs:'J', lg:'K', las:'M', 
-mc:'R', mds:'S', mf:'U', mfs:'h', mg:'i', mas:'k'},
-{lc:'B', ld:'C', le:'E', lf:'J', lg:'K', la:'M', 
-lb:'R', mc:'S', md:'U', me:'h', mf:'i', mg:'k'},
-{lc:'B', ld:'C', lds:'E', lf:'J', lg:'K', lgs:'M', 
-las:'R', mc:'S', md:'U', mds:'h', mf:'i', mg:'k'},
-{lc:'B', lcs:'C', lf:'E', lfs:'J', las:'K', mc:'M', 
-mcs:'R', mf:'S', mfs:'U', ma:'h', hc:'i', hcs:'k'},
-{lc:'B', lcs:'C', le:'E', lf:'J', lg:'K', lgs:'M', 
-las:'R', mc:'S', mcs:'U', me:'h', mf:'i', mg:'k'},
-{lcs:'B', lds:'C', lfs:'E', lgs:'J', las:'K', mcs:'M', 
-mds:'R', mfs:'S', mgs:'U', mas:'h', hcs:'i', hds:'k'}
-]
+const noteConvertRules = 
+{
+	a:'B', b:'C', c:'E', d:'J', e:'K', f:'M',
+	g:'R', h:'S', i:'U', j:'h', k:'i', l:'k'
+}
 Object.freeze(noteConvertRules);
-const multiNoteConvertRules = [
-{lgmds:'Z', mdsmas:'x', lgmas:'p', lgmdsmas:'5', lasmf:'a', mfhc:'y', 
-lashc:'q', lasmfhc:'6', mcmg:'c', mghds:'0', mchds:'s', mcmghds:'8'},
-{lgmd:'Z', mdma:'x', lgma:'p', lgmdma:'5', lame:'a', mehc:'y',
-lahc:'q', lamehc:'6', mcmg:'c', mghd:'0', mchd:'s', mcmghd:'8'},
-{ldslfs:'Z', lfsla:'x', ldsla:'p', ldslfsla:'5', lelg:'a', lglas:'y', 
-lelas:'q', lelglas:'6', lflgs:'c', lgslb:'0', lflb:'s', lflgslb:'8'},
-{lfsmc:'Z', mcmfs:'x', lfsmfs:'p', lfsmcmfs:'5', lgmds:'a', mdsmg:'y',
-lgmg:'q', lgmdsmg:'6', lasmf:'c', mfmas:'0', lasmas:'s', lasmfmas:'8'},
-{lflb:'Z', lbme:'x', lfme:'p', lflbme:'5', lgmc:'a', mcmf:'y',
-lgmf:'q', lgmcmf:'6', lamd:'c', mdmg:'0', lamg:'s', lamdmg:'8'},
-{lflas:'Z', lasmds:'x', lfmds:'p', lflasmds:'5', lgmc:'a', mcmf:'y',
-lgmf:'q', lgmcmf:'6', lgsmd:'c', mdmg:'0', lgsmg:'s', lgsmdmg:'8'},
-{lfsmcs:'Z', mcsma:'x', lfsma:'p', lfsmcsma:'5', lasmf:'a', mfhc:'y',
-lashc:'q', lasmfhc:'6', mcmfs:'c', mfshcs:'0', mchcs:'s', mcmfshcs:'8'},
-{lflas:'Z', lasme:'x', lfme:'p', lflasme:'5', lgmc:'a', mcmf:'y',
-lgmf:'q', lgmcmf:'6', lgsmcs:'c', mcsmg:'0', lgsmg:'s', lgsmcsmg:'8'},
-{lgsmds:'Z', mdsmas:'x', lgsmas:'p', lgsmdsmas:'5', lasmfs:'a', mfshcs:'y',
-lashcs:'q', lasmfshcs:'6', mcsmgs:'c', mgshds:'0', mcshds:'s', mcsmgshds:'8'}
-]
+const multiNoteConvertRules = 
+{ 
+	defghijkl: "/", deghjk: "7", efhikl: "+", dfgijl: "9", dgj: "5", ehk: "6", fil: "8", 
+	ghijkl: "3", hikl: "2", ghjk: "z", gijl: "1", il: "0", hk: "y", gj: "x", defjkl: "v", 
+	dejk: "r", dfjl: "t", efkl: "u", dj: "p", ek: "q", fl: "s", defghi: "f", efhi: "e", 
+	dfgi: "d", degh: "b", dg: "Z", eh: "a", fi: "c", jkl: "n", jk: "j", kl: "m", jl: "l", ghi: "X", 
+	hi: "W", gh: "T", gi: "V", def: "P", ef: "O", de: "L", df: "N", abc: "H", ab: "D", bc: "G", ac: "F"
+};
 Object.freeze(multiNoteConvertRules);
 const linesForTransposition = [-1, '=', 1, '=', 2, '=', 3, '=', 4, '=', 5, '='];
 Object.freeze(linesForTransposition); 
-let transposedLines = [-1, '=', 1, '=', 2, '=', 3, '=', 4, '=', 5, '='];
 
 //Event listeners
 translateBtn.addEventListener('click', translateNotes);
 translateBtn.addEventListener('click', errorStyle);
 copyBtn.addEventListener('click', copyCode);
 showScaleBtn.addEventListener('click', showScale);
-scaleSelector.addEventListener('click', changeScale);
 databaseCopyBtn.addEventListener('click', copyDatabase);
 transpositionIndex.addEventListener('click', transposeNotes);
 databaseSearchBar.addEventListener('click', searchDatabase);
 playerPlayBtn.addEventListener('click', playTrack);
+shawzinsSelect.addEventListener('click', updateShawzinPic);
 
 //Onloads
 copyBtn.style.disabled = true;
@@ -99,8 +96,9 @@ window.onload = () => {
 	copyBtn.style.border = "3px dotted black";
 	copyBtn.style.background = "grey";
 	}
-	changeScale();
+	changeScale(linesForTransposition);
 	updateNoteSheet(100);
+	updateShawzinPic();
 };
 
 //Translates notes and timings from the main input field
@@ -117,6 +115,7 @@ function translateNotes() {
 			return;
 		} else {
 			WrongNote = false;
+			errorStyle;
 		}
 	}
 	for (let i=0; i<notes.length; i++) {
@@ -128,6 +127,7 @@ function translateNotes() {
 		} finally {
 			if (timing !== false && note !== false) {
 				WrongNote = false;
+				errorStyle;
 			} else {
 				WrongNote = true;
 				errorStyle;
@@ -289,33 +289,34 @@ function convertTiming(timing, position) {
 //Checks and converts note
 function convertNote(note, position) {
 	if (note.includes('+')) {
-		try {
-			let multiNote = note.split('+').join('');
-			let multiResult = multiNoteConvertRules[scaleSelector.value][multiNote];
-			if (multiResult != undefined) {
-				finalCode.push(multiResult);
+		let matchedNoteKey = false;
+		let sortedNote = note.split('+').sort((a, b) => { return a===b ? 0:a>b ? 1:-1 }).join('');
+		for (let y=0; y<Object.entries(multiNoteConvertRules).length; y++) {
+			//Letters have alphabetic "weight"
+			let sortedKey = Object.entries(multiNoteConvertRules)[y][0].slice().split('').sort((a, b) => { return a===b ? 0:a>b ? 1:-1 }).join('');
+			if (sortedNote === sortedKey) {
+				finalCode.push(Object.entries(multiNoteConvertRules)[y][1]);
 				WrongNote = false;
-			} else {
-				throw new CustomError(`Error: Notes #${position} can't be played together.`);
+				errorStyle;
+				matchedNoteKey = true;
+				break;
 			}
-		} catch (error) {
+    	}
+    	if (matchedNoteKey === false) {
 			WrongNote = true;
 			errorStyle;
-			alert(error);
-		}
+			alert(`Error: Notes #${position} can't be played together.`);
+    	}
 	} else {
-		let result = noteConvertRules[scaleSelector.value][note];
-		try {
-			if (result != undefined) {
-				finalCode.push(result);
-				WrongNote = false;
-			} else {
-				throw new CustomError(`Note #${position} doesn't exist on this scale.`);
-			}
-		} catch (error) {
+		let result = noteConvertRules[note];
+		if (result != null) {
+			finalCode.push(result);
+			WrongNote = false;
+			errorStyle;
+		} else {
 			WrongNote = true;
 			errorStyle;
-			alert(error);
+			alert(`Note #${position} doesn't exist on this scale.`);
 		}
 	}
 }
@@ -347,7 +348,7 @@ function copyCode() {
 //Transposes notes by moving the lines number and updates the scale display
 function transposeNotes() {
 	//Input checks
-	transposedLines = linesForTransposition.slice();
+	let transposedLines = linesForTransposition.slice();
 	if (transpositionIndex.value == 0) {
 		return;
 	}
@@ -381,7 +382,7 @@ function transposeNotes() {
 			}
 		} else { return; }
 	}
-	changeScale();
+	changeScale(transposedLines);
 }
 
 //Shows\hides scale
@@ -403,143 +404,20 @@ function showScale() {
 } 
 
 //Changes scale display
-function changeScale() {
-	if (scaleSelector.value === '0') {
-		scaleNotes.innerText = 
-		`${transposedLines[11]}#-----------------------------------------------(HDS)---												
-		${transposedLines[10]}#-------------------------------------------(HC)---------
-		${transposedLines[9]}#---------------------------------------(MAS)-------------							
-		${transposedLines[8]}#-----------------------------------(MG)------------------
-		${transposedLines[7]}#-------------------------------(MF)----------------------
-		${transposedLines[6]}#---------------------------(MDS)-------------------------
-		${transposedLines[5]}#-----------------------(MC)------------------------------										
-		${transposedLines[4]}#-------------------(LAS)---------------------------------
-		${transposedLines[3]}#---------------(LG)--------------------------------------		
-		${transposedLines[2]}#-----------(LF)------------------------------------------		
-		${transposedLines[1]}#-------(LDS)---------------------------------------------
-		${transposedLines[0]}#---(LC)--------------------------------------------------
-		`;
-	} else if (scaleSelector.value === '1') {
-		scaleNotes.innerText = 
-		`${transposedLines[11]}#-----------------------------------------------(HD)---												
-		${transposedLines[10]}#-------------------------------------------(HC)--------
-		${transposedLines[9]}#---------------------------------------(MA)-------------								
-		${transposedLines[8]}#-----------------------------------(MG)-----------------
-		${transposedLines[7]}#-------------------------------(ME)---------------------
-		${transposedLines[6]}#---------------------------(MD)-------------------------
-		${transposedLines[5]}#-----------------------(MC)-----------------------------			
-		${transposedLines[4]}#-------------------(LA)---------------------------------
-		${transposedLines[3]}#---------------(LG)-------------------------------------		
-		${transposedLines[2]}#-----------(LE)-----------------------------------------		
-		${transposedLines[1]}#-------(LD)---------------------------------------------
-		${transposedLines[0]}#---(LC)-------------------------------------------------
-		`;
-	} else if (scaleSelector.value === '2') {
-		scaleNotes.innerText = 
-		`${transposedLines[11]}#-----------------------------------------------(LB)---												
-		${transposedLines[10]}#-------------------------------------------(LAS)-------
-		${transposedLines[9]}#---------------------------------------(LA)-------------							
-		${transposedLines[8]}#-----------------------------------(LGS)----------------
-		${transposedLines[7]}#-------------------------------(LG)---------------------
-		${transposedLines[6]}#---------------------------(LFS)------------------------
-		${transposedLines[5]}#-----------------------(LF)-----------------------------										
-		${transposedLines[4]}#-------------------(LE)---------------------------------
-		${transposedLines[3]}#---------------(LDS)------------------------------------		
-		${transposedLines[2]}#-----------(LD)-----------------------------------------	
-		${transposedLines[1]}#-------(LCS)--------------------------------------------
-		${transposedLines[0]}#---(LC)-------------------------------------------------
-		`;
-	} else if (scaleSelector.value === '3') {
-		scaleNotes.innerText = 
-		`${transposedLines[11]}#-----------------------------------------------(MAS)---												
-		${transposedLines[10]}#-------------------------------------------(MG)---------
-		${transposedLines[9]}#---------------------------------------(MFS)-------------							
-		${transposedLines[8]}#-----------------------------------(MF)------------------
-		${transposedLines[7]}#-------------------------------(MDS)---------------------
-		${transposedLines[6]}#---------------------------(MC)--------------------------
-		${transposedLines[5]}#-----------------------(LAS)-----------------------------
-		${transposedLines[4]}#-------------------(LG)----------------------------------
-		${transposedLines[3]}#---------------(LFS)-------------------------------------
-		${transposedLines[2]}#-----------(LF)------------------------------------------	
-		${transposedLines[1]}#-------(LDS)---------------------------------------------
-		${transposedLines[0]}#---(LC)--------------------------------------------------
-		`;
-	} else if (scaleSelector.value === '4') {
-		scaleNotes.innerText = 
-		`${transposedLines[11]}#-----------------------------------------------(MG)---											
-		${transposedLines[10]}#-------------------------------------------(MF)--------
-		${transposedLines[9]}#---------------------------------------(ME)-------------								
-		${transposedLines[8]}#-----------------------------------(MD)-----------------
-		${transposedLines[7]}#-------------------------------(MC)---------------------
-		${transposedLines[6]}#---------------------------(LB)-------------------------
-		${transposedLines[5]}#-----------------------(LA)-----------------------------								
-		${transposedLines[4]}#-------------------(LG)---------------------------------
-		${transposedLines[3]}#---------------(LF)-------------------------------------		
-		${transposedLines[2]}#-----------(LE)-----------------------------------------		
-		${transposedLines[1]}#-------(LD)---------------------------------------------
-		${transposedLines[0]}#---(LC)-------------------------------------------------
-		`;
-	} else if (scaleSelector.value === '5') {
-		scaleNotes.innerText = 
-		`${transposedLines[11]}#-----------------------------------------------(MG)---												
-		${transposedLines[10]}#-------------------------------------------(MF)--------
-		${transposedLines[9]}#---------------------------------------(MDS)------------								
-		${transposedLines[8]}#-----------------------------------(MD)-----------------
-		${transposedLines[7]}#-------------------------------(MC)---------------------
-		${transposedLines[6]}#---------------------------(LAS)------------------------
-		${transposedLines[5]}#-----------------------(LGS)----------------------------										
-		${transposedLines[4]}#-------------------(LG)---------------------------------
-		${transposedLines[3]}#---------------(LF)-------------------------------------		
-		${transposedLines[2]}#-----------(LDS)----------------------------------------		
-		${transposedLines[1]}#-------(LD)---------------------------------------------
-		${transposedLines[0]}#---(LC)-------------------------------------------------
-		`;
-	} else if (scaleSelector.value === '6') {
-		scaleNotes.innerText = 
-		`${transposedLines[11]}#-----------------------------------------------(MCS)---												
-		${transposedLines[10]}#-------------------------------------------(HC)---------
-		${transposedLines[9]}#---------------------------------------(MA)--------------			
-		${transposedLines[8]}#-----------------------------------(MFS)-----------------
-		${transposedLines[7]}#-------------------------------(MF)----------------------
-		${transposedLines[6]}#---------------------------(MCS)-------------------------
-		${transposedLines[5]}#-----------------------(MC)------------------------------										
-		${transposedLines[4]}#-------------------(LAS)---------------------------------
-		${transposedLines[3]}#---------------(LFS)-------------------------------------
-		${transposedLines[2]}#-----------(LF)------------------------------------------		
-		${transposedLines[1]}#-------(LCS)---------------------------------------------
-		${transposedLines[0]}#---(LC)--------------------------------------------------
-		`;
-	} else if (scaleSelector.value === '7') {
-		scaleNotes.innerText = 
-		`${transposedLines[11]}#-----------------------------------------------(MG)---												
-		${transposedLines[10]}#-------------------------------------------(MF)--------
-		${transposedLines[9]}#---------------------------------------(ME)-------------							
-		${transposedLines[8]}#-----------------------------------(MCS)----------------
-		${transposedLines[7]}#-------------------------------(MC)---------------------
-		${transposedLines[6]}#---------------------------(LAS)------------------------
-		${transposedLines[5]}#-----------------------(LGS)----------------------------							
-		${transposedLines[4]}#-------------------(LG)---------------------------------
-		${transposedLines[3]}#---------------(LF)-------------------------------------		
-		${transposedLines[2]}#-----------(LE)-----------------------------------------		
-		${transposedLines[1]}#-------(LCS)--------------------------------------------
-		${transposedLines[0]}#---(LC)-------------------------------------------------
-		`;
-	} else if (scaleSelector.value === '8') {
-		scaleNotes.innerText =
-		`${transposedLines[11]}#-----------------------------------------------(HDS)---												
-		${transposedLines[10]}#-------------------------------------------(HCS)--------
-		${transposedLines[9]}#---------------------------------------(MAS)-------------								
-		${transposedLines[8]}#-----------------------------------(MGS)-----------------
-		${transposedLines[7]}#-------------------------------(MFS)---------------------
-		${transposedLines[6]}#---------------------------(MDS)-------------------------
-		${transposedLines[5]}#-----------------------(MCS)-----------------------------										
-		${transposedLines[4]}#-------------------(LAS)---------------------------------
-		${transposedLines[3]}#---------------(LGS)-------------------------------------		
-		${transposedLines[2]}#-----------(LFS)-----------------------------------------		
-		${transposedLines[1]}#-------(LDS)---------------------------------------------
-		${transposedLines[0]}#---(LCS)-------------------------------------------------
-		`;
-	}
+function changeScale(transposedLines) {
+	scaleNotes.innerText = 
+	`${transposedLines[11]}#-----------------------------------------------(L)---												
+	${transposedLines[10]}#-------------------------------------------(K)---------
+	${transposedLines[9]}#---------------------------------------(J)-------------							
+	${transposedLines[8]}#-----------------------------------(I)------------------
+	${transposedLines[7]}#-------------------------------(H)----------------------
+	${transposedLines[6]}#---------------------------(G)-------------------------
+	${transposedLines[5]}#-----------------------(F)------------------------------										
+	${transposedLines[4]}#-------------------(E)---------------------------------
+	${transposedLines[3]}#---------------(D)--------------------------------------		
+	${transposedLines[2]}#-----------(C)------------------------------------------		
+	${transposedLines[1]}#-------(B)---------------------------------------------
+	${transposedLines[0]}#---(A)--------------------------------------------------`;
 }
 
 //Fetch database
@@ -614,6 +492,11 @@ function copyDatabase() {
 	}
 }
 
+//Updates shawzin picture near shawzin selector
+function updateShawzinPic() {
+	shawzinPic.src = `images/${shawzinsSelect.value}.png`;
+}
+
 //Generates interactable note sheet
 function updateNoteSheet(noteLength) {
 	noteSheetArr = [];
@@ -648,7 +531,6 @@ function updateNoteSheet(noteLength) {
 			newTR.appendChild(newTD);
 		}
 	}
-	//console.log(noteSheetArr);
 }
 
 //Updates note sheet cells
@@ -671,7 +553,6 @@ function updateNoteCell(event) {
 
 //Starts playing interactable note sheet
 function playTrack(event) {
-	//console.log(noteSheetArr);
 	if (event.target.src.includes(`images/player-buttons-play.png`)) {
 		event.target.src = `images/player-buttons-pause.png`;
 	} else {

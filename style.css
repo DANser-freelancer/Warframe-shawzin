@@ -207,6 +207,10 @@ sup {
 	max-width: 60px !important;
 	margin: 5px;
 }
+#shawzin-pic {
+	max-width: 80px;
+	background: lightgrey;
+}
 
 /*Footer wit credit to people*/
 .foot {
