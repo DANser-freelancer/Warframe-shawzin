@@ -66,7 +66,6 @@ textarea {
 	border: 3px solid black;
 }
 footer {
-	z-index: 10;
     max-height: 100%; 
     min-width: 100%;
 	display: flex;
@@ -80,13 +79,26 @@ sup {
 	-webkit-text-stroke: 0.5px black;
 }
 
-/*Favicon-logo*/
+/* Favicon-logo */
 #big-favicon {
 	position: relative;
 	max-width: 100px;
 }
 
-/*Note display and reference*/
+/* Progress reset */
+#reset-progress {
+	transition: 0.2s;
+}
+#reset-progress:hover {
+	background-color: red;
+	box-shadow: 0px 0px 10px 5px rgba(255, 0, 0, 1.0);
+}
+#reset-progress:active {
+	background-color: red;
+	box-shadow: 0px 0px 10px 5px rgba(255, 0, 0, 0.2);
+}
+
+/* Note display and reference */
 #note-displays {
 	display: flex;
 	justify-content: flex-start;
@@ -129,7 +141,7 @@ sup {
 	padding: auto;
 }
 
-/*Database of codes*/
+/* Database of codes */
 .database {
 	margin-top: 20px;
 }
@@ -140,7 +152,7 @@ sup {
 	white-space: nowrap;
 }
 
-/*Note sheet*/
+/* Note sheet */
 .sheet-music-1 p {
 	margin-bottom: 5px;
 }
@@ -181,7 +193,7 @@ sup {
 	background: rgba(204, 204, 204, 0.6);
 }
 
-/*Player block*/
+/* Player block */
 #player-buttons-container {
 	width: fit-content;
 	min-height: 80px;
@@ -200,6 +212,8 @@ sup {
 	max-width: 70px;
 }
 #shawzins-select {
+	margin-right: 20px;
+	margin-left: 20px;
 	font-size: 18px;
 	-webkit-text-stroke: 0.4px black;
 }
@@ -209,7 +223,56 @@ sup {
 }
 #shawzin-pic {
 	max-width: 80px;
-	background: lightgrey;
+	background-color: lightgray;
+	border: 4px solid black;
+  	cursor: pointer;
+  	transition: 0.2s;
+}
+#shawzin-pic:hover {
+	border-color: blue;
+}
+/* Shawzin pic modal */
+.modal { /* the modal (background) */
+  display: none; 
+  position: fixed; 
+  z-index: 10; 
+  padding-top: 100px;  
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%; 
+  overflow: auto;  
+  background-color: rgba(0,0,0,0.9);
+}
+.modal-content { /* modal content (Image) */
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 400px;
+}
+.modal-caption, #shawzin-pic-caption { /* caption of modal image (Image Text) */
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 700px;
+  text-align: center;
+  color: #ccc;
+  padding: 60px 0;
+  height: 150px;
+  font-size: 25px;
+}
+.modal-content, #shawzin-pic-caption { /* add animation - zoom in the modal */
+  animation-name: zoom;
+  animation-duration: 0.6s;
+}
+@keyframes zoom {
+  from {transform:scale(0)}
+  to {transform:scale(1)}
+}
+@media only screen and (max-width: 700px){
+  .modal-content {
+    width: 60%;
+  }
 }
 
 /*Footer wit credit to people*/

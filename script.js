@@ -21,7 +21,7 @@ function FUNC_LIST() {
 	`;
 	console.log(list);
 }
-window.FUNC_LIST = FUNC_LIST; //Makes it accesible through console.
+window.FUNC_LIST = FUNC_LIST; //Makes it accessible through console.
 
 //Global variables
 const translateBtn = document.getElementById('translate');
@@ -42,6 +42,13 @@ const noteSheetHeader = document.getElementById('sheet-header-table');
 const playerPlayBtn = document.getElementById('player-Play-button');
 const shawzinsSelect = document.getElementById('shawzins-select');
 const shawzinPic = document.getElementById('shawzin-pic');
+const shawzinPicModal = document.getElementById('shawzin-pic-modal');
+const shawzinPicModalImg =  document.getElementById('shawzin-pic-modal-image');
+const shawzinPicModalCaption = document.getElementById('shawzin-pic-caption');
+const progressResetBtn = document.getElementById('reset-progress');
+const progressResetModal = document.getElementById('reset-modal');
+const resetPrompt = document.getElementById('reset-prompt');
+const SAVES = document.querySelectorAll('.saveable');
 const findTimingRegex = /[0-9]+/;
 const findNoteRegex = /\D+/i;
 const findDoubleNoteRegex = /[a-z]+[+]+[a-z]+/i;
@@ -52,13 +59,15 @@ let noteSheetArr = [];
 let showScaleClicks = 0;
 let WrongNote = false;
 
-//I cal this stuff 'rules', it translates input notes into shawzin code according to key - value pairs
+// I cal this stuff 'rules', it translates input notes to shawzin code according to key - value pairs
 const timingConvertRules = 
-['A','B','C','D','E','F','G','H','I','J','K','L','M',
-'N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
-'a','b','c','d','e','f','g','h','i','j','k','l','m',
-'n','o','p','q','r','s','t','u','v','w','x','y','z',
-'0','1','2','3','4','5','6','7','8','9','+','/'];
+[
+	'A','B','C','D','E','F','G','H','I','J','K','L','M',
+	'N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+	'a','b','c','d','e','f','g','h','i','j','k','l','m',
+	'n','o','p','q','r','s','t','u','v','w','x','y','z',
+	'0','1','2','3','4','5','6','7','8','9','+','/'
+];
 Object.freeze(timingConvertRules);
 const noteConvertRules = 
 {
@@ -88,20 +97,69 @@ transpositionIndex.addEventListener('click', transposeNotes);
 databaseSearchBar.addEventListener('click', searchDatabase);
 playerPlayBtn.addEventListener('click', playTrack);
 shawzinsSelect.addEventListener('click', updateShawzinPic);
+shawzinPic.addEventListener('click', toggleShawzinModal);
+shawzinPicModal.addEventListener('click', toggleShawzinModal);
+progressResetBtn.addEventListener('click', progressClear);
+progressResetModal.addEventListener('click', progressClear);
+resetPrompt.addEventListener('click', progressClear);
+resetPrompt.addEventListener('keydown', progressClear);
+resetPrompt.addEventListener('keyup', progressClear)
 
-//Onloads
+
+// Onloads
 copyBtn.style.disabled = true;
 window.onload = () => { 
 	if (copyBtn.style.disabled === true) {
 	copyBtn.style.border = "3px dotted black";
 	copyBtn.style.background = "grey";
 	}
-	changeScale(linesForTransposition);
+	progressLoad();
+	for (let i=0; i<SAVES.length; i++) {
+		SAVES[i].addEventListener('keydown', progressSave);
+		SAVES[i].addEventListener('keyup', progressSave);
+		SAVES[i].addEventListener('click', progressSave);
+	}
+	transposeNotes();
 	updateNoteSheet(100);
 	updateShawzinPic();
 };
 
-//Translates notes and timings from the main input field
+// Loads progress from local storage
+function progressLoad() {
+	for (let i=0; i<SAVES.length; i++) {
+		let load = localStorage.getItem(SAVES[i].id);
+		if (load != null) {
+			SAVES[i].value = load;
+		} else {
+			localStorage.setItem(SAVES[i].id, SAVES[i].value);
+		}
+	}
+}
+// Saves progress to local storage
+function progressSave() {
+	localStorage.setItem(this.id, this.value);
+}
+// Clears progress from local storage
+function progressClear(event) {
+	if (this.id === 'reset-progress') {
+		progressResetModal.style.display = "block";
+		resetPrompt.focus();
+	} 
+	if (event.key === 'Escape') {
+		progressResetModal.style.display = "none";
+		resetPrompt.value = '';
+	}
+	if (this.value) {
+		if (this.value.toLowerCase() === 'override') {
+			localStorage.clear();
+			alert(`All saved progress was deleted.`);
+			progressResetModal.style.display = "none";
+			resetPrompt.value = '';
+		}
+	}
+}
+
+// Translates notes and timings from the main input field
 function translateNotes() {
 	finalCode.splice(0, 999999);
 	let notes = notesInput.value.split(',');
@@ -495,6 +553,18 @@ function copyDatabase() {
 //Updates shawzin picture near shawzin selector
 function updateShawzinPic() {
 	shawzinPic.src = `images/${shawzinsSelect.value}.png`;
+	shawzinPic.alt = `${shawzinsSelect.value}`;
+}
+
+//Toggles shawzin modal
+function toggleShawzinModal() {
+	if (this.id === 'shawzin-pic') {
+		shawzinPicModal.style.display = "block";
+		shawzinPicModalImg.src = shawzinPic.src;
+		shawzinPicModalCaption.innerText = shawzinPic.alt;
+	} else {
+		shawzinPicModal.style.display = "none";
+	}
 }
 
 //Generates interactable note sheet

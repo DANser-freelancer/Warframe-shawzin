@@ -17,6 +17,7 @@
 </head>
 <body>
 <article class="body">
+	<!-- Description and rules -->
 	<div name="body-div">
 	<a href="https://discord.gg/VyjFwKn8AY"><img src="images/AristeiShawzinIcon.png" id="big-favicon" alt="Shawzin icon" title="Made by DANser-freelancer, click to check out discord server 'Warframe Musicians'" target="_blank"></a>
 	<h1>Shawzin music compiler</h1>
@@ -55,6 +56,9 @@
 			The input field is case insensitive, you can write "A" or "a". Also you can use spaces and newlines, and you can resize it. 
 		</li>
 		<li>
+			All progress on the page is saved and can be reset(deleted). Your notes, notes duration, notes transpossition, scale, and shawzin persist even if you close the window. The page <b>doesn't</b> reload after you reset the progress, as your last failsafe, you can click on the parameters you want to be saved again. 
+		</li>
+		<li>
 			The database shows name of the song + name of the band + approximate length of the track<sup>*(It may vary if you enable slow mode)</sup>. When searching for a song - write song/band name and click on the field to search.
 		</li>
 		<li>
@@ -64,11 +68,22 @@
 			Click on the logo (top of the page) to join discord server for Warframe musical stuff.
 		</li>
 	</ul>
-	<textarea name="notes-input" id="notes-input" placeholder="Write your notes here" cols="45" rows ="5" maxlength="32768" wrap="soft" autofocus required></textarea><br>
+	<!-- Everything related to note input and translation parameters -->
+	<textarea name="notes-input" id="notes-input" class="saveable" placeholder="Write your notes here" cols="55" rows ="5" maxlength="200000" wrap="soft" autofocus required></textarea><br>
+	<!-- Progress reset and warning -->
+	<input type="button" name="reset progress" id="reset-progress" value="Reset Progress">
+	<div id="reset-modal" class="modal">
+		<div class="modal-caption">
+			Are you sure you want to delete all saved progress?<br> 
+			Type "OVERRIDE" to reset.<br> 
+			Press <b><code>'Escape'</code></b> to exit.
+		</div>
+		<input type="text" id="reset-prompt" class="modal-content">
+	</div>
 	<input type="button" name="translate" id="translate" value="Translate into code">
-	<input type="button" name="copy-code" id="copy-code" value="Copy code"><br>
+	<input type="button" name="copy code" id="copy-code" value="Copy code"><br>
 	<label>Choose a scale:</label>
-	<select name="Scale" id="scale-selector">
+	<select name="Scale" id="scale-selector" class="saveable">
 		<option value="0">Pentatonic Minor</option>
 		<option value="1">Pentatonic Major</option>
 		<option value="2">Chromatic</option>
@@ -80,12 +95,13 @@
 		<option value="8">Yo</option>
 	</select>
 	<label>Choose note duration:</label>
-	<select id="note-length-selector">
+	<select id="note-length-selector" class="saveable">
 		<option value="4">1/4</option>
 		<option value="2">1/8</option>
 		<option value="1">1/16</option>
 	</select><br>
-	<label>Transpose notes:</label><input type="number" name="transposition-index" id="transposition-index" max="12" min="-12" value="0" title="Click on the field to transpose the scale.">
+	<!-- Everything related to note scale -->
+	<label>Transpose notes:</label><input type="number" name="transposition-index" id="transposition-index" class="saveable" max="12" min="-12" value="0" title="Click on the field to transpose the scale.">
 	<input type="button" name="show-scale" id="show-scale" value="Hide scale">
 	<div id="note-displays">
 		<div  id="scale-display"> 
@@ -93,8 +109,9 @@
 			</p> 
 			<p>Low ============================>> High</p>
 		</div>
-		<img id="note-lengths" src="images/note-lengths-diagram.jpg">
+		<img id="note-lengths" src="images/note-lengths-diagram.jpg" alt="note lengths diagram">
 	</div>
+	<!-- Everything related to database -->
 	<div class="database">
 		<p>Here you can copy song codes from our database:</p>
 		<input type="text" name="database-search-bar" id="database-search-bar" size="30" maxlength="100" placeholder="Search for name/band of the song" title="Click on the field to search">
@@ -102,12 +119,15 @@
 		</select>
 		<input type="button" id="copy-database" value="Copy code">
 	</div>
+	<!-- Everything related to interactable note sheet -->
 	<div class="sheet-music-1">
 		<p><sup>*WIP</sup>Interactable note sheet:</p>
 		<div class="sheet-music-2">
 			<div id="player-buttons-container">
+				<!-- Buttons -->
 				<img src="images/player-buttons-play.png" id="player-Play-button" class="player-buttons">
-				<select id="shawzins-select">
+				<!-- Shawzin selector -->
+				<select id="shawzins-select" class="saveable">
 					<option value="KiraShawzin">Kira Shawzin (Synth Guitar)</option>
 					<option value="CorbuShawzin">Corbu Shawzin (Electric Guitar, Overdrive)</option>
 					<option value="NarmerShawzin">Narmer Shawzin (Electric Guitar, Distortion)</option>
@@ -117,7 +137,13 @@
 					<option value="AristeiPrimeShawzin">Aristei Prime Shawzin (Harp)</option>
 					<option value="Other">Other (Shamisen)</option>
 				</select>
-				<img src="" id="shawzin-pic">
+				<!-- Shawzin pic -->
+				<img src="" id="shawzin-pic" alt="shawzin pic" title="Click to expand.">
+				<!-- Shawzin pic modal -->
+				<div id="shawzin-pic-modal" class="modal">
+  					<img id="shawzin-pic-modal-image" class="modal-content" src="" alt="">
+  					<div id="shawzin-pic-caption"></div>
+  				</div>
 			</div>
 			<div id="note-sheet-container">
 				<table id="note-sheet"></table>
@@ -127,6 +153,7 @@
 	</div>
 	</div>
 </article>
+<!-- Credits section -->
 <footer>
 	<div class="foot">
 		<a href="https://docs.google.com/document/d/1VvlM4IQr8bfUV8pCJMVNRaG6piJTR9_t-xq7wQaxpho/edit" target="_blank">Credit to everybody here for gathering info!</a>
