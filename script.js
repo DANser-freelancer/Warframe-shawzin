@@ -55,7 +55,7 @@ const findDoubleNoteRegex = /[a-z]+[+]+[a-z]+/i;
 const findTripleNoteRegex = /[a-z]+[+]+[a-z]+[+]+[a-z]+/i;
 const missingSeparatorRegex = /[0-9]+[a-z]+[0-9]+[a-z]+/i;
 let finalCode = [];
-let noteSheetArr = [];
+let noteSheetArr = []; //2d array representation of the note sheet table
 let showScaleClicks = 0;
 let WrongNote = false;
 
@@ -84,7 +84,15 @@ const multiNoteConvertRules =
 	hi: "W", gh: "T", gi: "V", def: "P", ef: "O", de: "L", df: "N", abc: "H", ab: "D", bc: "G", ac: "F"
 };
 Object.freeze(multiNoteConvertRules);
-const linesForTransposition = [-1, '=', 1, '=', 2, '=', 3, '=', 4, '=', 5, '='];
+const notesAudioNames = 
+[
+	'L', 'K', 'J', 'I', 'H', 'G', 'F', 'E', 'D', 'C', 'B', 'A'
+];
+Object.freeze(notesAudioNames);
+const linesForTransposition = 
+[
+	'-1#', '=#', '1#', '=#', '2🎼', '=#', '3#', '=#', '4#', '=#', '5#', '=#'
+];
 Object.freeze(linesForTransposition); 
 
 //Event listeners
@@ -95,6 +103,7 @@ showScaleBtn.addEventListener('click', showScale);
 databaseCopyBtn.addEventListener('click', copyDatabase);
 transpositionIndex.addEventListener('click', transposeNotes);
 databaseSearchBar.addEventListener('click', searchDatabase);
+databaseSearchBar.addEventListener('keyup', searchDatabase);
 playerPlayBtn.addEventListener('click', playTrack);
 shawzinsSelect.addEventListener('click', updateShawzinPic);
 shawzinPic.addEventListener('click', toggleShawzinModal);
@@ -102,7 +111,6 @@ shawzinPicModal.addEventListener('click', toggleShawzinModal);
 progressResetBtn.addEventListener('click', progressClear);
 progressResetModal.addEventListener('click', progressClear);
 resetPrompt.addEventListener('click', progressClear);
-resetPrompt.addEventListener('keydown', progressClear);
 resetPrompt.addEventListener('keyup', progressClear)
 
 
@@ -464,18 +472,18 @@ function showScale() {
 //Changes scale display
 function changeScale(transposedLines) {
 	scaleNotes.innerText = 
-	`${transposedLines[11]}#-----------------------------------------------(L)---												
-	${transposedLines[10]}#-------------------------------------------(K)---------
-	${transposedLines[9]}#---------------------------------------(J)-------------							
-	${transposedLines[8]}#-----------------------------------(I)------------------
-	${transposedLines[7]}#-------------------------------(H)----------------------
-	${transposedLines[6]}#---------------------------(G)-------------------------
-	${transposedLines[5]}#-----------------------(F)------------------------------										
-	${transposedLines[4]}#-------------------(E)---------------------------------
-	${transposedLines[3]}#---------------(D)--------------------------------------		
-	${transposedLines[2]}#-----------(C)------------------------------------------		
-	${transposedLines[1]}#-------(B)---------------------------------------------
-	${transposedLines[0]}#---(A)--------------------------------------------------`;
+	`${transposedLines[11]}-----------------------------------------------(L)---												
+	${transposedLines[10]}-------------------------------------------(K)---------
+	${transposedLines[9]}---------------------------------------(J)-------------							
+	${transposedLines[8]}-----------------------------------(I)------------------
+	${transposedLines[7]}-------------------------------(H)----------------------
+	${transposedLines[6]}---------------------------(G)-------------------------
+	${transposedLines[5]}-----------------------(F)------------------------------										
+	${transposedLines[4]}-------------------(E)---------------------------------
+	${transposedLines[3]}---------------(D)--------------------------------------		
+	${transposedLines[2]}-----------(C)------------------------------------------		
+	${transposedLines[1]}-------(B)---------------------------------------------
+	${transposedLines[0]}---(A)--------------------------------------------------`;
 }
 
 //Fetch database
@@ -550,13 +558,13 @@ function copyDatabase() {
 	}
 }
 
-//Updates shawzin picture near shawzin selector
+// Updates shawzin picture near shawzin selector
 function updateShawzinPic() {
 	shawzinPic.src = `images/${shawzinsSelect.value}.png`;
 	shawzinPic.alt = `${shawzinsSelect.value}`;
 }
 
-//Toggles shawzin modal
+// Toggles shawzin modal
 function toggleShawzinModal() {
 	if (this.id === 'shawzin-pic') {
 		shawzinPicModal.style.display = "block";
@@ -567,7 +575,7 @@ function toggleShawzinModal() {
 	}
 }
 
-//Generates interactable note sheet
+// Generates interactable note sheet
 function updateNoteSheet(noteLength) {
 	noteSheetArr = [];
 	for (let y=0; y < 12; y++) {
@@ -603,13 +611,11 @@ function updateNoteSheet(noteLength) {
 	}
 }
 
-//Updates note sheet cells
+// Updates note sheet cells
 function updateNoteCell(event) {
 	let cell = event.target;
 	let cellY = cell.id.match(/(?<=tr-)\d+/i)[0];
-	let cellX = cell.id.match(/(?<=td-)\d+/i)[0]-1;
-	//console.log(cellY);
-	//console.log(cellX); 
+	let cellX = cell.id.match(/(?<=td-)\d+/i)[0]-1; 
 	if (cell.style.background != "rgb(10, 10, 10)") {
 		//Note ON
 		cell.style.background = "rgb(10, 10, 10)";
@@ -621,17 +627,42 @@ function updateNoteCell(event) {
 	}
 }
 
-//Starts playing interactable note sheet
-function playTrack(event) {
+// Starts playing interactable note sheet
+async function playTrack(event) {
+	console.log(noteSheetArr);
+	let promisesArr = [];
 	if (event.target.src.includes(`images/player-buttons-play.png`)) {
 		event.target.src = `images/player-buttons-pause.png`;
+		for (let x=0; x<noteSheetArr[0].length; x++) {
+			for (let y=0; y<noteSheetArr.length; y++) {
+				if (noteSheetArr[y][x] === 1) {
+					console.log('note' + y);
+					let newNote = new Promise((resolve, reject) => {
+						resolve(new Audio(`./audio/Other/Hexatonic/Hexatonic${notesAudioNames[y]}.ogg`));
+					});
+					promisesArr.push(newNote); 
+				}
+			}
+			Promise.all(promisesArr).then((note) => {
+				note.play();
+			});
+			await Delay(62.5); //16 notes per second max
+		}
+		console.log(promisesArr);
 	} else {
 		event.target.src = `images/player-buttons-play.png`;
 	}
 	//LOOPS WITH PROMISES AND PROMISE.ALL
 }
 
-//Custom errors
+// Custom delay
+function Delay(ms) {
+	return new Promise((resolve) => {
+		setTimeout(resolve, ms);
+	})
+}
+
+// Custom errors
 function CustomError(message) {
 	const error = new Error(message);
 	return error;

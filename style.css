@@ -49,15 +49,23 @@ input {
 }
 input:not([type='text']):hover {
 	background-color: deepskyblue;
+	cursor: pointer;
 }
 input:not([type='text']):active {
 	background-color: steelblue;
+	cursor: pointer;
 }
 select {
 	padding: 5px;
 	margin: 10px;
 	font-size: 15px;
 	border: 3px solid black;
+}
+select:hover {
+	cursor: pointer;
+}
+select:active {
+	cursor: pointer;
 }
 textarea {
 	padding: 5px;
@@ -230,6 +238,7 @@ sup {
 }
 #shawzin-pic:hover {
 	border-color: blue;
+	cursor: zoom-in;
 }
 /* Shawzin pic modal */
 .modal { /* the modal (background) */
