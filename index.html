@@ -56,7 +56,7 @@
 			The input field is case insensitive, you can write "A" or "a". Also you can use spaces and newlines, and you can resize it. 
 		</li>
 		<li>
-			All progress on the page is saved and can be reset(deleted). Your notes, notes duration, notes transpossition, scale, and shawzin persist even if you close the window. The page <b>doesn't</b> reload after you reset the progress, as your last failsafe, you can click on the parameters you want to be saved again. 
+			All progress on the page is saved and can be reset(deleted). Your notes, notes duration, notes transpossition, scale, shawzin, and music volume persist even if you close the window. The page <b>doesn't</b> reload after you reset the progress, as your last failsafe, you can click on the parameters you want to be saved again. 
 		</li>
 		<li>
 			The database shows name of the song + name of the band + approximate length of the track<sup>*(It may vary if you enable slow mode)</sup>. When searching for a song - write song/band name and click on the field to search.
@@ -125,6 +125,13 @@
 			<div id="player-buttons-container">
 				<!-- Buttons -->
 				<img src="images/player-buttons-play.png" id="player-Play-button" class="player-buttons">
+				<div id="volume-container">
+					<div>
+						<label for="volume">Volume</label>
+						<output id=volume-value></output>
+					</div>
+					<input type="range" name="volume" id="volume" class="saveable" value="20" min="0" max="100">
+				</div>
 				<!-- Shawzin selector -->
 				<select id="shawzins-select" class="saveable">
 					<option value="KiraShawzin">Kira Shawzin (Synth Guitar)</option>

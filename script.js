@@ -16,7 +16,7 @@ function FUNC_LIST() {
 	updateShawzinPic() - line 496
 	updateNoteSheet(noteLength) - line 501
 	updateNoteCell(event) - line 537
-	playTrack(event) - line 555
+	setupTrack(event) - line 555
 	CustomError(message) - line 565
 	`;
 	console.log(list);
@@ -48,6 +48,8 @@ const shawzinPicModalCaption = document.getElementById('shawzin-pic-caption');
 const progressResetBtn = document.getElementById('reset-progress');
 const progressResetModal = document.getElementById('reset-modal');
 const resetPrompt = document.getElementById('reset-prompt');
+const volumeSlider = document.getElementById('volume');
+const volumeOutput = document.getElementById('volume-value');
 const SAVES = document.querySelectorAll('.saveable');
 const findTimingRegex = /[0-9]+/;
 const findNoteRegex = /\D+/i;
@@ -56,8 +58,11 @@ const findTripleNoteRegex = /[a-z]+[+]+[a-z]+[+]+[a-z]+/i;
 const missingSeparatorRegex = /[0-9]+[a-z]+[0-9]+[a-z]+/i;
 let finalCode = [];
 let noteSheetArr = []; //2d array representation of the note sheet table
+let audioContext = '';
+let audioSamples = [];
 let showScaleClicks = 0;
 let WrongNote = false;
+let WasSetup = false;
 
 // I cal this stuff 'rules', it translates input notes to shawzin code according to key - value pairs
 const timingConvertRules = 
@@ -94,6 +99,16 @@ const linesForTransposition =
 	'-1#', '=#', '1#', '=#', '2🎼', '=#', '3#', '=#', '4#', '=#', '5#', '=#'
 ];
 Object.freeze(linesForTransposition); 
+const audioSamplePaths = 
+[
+	'audio/Other/Hexatonic/HexatonicA.ogg', 'audio/Other/Hexatonic/HexatonicB.ogg',
+	'audio/Other/Hexatonic/HexatonicC.ogg', 'audio/Other/Hexatonic/HexatonicD.ogg',
+	'audio/Other/Hexatonic/HexatonicE.ogg', 'audio/Other/Hexatonic/HexatonicF.ogg',
+	'audio/Other/Hexatonic/HexatonicG.ogg', 'audio/Other/Hexatonic/HexatonicH.ogg',
+	'audio/Other/Hexatonic/HexatonicI.ogg', 'audio/Other/Hexatonic/HexatonicJ.ogg', 
+	'audio/Other/Hexatonic/HexatonicK.ogg', 'audio/Other/Hexatonic/HexatonicL.ogg'
+];
+Object.freeze(audioSamplePaths);
 
 //Event listeners
 translateBtn.addEventListener('click', translateNotes);
@@ -104,19 +119,19 @@ databaseCopyBtn.addEventListener('click', copyDatabase);
 transpositionIndex.addEventListener('click', transposeNotes);
 databaseSearchBar.addEventListener('click', searchDatabase);
 databaseSearchBar.addEventListener('keyup', searchDatabase);
-playerPlayBtn.addEventListener('click', playTrack);
+playerPlayBtn.addEventListener('click', setupTrack);
 shawzinsSelect.addEventListener('click', updateShawzinPic);
 shawzinPic.addEventListener('click', toggleShawzinModal);
 shawzinPicModal.addEventListener('click', toggleShawzinModal);
 progressResetBtn.addEventListener('click', progressClear);
 progressResetModal.addEventListener('click', progressClear);
 resetPrompt.addEventListener('click', progressClear);
-resetPrompt.addEventListener('keyup', progressClear)
-
+resetPrompt.addEventListener('keyup', progressClear);
+volumeSlider.addEventListener('input', () => { volumeOutput.value = `${volumeSlider.value}%` });
 
 // Onloads
-copyBtn.style.disabled = true;
-window.onload = () => { 
+window.onload = () => {
+	copyBtn.style.disabled = true; 
 	if (copyBtn.style.disabled === true) {
 	copyBtn.style.border = "3px dotted black";
 	copyBtn.style.background = "grey";
@@ -127,6 +142,7 @@ window.onload = () => {
 		SAVES[i].addEventListener('keyup', progressSave);
 		SAVES[i].addEventListener('click', progressSave);
 	}
+	volumeOutput.value = `${volumeSlider.value}%`;
 	transposeNotes();
 	updateNoteSheet(100);
 	updateShawzinPic();
@@ -575,6 +591,7 @@ function toggleShawzinModal() {
 	}
 }
 
+
 // Generates interactable note sheet
 function updateNoteSheet(noteLength) {
 	noteSheetArr = [];
@@ -589,7 +606,7 @@ function updateNoteSheet(noteLength) {
 			newTD.id = `td-${x}-tr-${y}`;
 			newTD.className = `sheet-table-cells`;
 			if (x === 0) {
-				newTD.innerText = `${y+1}`;
+				newTD.innerText = `${12-y}`;
 				newTD.style.padding = "5px";
 				newTD.style.color = "red";
 				newTD.style.fontSize = "25px";
@@ -627,32 +644,68 @@ function updateNoteCell(event) {
 	}
 }
 
-// Starts playing interactable note sheet
-async function playTrack(event) {
+// Sets up the note sheets
+async function setupTrack(event) {
 	console.log(noteSheetArr);
-	let promisesArr = [];
 	if (event.target.src.includes(`images/player-buttons-play.png`)) {
 		event.target.src = `images/player-buttons-pause.png`;
-		for (let x=0; x<noteSheetArr[0].length; x++) {
+		if (!WasSetup) {
+			console.log('Audio Context was set up.');
+			audioContext = new AudioContext();
+			audioSamples = await setupAudioSamples(audioSamplePaths);
+			WasSetup = true;
+		}
+		for (let x=0; x<noteSheetArr[0].length; x++) { //loop for columns to be played
+			let activeNotes = []; 
 			for (let y=0; y<noteSheetArr.length; y++) {
 				if (noteSheetArr[y][x] === 1) {
-					console.log('note' + y);
-					let newNote = new Promise((resolve, reject) => {
-						resolve(new Audio(`./audio/Other/Hexatonic/Hexatonic${notesAudioNames[y]}.ogg`));
-					});
-					promisesArr.push(newNote); 
+					activeNotes.push(audioSamples[y]);
 				}
 			}
-			Promise.all(promisesArr).then((note) => {
-				note.play();
-			});
-			await Delay(62.5); //16 notes per second max
+			playTrack(activeNotes);
+			await Delay(62.5); //16 notes(columns) per second max
 		}
-		console.log(promisesArr);
 	} else {
 		event.target.src = `images/player-buttons-play.png`;
 	}
-	//LOOPS WITH PROMISES AND PROMISE.ALL
+}
+
+// Load audio file
+async function getAudio(filePath) { 
+	const response = await fetch(filePath);
+	const arrayBuffer = await response.arrayBuffer();
+	const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+	return audioBuffer;
+}
+
+// Handle audio files
+async function setupAudioSamples(paths) {
+	let audioBuffers = [];
+	for (let i=0; i<paths.length; i++) {
+		const sample = await getAudio(paths[i]);
+		audioBuffers.push(sample);
+	}
+	return audioBuffers;
+}
+
+// Play columns of notes
+async function playTrack(audioBufferArr, time = 0) {
+	if (audioBufferArr == null || audioBufferArr.length<=0) {
+		return;
+	}
+	let samplesArr = []; //arr to collect all samples before playing them
+	for (let i=0; i<audioBufferArr.length; i++) { //sample settings
+		let volumeControl = audioContext.createGain();
+		volumeControl.gain.value = volumeSlider.value / 400;
+		volumeControl.connect(audioContext.destination);
+		let sampleSource = audioContext.createBufferSource();
+		sampleSource.buffer = audioBufferArr[i];
+		sampleSource.connect(volumeControl);
+		samplesArr.push(sampleSource);
+	}
+	for (let i=0; i<samplesArr.length; i++) { //samples being played
+		samplesArr[i].start(time);
+	}
 }
 
 // Custom delay

@@ -202,6 +202,7 @@ sup {
 }
 
 /* Player block */
+/* Buttons */
 #player-buttons-container {
 	width: fit-content;
 	min-height: 80px;
@@ -219,15 +220,49 @@ sup {
 	flex: 1;
 	max-width: 70px;
 }
+.player-buttons:active {
+	max-width: 60px !important;
+	margin: 5px;
+}
+
+/* Volume */
+#volume-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+#volume-value {
+	background-color: grey;
+	border-radius: 5px;
+	padding: 2px;
+}
+#volume {
+	-webkit-appearance: none;
+	width: 300px;
+	height: 8px;
+	padding: 0px;
+	border-radius: 5px;
+	background: rgba(255, 255, 255, 0.6);
+  	background-image: linear-gradient(to right, orangered, yellow);
+}
+#volume::-webkit-slider-thumb {
+ 	-webkit-appearance: none;
+	height: 30px;
+	width: 30px;
+	padding: 0px;
+	border-radius: 50%;
+	border: 3px solid black;
+	background: blue;
+	cursor: ew-resize;
+	transition: background .3s ease-in-out;
+}
+
+/* Shawzin selector */
 #shawzins-select {
 	margin-right: 20px;
 	margin-left: 20px;
 	font-size: 18px;
 	-webkit-text-stroke: 0.4px black;
-}
-.player-buttons:active {
-	max-width: 60px !important;
-	margin: 5px;
 }
 #shawzin-pic {
 	max-width: 80px;
@@ -240,6 +275,7 @@ sup {
 	border-color: blue;
 	cursor: zoom-in;
 }
+
 /* Shawzin pic modal */
 .modal { /* the modal (background) */
   display: none; 
