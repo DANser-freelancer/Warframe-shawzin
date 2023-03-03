@@ -9,4 +9,4 @@ I have created a discord server for code requests and Warframe music fans in gen
 Working on updating the Shawzin compiler to add a playable note sheet with sound, and upgrade the note tanslating parts.
 ### Credits  
 Credit to [these guys](https://docs.google.com/document/d/1VvlM4IQr8bfUV8pCJMVNRaG6piJTR9_t-xq7wQaxpho/edit) for extensive info on shawzin.   
-Credit to myself for finding the missing [keys](https://docs.google.com/spreadsheets/d/1Zd0L6b1W8ic7s9b8DKJHDBNRB-Z0tdwQEhvQl6axFCU/edit?usp=sharing) for the shawzin code, soon you will be able to program any possible combination of shawzin notes.  
+Credit to myself for finding the missing [keys](https://docs.google.com/spreadsheets/d/1Zd0L6b1W8ic7s9b8DKJHDBNRB-Z0tdwQEhvQl6axFCU/edit?usp=sharing) for the shawzin code.
