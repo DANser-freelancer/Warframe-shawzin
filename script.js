@@ -63,10 +63,7 @@ let audioSamples = [];
 let showScaleClicks = 0;
 let WrongNote = false;
 let WasSetup = false;
-<<<<<<< HEAD
 let WasSampled = false;
-=======
->>>>>>> d68e2ccabdd97fc8cd89fbb77c94d9aa37bb8666
 
 // I cal this stuff 'rules', it translates input notes to shawzin code according to key - value pairs
 const timingConvertRules = 
@@ -105,9 +102,7 @@ const linesForTransposition =
 Object.freeze(linesForTransposition); 
 const audioSamplePaths = 
 [
-<<<<<<< HEAD
 	'A.ogg','B.ogg','C.ogg','D.ogg','E.ogg','F.ogg','G.ogg','H.ogg','I.ogg','J.ogg','K.ogg','L.ogg'
->>>>>>> d68e2ccabdd97fc8cd89fbb77c94d9aa37bb8666
 ];
 Object.freeze(audioSamplePaths);
 
@@ -121,11 +116,9 @@ transpositionIndex.addEventListener('click', transposeNotes);
 databaseSearchBar.addEventListener('click', searchDatabase);
 databaseSearchBar.addEventListener('keyup', searchDatabase);
 playerPlayBtn.addEventListener('click', setupTrack);
-<<<<<<< HEAD
 scaleSelector.addEventListener('click', () => { WasSampled = false });
 shawzinsSelect.addEventListener('click', updateShawzinPic);
 shawzinsSelect.addEventListener('click', () => { WasSampled = false });
->>>>>>> d68e2ccabdd97fc8cd89fbb77c94d9aa37bb8666
 shawzinPic.addEventListener('click', toggleShawzinModal);
 shawzinPicModal.addEventListener('click', toggleShawzinModal);
 progressResetBtn.addEventListener('click', progressClear);
@@ -151,8 +144,6 @@ window.onload = () => {
 	transposeNotes();
 	updateNoteSheet(100);
 	updateShawzinPic();
-<<<<<<< HEAD
->>>>>>> d68e2ccabdd97fc8cd89fbb77c94d9aa37bb8666
 };
 
 // Loads progress from local storage
@@ -653,7 +644,6 @@ function updateNoteCell(event) {
 
 // Sets up the note sheets
 async function setupTrack(event) {
-<<<<<<< HEAD
 	if (event.target.src.includes(`images/player-buttons-play.png`)) {
 		event.target.src = `images/player-buttons-pause.png`;
 		if (!WasSetup) {
@@ -673,7 +663,6 @@ async function setupTrack(event) {
 			} catch(err) {
 				console.log(`Something went wrong: ${err}`);
 			}
->>>>>>> d68e2ccabdd97fc8cd89fbb77c94d9aa37bb8666
 		}
 		for (let x=0; x<noteSheetArr[0].length; x++) { //loop for columns to be played
 			let activeNotes = []; 
@@ -701,11 +690,9 @@ async function getAudio(filePath) {
 // Handle audio files
 async function setupAudioSamples(paths) {
 	let audioBuffers = [];
-<<<<<<< HEAD
 	let selectedScale = scaleSelector.options[scaleSelector.selectedIndex].text;
 	for (let i=0; i<12; i++) {
 		let sample = await getAudio(`audio/${shawzinsSelect.value}/${selectedScale}/${selectedScale}${paths[i]}`);
->>>>>>> d68e2ccabdd97fc8cd89fbb77c94d9aa37bb8666
 		audioBuffers.push(sample);
 	}
 	return audioBuffers;
