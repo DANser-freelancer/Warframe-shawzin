@@ -1,5 +1,5 @@
 .env
-.vs/
+.vs
 .gitignore
 npm_modules/
-audio/Lotus
+audio/Lotus/
