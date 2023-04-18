@@ -1,4 +1,4 @@
-//Dev tools
+// Dev tools
 function FUNC_LIST() {
 	let list = `
 	Onloads - line 92
@@ -21,12 +21,17 @@ function FUNC_LIST() {
 	`;
 	console.log(list);
 }
-window.FUNC_LIST = FUNC_LIST; //Makes it accessible through console.
 
-//Global variables
+window.FUNC_LIST = FUNC_LIST; //Makes it accessible through console.
+window.CHECKBOX_CONTROL = () => {
+	console.log(`${localStorage.getItem(slowModeToggle.id)} and ${slowModeToggle.checked}`)};
+
+// Global variables
 const translateBtn = document.getElementById('translate');
+const translateSheetBtn = document.getElementById('translate-sheet');
 const notesInput = document.getElementById('notes-input');
 const copyBtn = document.getElementById('copy-code');
+const copyBtnDouble = document.querySelectorAll('.copy-code-double');
 const scaleSelector = document.getElementById('scale-selector');
 const showScaleBtn = document.getElementById('show-scale');
 const scaleDisplay = document.getElementById('scale-display');
@@ -50,6 +55,7 @@ const progressResetModal = document.getElementById('reset-modal');
 const resetPrompt = document.getElementById('reset-prompt');
 const volumeSlider = document.getElementById('volume');
 const volumeOutput = document.getElementById('volume-value');
+const slowModeToggle = document.getElementById('slow-mode');
 const SAVES = document.querySelectorAll('.saveable');
 const findTimingRegex = /[0-9]+/;
 const findNoteRegex = /\D+/i;
@@ -106,9 +112,11 @@ const audioSamplePaths =
 ];
 Object.freeze(audioSamplePaths);
 
-//Event listeners
+// Event listeners
 translateBtn.addEventListener('click', translateNotes);
 translateBtn.addEventListener('click', errorStyle);
+translateSheetBtn.addEventListener('click', translateNotes);
+translateSheetBtn.addEventListener('click', errorStyle);
 copyBtn.addEventListener('click', copyCode);
 showScaleBtn.addEventListener('click', showScale);
 databaseCopyBtn.addEventListener('click', copyDatabase);
@@ -130,35 +138,58 @@ volumeSlider.addEventListener('input', () => { volumeOutput.value = `${volumeSli
 // Onloads
 window.onload = () => {
 	copyBtn.style.disabled = true; 
-	if (copyBtn.style.disabled === true) {
 	copyBtn.style.border = "3px dotted black";
 	copyBtn.style.background = "grey";
-	}
 	progressLoad();
 	for (let i=0; i<SAVES.length; i++) {
 		SAVES[i].addEventListener('keydown', progressSave);
 		SAVES[i].addEventListener('keyup', progressSave);
 		SAVES[i].addEventListener('click', progressSave);
+		SAVES[i].addEventListener('input', progressSave);
+		SAVES[i].addEventListener('change', progressSave);
+	}
+	for (let i=0; i<copyBtnDouble.length; i++){//doubles for one actual copy code button, probably should rework into a css class...
+		copyBtnDouble[i].addEventListener('click', ()=>{copyBtn.focus({focusVisible: true})});
+		copyBtnDouble[i].addEventListener('click', ()=>{copyBtn.click()});
 	}
 	volumeOutput.value = `${volumeSlider.value}%`;
 	transposeNotes();
-	updateNoteSheet(100);
+	updateNoteSheet(1100);
 	updateShawzinPic();
 };
 
 // Loads progress from local storage
 function progressLoad() {
+	debugger;
 	for (let i=0; i<SAVES.length; i++) {
 		let load = localStorage.getItem(SAVES[i].id);
 		if (load != null) {
+			if (SAVES[i].type === 'checkbox') {
+				console.log(`full load ${load} obj ${SAVES[i].id}`);
+				SAVES[i].checked = load;
+				continue;
+			}
 			SAVES[i].value = load;
 		} else {
+			if (SAVES[i].type === 'checkbox') {
+				console.log(`not full load ${SAVES[i].checked}`);
+				localStorage.setItem(SAVES[i].id, SAVES[i].checked);
+				continue;
+			}
+			console.log(`did not continue when loading`);
 			localStorage.setItem(SAVES[i].id, SAVES[i].value);
 		}
 	}
 }
 // Saves progress to local storage
 function progressSave() {
+	console.log(this.type);
+	console.log(this.checked);
+	if (this.type === 'checkbox') {
+		localStorage.setItem(this.id, this.checked);
+		return;
+	}
+	console.log(`did not return`);
 	localStorage.setItem(this.id, this.value);
 }
 // Clears progress from local storage
@@ -182,9 +213,17 @@ function progressClear(event) {
 }
 
 // Translates notes and timings from the main input field
-function translateNotes() {
+function translateNotes(e) {
 	finalCode.splice(0, 999999);
-	let notes = notesInput.value.split(',');
+	let notes;
+	if (e.target.id === translateBtn.id) {
+		notes = notesInput.value.split(',');
+	} else {
+		notes = noteSheetCollector();
+	}
+	if (notes == null) {
+		alert(`Error: The field is empty.`);
+	}
 	for (let i=0; i<notes.length; i++) {
 		notes[i] = notes[i].replace(/\s+/gi, '');
 		notes[i] = notes[i].replace(/\n+/gi, '');
@@ -202,8 +241,9 @@ function translateNotes() {
 		let timing = false; 
 		let note = false; 
 		try {
-			timing = Number(notes[i].match(findTimingRegex)[0]) - 1;
+			timing = Number(notes[i].match(findTimingRegex)[0])-1;
 			note = notes[i].toLowerCase().match(findNoteRegex)[0];
+			console.log(`%cNote conversion check, timing: ${timing} notes: ${note}`, 'color:gold');
 		} finally {
 			if (timing !== false && note !== false) {
 				WrongNote = false;
@@ -227,143 +267,34 @@ function translateNotes() {
 //Converts timing into shawzin code: ranges from [AA-AZ, Aa-Az, A0-A9, A+, A/] to [/A-/Z, /a-/z, /0-/9, /+, //]
 function convertTiming(timing, position) {
 	let range = timingConvertRules[Math.floor(timing/64)];
-	if (timing === -1) {
-		WrongNote = true;
-		errorStyle;
-		alert(`Error: start first note position from 1+.`);
-	} else if (timing < 64 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing]);
-	} else if (timing < 64*2 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64]);
-	} else if (timing < 64*3 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*2]);
-	} else if (timing < 64*4 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*3]);
-	} else if (timing < 64*5 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*4]);
-	} else if (timing < 64*6 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*5]);
-	} else if (timing < 64*7 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*6]);
-	} else if (timing < 64*8 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*7]);
-	} else if (timing < 64*9 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*8]);
-	} else if (timing < 64*10 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*9]);
-	} else if (timing < 64*11 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*10]);
-	} else if (timing < 64*12 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*11]);
-	} else if (timing < 64*13 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*12]);
-	} else if (timing < 64*14 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*13]);
-	} else if (timing < 64*15 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*14]);
-	} else if (timing < 64*16 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*15]);
-	} else if (timing < 64*17 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*16]);
-	} else if (timing < 64*18 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*17]);
-	} else if (timing < 64*19 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*18]);
-	} else if (timing < 64*20 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*19]);
-	} else if (timing < 64*21 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*20]);
-	} else if (timing < 64*22 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*21]);
-	} else if (timing < 64*23 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*22]);
-	} else if (timing < 64*24 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*23]);
-	} else if (timing < 64*25 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*24]);
-	} else if (timing < 64*26 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*25]);
-	} else if (timing < 64*27 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*26]);
-	} else if (timing < 64*28 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*27]);
-	} else if (timing < 64*29 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*28]);
-	} else if (timing < 64*30 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*29]);
-	} else if (timing < 64*31 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*30]);
-	} else if (timing < 64*32 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*31]);
-	} else if (timing < 64*33 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*32]);
-	} else if (timing < 64*34 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*33]);
-	} else if (timing < 64*35 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*34]);
-	} else if (timing < 64*36 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*35]);
-	} else if (timing < 64*37 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*36]);
-	} else if (timing < 64*38 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*37]);
-	} else if (timing < 64*39 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*38]);
-	} else if (timing < 64*40 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*39]);
-	} else if (timing < 64*41 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*40]);
-	} else if (timing < 64*42 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*41]);
-	} else if (timing < 64*43 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*42]);
-	} else if (timing < 64*44 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*43]);
-	} else if (timing < 64*45 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*44]);
-	} else if (timing < 64*46 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*45]);
-	} else if (timing < 64*47 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*46]);
-	} else if (timing < 64*48 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*47]);
-	} else if (timing < 64*49 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*48]);
-	} else if (timing < 64*50 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*49]);
-	} else if (timing < 64*51 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*50]);
-	} else if (timing < 64*52 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*51]);
-	} else if (timing < 64*53 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*52]);
-	} else if (timing < 64*54 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*53]);
-	} else if (timing < 64*55 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*54]);
-	} else if (timing < 64*56 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*55]);
-	} else if (timing < 64*57 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*56]);
-	} else if (timing < 64*58 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*57]);
-	} else if (timing < 64*59 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*58]);
-	} else if (timing < 64*60 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*59]);
-	} else if (timing < 64*61 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*60]);
-	} else if (timing < 64*62 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*61]);
-	} else if (timing < 64*63 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*62]);
-	} else if (timing < 64*64 && timing > -1) {
-		finalCode.push(range+timingConvertRules[timing-64*63]);
-	} else { 
-		WrongNote = true;
-		errorStyle;
-		alert(`Error: Wrong timeline position, note #${position} range must be 1-4096.`) 
+	for (let i=2; i<=64; i++) {
+		if (timing <= -1) {
+			WrongNote = true;
+			errorStyle;
+			alert(`Error: start first note position from 1+.`);
+			break;
+		} else if (timing < 64) {
+			finalCode.push(range+timingConvertRules[timing]);
+			break;
+		} else if (timing < (64*i)) {
+			finalCode.push(range+timingConvertRules[timing-(64*(i-1))]);
+			break;
+		} else if (i>=64) { 
+			WrongNote = true;
+			errorStyle;
+			alert(`Error: Wrong timeline position, note #${position} range must be 1-4096.`)
+			break; 
+		}
 	}
+	
+	//	reference 09.04.2023
+	/* 
+	} else if (timing < 64*63) {
+		finalCode.push(range+timingConvertRules[timing-64*62]);
+	} else if (timing < 64*64) {
+		finalCode.push(range+timingConvertRules[timing-64*63]);
+	} 
+	*/
 }
 
 //Checks and converts note
@@ -560,7 +491,7 @@ function copyDatabase() {
 	try {
 		databaseCode = database[databaseSelector.value].code;
 	} finally {
-		if (databaseCode != undefined) {
+		if (databaseCode != null) {
 			navigator.clipboard.writeText(databaseCode);
 			databaseCopyBtn.style.border = "revert-layer";
 			databaseCopyBtn.style.background = "revert-layer";
@@ -603,32 +534,75 @@ function updateNoteSheet(noteLength) {
 			let newTD = document.createElement('td');
 			newTD.id = `td-${x}-tr-${y}`;
 			newTD.className = `sheet-table-cells`;
-			if (x === 0) {
-				newTD.innerText = `${12-y}`;
-				newTD.style.padding = "5px";
-				newTD.style.color = "red";
-				newTD.style.fontSize = "25px";
-				newTD.style.fontFamily = "Arial";
-				newTD.style.textAlign = "center";
-				newTD.style.fontWeight = "bold";
-			}
+			let div = document.createElement('div'); //insert into cells for better control over size and content
+			div.style.width = "30px";
+			div.style.height = "35px";
+			div.style.color = "#CB23DE";
+			div.style.overflow = "visible";
+			div.style.whiteSpace = "nowrap";
+			div.style.display = "flex";
+			div.style.flexDirection = "row-reverse";
+			div.style.alignItems = "flex-end";
 			if (x !== 0) {
 				newTD.addEventListener('click', updateNoteCell);
 				noteSheetArr[y].push(0);
+				div.style.fontSize = "22px";
+				div.style.fontWeight = "bold";
 			}
-			if (x%8 === 0) {
-				newTD.style.borderRight = "3px solid rgb(57, 0, 233)";
+			if (x%16 === 0) {
+				newTD.style.borderRight = "3px solid rgb(178, 51, 3)";
+				if (y === 11) {
+					div.innerText = `${x}`;
+				}
+			} else if (x%8 === 0) {
+				newTD.style.borderRight = "2px solid rgb(255, 95, 35)";
+				if (y === 11) {
+					div.innerText = `${x}`;
+				}
 			} else if (x%4 === 0) {
 				newTD.style.borderRight = "1px solid rgb(25, 0, 103)"
+				if (y === 11) {
+					div.innerText = `${x}`;
+				}
 			}
+			if (x === 0) {
+				div.innerText = `${notesAudioNames[y]}`;
+				div.style.flexDirection = "row";
+				div.style.alignItems = "center";
+				div.style.justifyContent = "center";
+				div.style.color = "red";
+				div.style.fontSize = "25px";
+				div.style.fontFamily = "Arial";
+				div.style.textAlign = "center";
+				div.style.fontWeight = "bold";
+			}
+			newTD.appendChild(div);
 			newTR.appendChild(newTD);
 		}
 	}
 }
 
+// Collects notes from note sheet
+function noteSheetCollector() {//needs more work
+	let returnedNotes = [];
+	for (let x=0; x<noteSheetArr[0].length; x++) { //loop for columns to be played
+		let activeNotes = []; 
+		for (let y=0; y<noteSheetArr.length; y++) { //loop for rows to be played
+			if (noteSheetArr[y][x] === 1) {
+				activeNotes.push(`${notesAudioNames[y]}`);
+			}
+		}
+		if (activeNotes.length>=1) { //connect notes by "+" if we have more than one 
+			let finalNotes = `${x+1}${activeNotes.join('+')}`;//add correct timing number
+			returnedNotes.push(finalNotes);//{timing}{note/s and +},{timing}{note/s and +}......
+		}	
+	}
+	return returnedNotes;
+}
+
 // Updates note sheet cells
 function updateNoteCell(event) {
-	let cell = event.target;
+	let cell = event.currentTarget;
 	let cellY = cell.id.match(/(?<=tr-)\d+/i)[0];
 	let cellX = cell.id.match(/(?<=td-)\d+/i)[0]-1; 
 	if (cell.style.background != "rgb(10, 10, 10)") {
@@ -643,13 +617,16 @@ function updateNoteCell(event) {
 }
 
 // Sets up the note sheets
-async function setupTrack(event) {
+async function setupTrack(event, speed = 62.5) {
+	if (slowModeToggle.checked) {
+		speed = 125;
+	}
 	if (event.target.src.includes(`images/player-buttons-play.png`)) {
 		event.target.src = `images/player-buttons-pause.png`;
 		if (!WasSetup) {
 			try {
 				audioContext = new AudioContext();
-				console.log('Audio Context was set up.');
+				console.log(`%cAudio Context was set up.`, 'color:gold');
 				WasSetup = true;
 			} catch(err) {
 				console.log(`Something went wrong: ${err}`);
@@ -658,7 +635,7 @@ async function setupTrack(event) {
 		if (!WasSampled) {
 			try {
 				audioSamples = await setupAudioSamples(audioSamplePaths);
-				console.log(`Audio samples were loaded.`)
+				console.log(`%cAudio samples were loaded.`, 'color:gold')
 				WasSampled = true;
 			} catch(err) {
 				console.log(`Something went wrong: ${err}`);
@@ -666,13 +643,14 @@ async function setupTrack(event) {
 		}
 		for (let x=0; x<noteSheetArr[0].length; x++) { //loop for columns to be played
 			let activeNotes = []; 
-			for (let y=0; y<noteSheetArr.length; y++) {
+			for (let y=0; y<noteSheetArr.length; y++) { //loop for rows to be played
 				if (noteSheetArr[y][x] === 1) {
+					console.log(audioSamples[y]);
 					activeNotes.push(audioSamples[y]);
 				}
 			}
+			await Delay(speed); //16 notes(columns) per second max
 			playTrack(activeNotes);
-			await Delay(62.5); //16 notes(columns) per second max
 		}
 	} else {
 		event.target.src = `images/player-buttons-play.png`;
@@ -690,9 +668,9 @@ async function getAudio(filePath) {
 // Handle audio files
 async function setupAudioSamples(paths) {
 	let audioBuffers = [];
-	let selectedScale = scaleSelector.options[scaleSelector.selectedIndex].text;
-	for (let i=0; i<12; i++) {
-		let sample = await getAudio(`audio/${shawzinsSelect.value}/${selectedScale}/${selectedScale}${paths[i]}`);
+	let selectedScale = scaleSelector.options[scaleSelector.selectedIndex].text.split(' ');
+	for (let i=0; i<paths.length; i++) {
+		let sample = await getAudio(`audio/${shawzinsSelect.value}/${selectedScale[0]}/${selectedScale[0]}${paths[i]}`);
 		audioBuffers.push(sample);
 	}
 	return audioBuffers;
@@ -725,7 +703,7 @@ function Delay(ms) {
 	})
 }
 
-// Custom errors
+// Custom error
 function CustomError(message) {
 	const error = new Error(message);
 	return error;
