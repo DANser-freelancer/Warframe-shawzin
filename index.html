@@ -19,7 +19,7 @@
 <article class="body">
 	<!-- Description and rules -->
 	<div name="body-div">
-	<a href="https://discord.gg/VyjFwKn8AY"><img src="images/AristeiShawzinIcon.png" id="big-favicon" alt="Shawzin icon" title="Made by DANser-freelancer, click to check out discord server 'Warframe Musicians'" target="_blank"></a>
+	<a href="https://discord.gg/VyjFwKn8AY"><img src="images/AristeiShawzinIcon.png" id="big-favicon" alt="Shawzin icon" title="Made by DANser-freelancer, click to check out discord server 'Warframe Musicians'" target="_blank"/></a>
 	<h1>Shawzin music compiler</h1>
 	<p>Hi, this app will translate musical notes into shawzin code that you can copy&paste to play your favourite shawzin.<br>
 	<code>Made by DANser#6915 (discord).</code></p>
@@ -56,7 +56,7 @@
 			The input field is case insensitive, you can write "A" or "a". Also you can use spaces and newlines, and you can resize it. 
 		</li>
 		<li>
-			All progress on the page is saved and can be reset(deleted). Your notes, notes duration, notes transpossition, scale, shawzin, and music volume persist even if you close the window. The page <b>doesn't</b> reload after you reset the progress, as your last failsafe, you can click on the parameters you want to be saved again. 
+			All progress on the page is saved and can be reset(deleted). Your notes, notes duration, notes transpossition, scale, shawzin, slow mode, and music volume persist even if you close the window. The page <b>doesn't</b> reload after you reset the progress, as your last failsafe, you can click on the parameters you want to be saved again. 
 		</li>
 		<li>
 			The database shows name of the song + name of the band + approximate length of the track<sup>*(It may vary if you enable slow mode)</sup>. When searching for a song - write song/band name and click on the field to search.
@@ -71,17 +71,17 @@
 	<!-- Everything related to note input and translation parameters -->
 	<textarea name="notes-input" id="notes-input" class="saveable" placeholder="Write your notes here" cols="55" rows ="5" maxlength="200000" wrap="soft" autofocus required></textarea><br>
 	<!-- Progress reset and warning -->
-	<input type="button" name="reset progress" id="reset-progress" value="Reset Progress">
+	<input type="button" name="reset progress" id="reset-progress" value="Reset Progress"/>
 	<div id="reset-modal" class="modal">
 		<div class="modal-caption">
 			Are you sure you want to delete all saved progress?<br> 
 			Type "OVERRIDE" to reset.<br> 
 			Press <b><code>'Escape'</code></b> to exit.
 		</div>
-		<input type="text" id="reset-prompt" class="modal-content">
+		<input type="text" id="reset-prompt" class="modal-content"/>
 	</div>
-	<input type="button" name="translate" id="translate" value="Translate field">
-	<input type="button" name="copy code" id="copy-code" value="Copy code"><br>
+	<input type="button" name="translate" id="translate" value="Translate field"/>
+	<input type="button" name="copy code" id="copy-code" value="Copy code"/><br>
 	<label>Choose a scale:</label>
 	<select name="Scale" id="scale-selector" class="saveable">
 		<option value="0">Pentatonic Minor</option>
@@ -101,21 +101,21 @@
 		<option value="1">1/16</option>
 	</select><br>
 	<!-- Everything related to note scale -->
-	<label>Transpose notes:</label><input type="number" name="transposition-index" id="transposition-index" class="saveable" max="12" min="-12" value="0" title="Click on the field to transpose the scale.">
-	<input type="button" name="show-scale" id="show-scale" value="Hide scale">
+	<label>Transpose notes:</label><input type="number" name="transposition-index" id="transposition-index" class="saveable" max="12" min="-12" value="0" title="Click on the field to transpose the scale."/>
+	<input type="button" name="show-scale" id="show-scale" value="Hide scale"/>
 	<div id="note-displays">
 		<div  id="scale-display"> 
 			<p id="scale-notes">
 			</p> 
 			<p>Low ============================>> High</p>
 		</div>
-		<img id="note-lengths" src="images/note-lengths-diagram.jpg" alt="note lengths diagram">
+		<img id="note-lengths" src="images/note-lengths-diagram.jpg" alt="note lengths diagram"/>
 	</div>
 	<!-- Everything related to database -->
 	<div class="database">
 		<p>Here you can copy song codes from our database:</p>
-		<input type="text" name="database-search-bar" id="database-search-bar" size="30" maxlength="100" placeholder="Search for name/band of the song" title="Click on the field to search">
-		<input type="button" id="copy-database" value="Copy code"><br>
+		<input type="text" name="database-search-bar" id="database-search-bar" size="30" maxlength="100" placeholder="Search for name/band of the song" title="Click on the field to search"/>
+		<input type="button" id="copy-database" value="Copy code"/><br>
 		<select name="Database selector" id="database-selector"></select>
 	</div>
 	<!-- Everything related to interactable note sheet -->
@@ -124,16 +124,16 @@
 		<div class="sheet-music-2">
 			<div id="player-buttons-container">
 				<!-- Buttons -->
-				<img src="images/player-buttons-play.png" id="player-Play-button" class="player-buttons">
+				<img src="images/player-buttons-play.png" id="player-Play-button" class="player-buttons"/>
 				<div id="volume-container">
 					<div>
 						<label for="volume">Volume</label>
 						<output id=volume-value></output>
 					</div>
-					<input type="range" name="volume" id="volume" class="saveable" value="20" min="0" max="100">
+					<input type="range" name="volume" id="volume" class="saveable" value="20" min="0" max="100"/>
 					<div>
 						<label for="slow-mode">Slow mode</label>
-						<input type="checkbox" autocomplete="off" name="slow mode toggle" id="slow-mode" class="saveable">
+						<input type="checkbox" name="slow mode toggle" id="slow-mode" class="saveable" autocomplete="off"/>
 					</div>
 				</div>
 				<!-- Shawzin selector -->
@@ -148,10 +148,10 @@
 					<option value="Other">Other (Shamisen)</option>
 				</select>
 				<!-- Shawzin pic -->
-				<img src="" id="shawzin-pic" alt="shawzin pic" title="Click to expand.">
+				<img src="" id="shawzin-pic" alt="shawzin pic" title="Click to expand."/>
 				<!-- Shawzin pic modal -->
 				<div id="shawzin-pic-modal" class="modal">
-  					<img id="shawzin-pic-modal-image" class="modal-content" src="" alt="picture of selected shawzin">
+  					<img id="shawzin-pic-modal-image" class="modal-content" src="" alt="picture of selected shawzin"/>
   					<div id="shawzin-pic-caption"></div>
   				</div>
 			</div>
@@ -160,8 +160,8 @@
 			</div>
 			<sup>*All sound files are created&owned by Digital Extremes.</sup>
 			<div>
-				<input type="button" name="translate sheet" id="translate-sheet" value="Translate sheet">
-				<input type="button" name="copy code from sheet" value="Copy code" class="copy-code-double">
+				<input type="button" name="translate sheet" id="translate-sheet" value="Translate sheet"/>
+				<input type="button" name="copy code from sheet" value="Copy code" class="copy-code-double"/>
 			</div>
 		</div>
 	</div>
@@ -170,8 +170,9 @@
 <!-- Credits section -->
 <footer>
 	<div class="foot">
-		<p>Credit to everybody here for gathering <a href="https://docs.google.com/document/d/1VvlM4IQr8bfUV8pCJMVNRaG6piJTR9_t-xq7wQaxpho/edit" target="_blank">info!</a></p>
-		<p>Some of my own research, finally a complete set of <a href="https://docs.google.com/spreadsheets/d/1Zd0L6b1W8ic7s9b8DKJHDBNRB-Z0tdwQEhvQl6axFCU/edit?usp=sharing" target="_blank">keys.</a></p>
+		<p>Last updated: 19/04/2023</p>
+		<p>Some of my own research, with more <a href="https://docs.google.com/spreadsheets/d/1Zd0L6b1W8ic7s9b8DKJHDBNRB-Z0tdwQEhvQl6axFCU/edit?usp=sharing" target="_blank">keys</a>.</p>
+		<p>Credit to everybody here for gathering <a href="https://docs.google.com/document/d/1VvlM4IQr8bfUV8pCJMVNRaG6piJTR9_t-xq7wQaxpho/edit" target="_blank">info</a>!</p>
 		<p>Do you wish to report a <a href="https://github.com/DANser-freelancer/Warframe-shawzin/issues/new" target="_blank">bug</a> or give some <a href="https://github.com/DANser-freelancer/Warframe-shawzin/issues/1" target="_blank">feedback</a>?</p>
 	</div>
 </footer>

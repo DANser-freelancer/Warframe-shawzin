@@ -24,7 +24,9 @@ function FUNC_LIST() {
 
 window.FUNC_LIST = FUNC_LIST; //Makes it accessible through console.
 window.CHECKBOX_CONTROL = () => {
-	console.log(`${localStorage.getItem(slowModeToggle.id)} and ${slowModeToggle.checked}`)};
+	console.log(`${localStorage.getItem(slowModeToggle.id)} and ${slowModeToggle.checked}`);
+	slowModeToggle.click();
+};
 
 // Global variables
 const translateBtn = document.getElementById('translate');
@@ -158,39 +160,28 @@ window.onload = () => {
 	updateShawzinPic();
 };
 
-// Loads progress from local storage
+// Loads progress from local storage (if empty - save progress)
 function progressLoad() {
-	debugger;
 	for (let i=0; i<SAVES.length; i++) {
-		let load = localStorage.getItem(SAVES[i].id);
+		let load = JSON.parse(localStorage.getItem(SAVES[i].id));
 		if (load != null) {
 			if (SAVES[i].type === 'checkbox') {
-				console.log(`full load ${load} obj ${SAVES[i].id}`);
 				SAVES[i].checked = load;
-				continue;
+			} else {
+				SAVES[i].value = load;
 			}
-			SAVES[i].value = load;
 		} else {
-			if (SAVES[i].type === 'checkbox') {
-				console.log(`not full load ${SAVES[i].checked}`);
-				localStorage.setItem(SAVES[i].id, SAVES[i].checked);
-				continue;
-			}
-			console.log(`did not continue when loading`);
-			localStorage.setItem(SAVES[i].id, SAVES[i].value);
+			progressSave.call(SAVES[i]);
 		}
 	}
 }
 // Saves progress to local storage
 function progressSave() {
-	console.log(this.type);
-	console.log(this.checked);
 	if (this.type === 'checkbox') {
-		localStorage.setItem(this.id, this.checked);
-		return;
+		localStorage.setItem(this.id, JSON.stringify(this.checked));
+	} else {
+		localStorage.setItem(this.id, JSON.stringify(this.value));
 	}
-	console.log(`did not return`);
-	localStorage.setItem(this.id, this.value);
 }
 // Clears progress from local storage
 function progressClear(event) {
@@ -198,7 +189,7 @@ function progressClear(event) {
 		progressResetModal.style.display = "block";
 		resetPrompt.focus();
 	} 
-	if (event.key === 'Escape') {
+	if (event.key === 'Escape' || event.target.id === 'reset-modal') {
 		progressResetModal.style.display = "none";
 		resetPrompt.value = '';
 	}
