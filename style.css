@@ -109,6 +109,12 @@ sup {
 	padding: 6px;
 	-webkit-text-stroke: 0.5px black;
 }
+code {
+	background: grey;
+	border-radius: 5px;
+	border: 1px solid black;
+	padding: 1px 6px 1px 6px;
+}
 
 /* Favicon-logo */
 #big-favicon {
@@ -183,7 +189,7 @@ sup {
 	white-space: nowrap;
 }
 
-/* Note sheet */
+/* === Note sheet === */
 .sheet-music-1 p {
 	margin-bottom: 5px;
 }
@@ -215,16 +221,33 @@ sup {
 	height: auto;
 	border-top: 1px solid rgb(25, 0, 103);
 	border-bottom: 1px solid rgb(25, 0, 103);
-	background: whitesmoke;
+	background: rgb(245, 245, 245);
+	padding: 2px;
 }
-.sheet-table-cells:hover {
-	background: rgba(100, 100, 100, 0.9) !important;
+/*highlight cell*/
+.sheet-table-rows:hover .sheet-table-cells:hover {
+	background: rgba(0, 146, 230, 1);
 }
-.sheet-table-rows:hover .sheet-table-cells {
-	background: rgba(204, 204, 204, 0.6);
+/*highlight row*/
+.sheet-table-rows:hover .sheet-table-cells{
+	/*border-top: 2px solid red;
+	border-bottom: 2px solid red;*/
+	background: rgba(180, 180, 180, 0.6);
+}
+/*.cell-off {
+	background: rgb(245, 245, 245);
+}*/
+.cell-on {
+	background: rgb(10, 10, 10);
+}
+.cell-off-err {
+	background: rgb(253, 200, 0);
+}
+.cell-on-err {
+	background: rgb(181, 67, 0);
 }
 
-/* Player block */
+/* === Player block === */
 /* Buttons */
 #player-buttons-container {
 	width: fit-content;
@@ -385,6 +408,8 @@ sup {
 	background-image: linear-gradient(to bottom, lightgray, grey);
 	height: fit-content;
 	margin-top: 120px;
+	padding: 10px 0 0 0;
+	line-height: 0.9rem;
 }
 .foot p {
 	margin: 5px;

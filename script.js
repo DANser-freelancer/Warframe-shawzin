@@ -14,7 +14,7 @@ function FUNC_LIST() {
 	searchDatabase() - line 447
 	copyDatabase() - line 478
 	updateShawzinPic() - line 496
-	updateNoteSheet(noteLength) - line 501
+	generateNoteSheet(noteLength) - line 501
 	updateNoteCell(event) - line 537
 	setupTrack(event) - line 555
 	CustomError(message) - line 565
@@ -65,7 +65,6 @@ const findDoubleNoteRegex = /[a-z]+[+]+[a-z]+/i;
 const findTripleNoteRegex = /[a-z]+[+]+[a-z]+[+]+[a-z]+/i;
 const missingSeparatorRegex = /[0-9]+[a-z]+[0-9]+[a-z]+/i;
 let finalCode = [];
-let noteSheetArr = []; //2d array representation of the note sheet table
 let audioContext = '';
 let audioSamples = [];
 let showScaleClicks = 0;
@@ -156,8 +155,14 @@ window.onload = () => {
 	}
 	volumeOutput.value = `${volumeSlider.value}%`;
 	transposeNotes();
-	updateNoteSheet(1100);
+	sheetBinding.generateNoteSheet(1100);
 	updateShawzinPic();
+	(() => { //display last update date in local date format
+		const updateDisplay = document.getElementById('last-update');
+		let lastUpdateDate = new Date(Date.UTC(2023, 4, 12)); //y-m-d, months are 0 indexed
+		let displayedDate = lastUpdateDate.toLocaleString(undefined, {timezone: 'UTC'});
+		updateDisplay.innerText = displayedDate.slice(0,10);
+	})();
 };
 
 // Loads progress from local storage (if empty - save progress)
@@ -204,16 +209,21 @@ function progressClear(event) {
 }
 
 // Translates notes and timings from the main input field
-function translateNotes(e) {
+function translateNotes(event) {
 	finalCode.splice(0, 999999);
 	let notes;
-	if (e.target.id === translateBtn.id) {
+	if (event?.target?.id === translateBtn.id) {
 		notes = notesInput.value.split(',');
-	} else {
-		notes = noteSheetCollector();
+	} else if (event?.target?.id === translateSheetBtn.id) {
+		notes = sheetBinding.noteSheetCollector();
+	} else if (event?.id === 'sheetBinding') {
+		notes = sheetBinding.noteSheetCollector();
 	}
 	if (notes == null) {
+		WrongNote = true;
+		errorStyle;
 		alert(`Error: The field is empty.`);
+		return;
 	}
 	for (let i=0; i<notes.length; i++) {
 		notes[i] = notes[i].replace(/\s+/gi, '');
@@ -423,10 +433,18 @@ function changeScale(transposedLines) {
 }
 
 //Fetch database
-let database;
 async function fetchDatabase() {
 	const response = await fetch('database.json');
-	database = await response.json(); 
+	let database = await response.json();
+	database.sort((a,b) => { //strings can be compared for alphabetical order in js and will give a boolean, hwat?????
+		if (a.name.toLowerCase() < b.name.toLowerCase()) {
+			return -1;
+		}
+		if (a.name.toLowerCase() < b.name.toLowerCase()) {
+			return 1;
+		}
+		return 0;
+	});
 	for (let i=0; i<database.length; i++) {
 		//Calculates length of the song
 		let lastTimingLetters = database[i].code.slice(-2).split('');
@@ -511,103 +529,137 @@ function toggleShawzinModal() {
 	}
 }
 
+// Creates js-html binding
+class NoteTableBinding {
+	constructor(element) {
+		this.tableElement = element;
+		this.noteSheetArr = []; //2d array representation of the note sheet table
+		this.id = 'sheetBinding';
+	}
 
-// Generates interactable note sheet
-function updateNoteSheet(noteLength) {
-	noteSheetArr = [];
-	for (let y=0; y < 12; y++) {
-		let newTR = document.createElement('tr');
-		newTR.id = `tr-${y}`;
-		newTR.className = `sheet-table-rows`;
-		noteSheet.appendChild(newTR);
-		noteSheetArr.push([]);	
-		for (let x=0; x<noteLength; x++) {
-			let newTD = document.createElement('td');
-			newTD.id = `td-${x}-tr-${y}`;
-			newTD.className = `sheet-table-cells`;
-			let div = document.createElement('div'); //insert into cells for better control over size and content
-			div.style.width = "30px";
-			div.style.height = "35px";
-			div.style.color = "#CB23DE";
-			div.style.overflow = "visible";
-			div.style.whiteSpace = "nowrap";
-			div.style.display = "flex";
-			div.style.flexDirection = "row-reverse";
-			div.style.alignItems = "flex-end";
-			if (x !== 0) {
-				newTD.addEventListener('click', updateNoteCell);
-				noteSheetArr[y].push(0);
-				div.style.fontSize = "22px";
-				div.style.fontWeight = "bold";
-			}
-			if (x%16 === 0) {
-				newTD.style.borderRight = "3px solid rgb(178, 51, 3)";
-				if (y === 11) {
-					div.innerText = `${x}`;
+	// Generates interactable note sheet
+	generateNoteSheet(noteLength) {
+		this.noteSheetArr.length = 0; // clear array
+		for (let y=0; y < 12; y++) {
+			let newTR = document.createElement('tr');
+			newTR.id = `tr-${y}`;
+			newTR.className = `sheet-table-rows`;
+			this.tableElement.appendChild(newTR);
+			this.noteSheetArr.push([]);	
+			for (let x=0; x<noteLength; x++) {
+				let newTD = document.createElement('td');
+				newTD.id = `td-${x}-tr-${y}`;
+				newTD.className = `sheet-table-cells`;
+				let div = document.createElement('div'); //insert into cells for better control over size and content
+				div.style.width = "30px";
+				div.style.height = "35px";
+				div.style.color = "#CB23DE";
+				div.style.overflow = "visible";
+				div.style.whiteSpace = "nowrap";
+				div.style.display = "flex";
+				div.style.flexDirection = "row-reverse";
+				div.style.alignItems = "flex-end";
+				div.style.padding = "0 2px 4px 2px";
+				if (x !== 0) {
+					newTD.addEventListener('click', this.updateNoteCell.bind(this));// overwrite 'this' to be the class and not the source of the event.
+					this.noteSheetArr[y].push(0);
+					div.style.fontSize = "22px";
+					div.style.fontWeight = "bold";
 				}
-			} else if (x%8 === 0) {
-				newTD.style.borderRight = "2px solid rgb(255, 95, 35)";
-				if (y === 11) {
-					div.innerText = `${x}`;
+				if (x%16 === 0) {
+					newTD.style.borderRight = "3px solid rgb(178, 51, 3)";
+					if (y === 11) {
+						div.innerText = `${x}`;
+					}
+				} else if (x%8 === 0) {
+					newTD.style.borderRight = "2px solid rgb(255, 95, 35)";
+					if (y === 11) {
+						div.innerText = `${x}`;
+					}
+				} else if (x%4 === 0) {
+					newTD.style.borderRight = "1px solid rgb(25, 0, 103)"
+					if (y === 11) {
+						div.innerText = `${x}`;
+					}
 				}
-			} else if (x%4 === 0) {
-				newTD.style.borderRight = "1px solid rgb(25, 0, 103)"
-				if (y === 11) {
-					div.innerText = `${x}`;
+				if (x === 0) {
+					div.innerText = `${notesAudioNames[y]}`;
+					div.style.flexDirection = "row";
+					div.style.alignItems = "center";
+					div.style.justifyContent = "center";
+					div.style.color = "red";
+					div.style.fontSize = "25px";
+					div.style.fontFamily = "Arial";
+					div.style.textAlign = "center";
+					div.style.fontWeight = "bold";
+				}
+				newTD.appendChild(div);
+				newTR.appendChild(newTD);
+			}
+		}
+	}
+
+	// Collects notes from note sheet
+	noteSheetCollector() {
+		let returnedNotes = [];
+		for (let x=0; x<this.noteSheetArr[0].length; x++) { //loop for columns to be played
+			let activeNotes = []; 
+			for (let y=0; y<this.noteSheetArr.length; y++) { //loop for rows to be played
+				if (this.noteSheetArr[y][x] === 1) {
+					activeNotes.push(`${notesAudioNames[y]}`);
 				}
 			}
-			if (x === 0) {
-				div.innerText = `${notesAudioNames[y]}`;
-				div.style.flexDirection = "row";
-				div.style.alignItems = "center";
-				div.style.justifyContent = "center";
-				div.style.color = "red";
-				div.style.fontSize = "25px";
-				div.style.fontFamily = "Arial";
-				div.style.textAlign = "center";
-				div.style.fontWeight = "bold";
+			if (activeNotes.length>=1) { //connect notes by "+" if we have more than one 
+				let finalNotes = `${x+1}${activeNotes.join('+')}`;//add correct timing number
+				returnedNotes.push(finalNotes);//{timing}{note/s and +},{timing}{note/s and +}......
+			}	
+		}
+		return returnedNotes;
+	}
+
+	// Updates note sheet cells
+	updateNoteCell(event) {
+		let cell = event.currentTarget;
+		let div = cell.children[0];
+		let cellY = cell.id.match(/(?<=tr-)\d+/i)[0];
+		let cellX = cell.id.match(/(?<=td-)\d+/i)[0]-1;
+		if (this.noteSheetArr[cellY][cellX] !== 1) {
+			//Note ON
+			div.classList.remove(...['cell-on-err', 'cell-off-err']);
+			div.classList.add('cell-on');
+			this.noteSheetArr[cellY][cellX] = 1;
+			div.innerText = div.innerText.replace('⚠️', '');
+		} else {
+			//Note OFF
+			div.classList.remove(...['cell-on', 'cell-on-err', 'cell-off-err']);
+			this.noteSheetArr[cellY][cellX] = 0;
+			div.innerText = div.innerText.replace('⚠️', '');
+		}
+		translateNotes(this);
+		this.errorCell(div, {y: cellY, x: cellX});
+	}
+
+	// Make cell display an error 
+	errorCell(div, coords) {
+		if (WrongNote) {
+			if (this.noteSheetArr[coords.y][coords.x] === 0) {
+				//Note OFF err
+				div.classList.remove(...['cell-on-err', 'cell-on']);
+				div.classList.add('cell-off-err');
+			} else {
+				//Note ON err
+				div.classList.remove(...['cell-off-err', 'cell-on']);
+				div.classList.add('cell-on-err');
 			}
-			newTD.appendChild(div);
-			newTR.appendChild(newTD);
+			if (!div.innerText.includes('⚠️')) {
+				div.innerText = `${div.innerText}⚠️`;
+			}
 		}
 	}
 }
+const sheetBinding = new NoteTableBinding(noteSheet);
 
-// Collects notes from note sheet
-function noteSheetCollector() {//needs more work
-	let returnedNotes = [];
-	for (let x=0; x<noteSheetArr[0].length; x++) { //loop for columns to be played
-		let activeNotes = []; 
-		for (let y=0; y<noteSheetArr.length; y++) { //loop for rows to be played
-			if (noteSheetArr[y][x] === 1) {
-				activeNotes.push(`${notesAudioNames[y]}`);
-			}
-		}
-		if (activeNotes.length>=1) { //connect notes by "+" if we have more than one 
-			let finalNotes = `${x+1}${activeNotes.join('+')}`;//add correct timing number
-			returnedNotes.push(finalNotes);//{timing}{note/s and +},{timing}{note/s and +}......
-		}	
-	}
-	return returnedNotes;
-}
-
-// Updates note sheet cells
-function updateNoteCell(event) {
-	let cell = event.currentTarget;
-	let cellY = cell.id.match(/(?<=tr-)\d+/i)[0];
-	let cellX = cell.id.match(/(?<=td-)\d+/i)[0]-1; 
-	if (cell.style.background != "rgb(10, 10, 10)") {
-		//Note ON
-		cell.style.background = "rgb(10, 10, 10)";
-		noteSheetArr[cellY][cellX] = 1;
-	} else {
-		//Note OFF
-		cell.style.background = "revert-layer";
-		noteSheetArr[cellY][cellX] = 0;
-	}
-}
-
-// Sets up the note sheets
+// Sets up the track
 async function setupTrack(event, speed = 62.5) {
 	if (slowModeToggle.checked) {
 		speed = 125;
@@ -632,11 +684,11 @@ async function setupTrack(event, speed = 62.5) {
 				console.log(`Something went wrong: ${err}`);
 			}
 		}
-		for (let x=0; x<noteSheetArr[0].length; x++) { //loop for columns to be played
+		for (let x=0; x<sheetBinding.noteSheetArr[0].length; x++) { //loop for columns to be played
 			let activeNotes = []; 
-			for (let y=0; y<noteSheetArr.length; y++) { //loop for rows to be played
-				if (noteSheetArr[y][x] === 1) {
-					console.log(audioSamples[y]);
+			for (let y=0; y<sheetBinding.noteSheetArr.length; y++) { //loop for rows to be played
+				if (sheetBinding.noteSheetArr[y][x] === 1) {
+					//console.log(audioSamples[y]);
 					activeNotes.push(audioSamples[y]);
 				}
 			}
