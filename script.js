@@ -107,11 +107,13 @@ const linesForTransposition =
 	'-1#', '=#', '1#', '=#', '2🎼', '=#', '3#', '=#', '4#', '=#', '5#', '=#'
 ];
 Object.freeze(linesForTransposition); 
-const audioSamplePaths = 
+const octaveNotes = 
 [
 	'A.ogg','B.ogg','C.ogg','D.ogg','E.ogg','F.ogg','G.ogg','H.ogg','I.ogg','J.ogg','K.ogg','L.ogg'
 ];
-Object.freeze(audioSamplePaths);
+Object.freeze(octaveNotes);
+const octavesShawzin = [];
+Object.freeze(octavesShawzin);
 
 // Event listeners
 translateBtn.addEventListener('click', translateNotes);
@@ -159,7 +161,7 @@ window.onload = () => {
 	updateShawzinPic();
 	(() => { //display last update date in local date format
 		const updateDisplay = document.getElementById('last-update');
-		let lastUpdateDate = new Date(Date.UTC(2023, 4, 12)); //y-m-d, months are 0 indexed
+		let lastUpdateDate = new Date(Date.UTC(2023, 5, 30)); //y-m-d, months are 0 indexed
 		let displayedDate = lastUpdateDate.toLocaleString(undefined, {timezone: 'UTC'});
 		updateDisplay.innerText = displayedDate.slice(0,10);
 	})();
@@ -432,10 +434,11 @@ function changeScale(transposedLines) {
 	${transposedLines[0]}---(A)--------------------------------------------------`;
 }
 
+let database;//has to be global because it's spread between 3 functions
 //Fetch database
 async function fetchDatabase() {
 	const response = await fetch('database.json');
-	let database = await response.json();
+	database = await response.json();
 	database.sort((a,b) => { //strings can be compared for alphabetical order in js and will give a boolean, hwat?????
 		if (a.name.toLowerCase() < b.name.toLowerCase()) {
 			return -1;
@@ -618,7 +621,7 @@ class NoteTableBinding {
 	}
 
 	// Updates note sheet cells
-	updateNoteCell(event) {
+	updateNoteCell(event) { 
 		let cell = event.currentTarget;
 		let div = cell.children[0];
 		let cellY = cell.id.match(/(?<=tr-)\d+/i)[0];
@@ -677,7 +680,7 @@ async function setupTrack(event, speed = 62.5) {
 		}
 		if (!WasSampled) {
 			try {
-				audioSamples = await setupAudioSamples(audioSamplePaths);
+				audioSamples = await setupAudioSamples(octaveNotes);
 				console.log(`%cAudio samples were loaded.`, 'color:gold')
 				WasSampled = true;
 			} catch(err) {
@@ -709,11 +712,18 @@ async function getAudio(filePath) {
 }
 
 // Handle audio files
-async function setupAudioSamples(paths) {
+async function setupAudioSamples(notes) {
 	let audioBuffers = [];
 	let selectedScale = scaleSelector.options[scaleSelector.selectedIndex].text.split(' ');
-	for (let i=0; i<paths.length; i++) {
-		let sample = await getAudio(`audio/${shawzinsSelect.value}/${selectedScale[0]}/${selectedScale[0]}${paths[i]}`);
+	// map selected shawzin to file names array
+	let turnedArr = Array.apply(null, shawzinsSelect.options);
+	let shawzinArray = [];
+	for (let i=0; i<turnedArr.length; i++) {
+		shawzinArray.push(turnedArr[i].value);
+	}						
+	console.log(shawzinArray.indexOf(shawzinsSelect.value));
+	for (let i=0; i<notes.length; i++) {			//what shawzin 												//what note (octave)
+		let sample = await getAudio(`audio/Octaves/${octavesShawzin[shawzinArray.indexOf(shawzinsSelect.value)]}${notes[Number(scaleSelector.value)][i]}.ogg`);
 		audioBuffers.push(sample);
 	}
 	return audioBuffers;
