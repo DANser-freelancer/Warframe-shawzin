@@ -109,10 +109,12 @@ const linesForTransposition =
 Object.freeze(linesForTransposition); 
 const octaveNotes = 
 [
-	'A.ogg','B.ogg','C.ogg','D.ogg','E.ogg','F.ogg','G.ogg','H.ogg','I.ogg','J.ogg','K.ogg','L.ogg'
+	['OctThreeDSharp', 'OctThreeC', 'OctTwoASharp', 'OctTwoG', 'OctTwoF', 'OctTwoDSharp', 'OctTwoC', 'OctOneASharp', 'OctOneG', 'OctOneF', 'OctOneDSharp', 'OctOneC']
 ];
 Object.freeze(octaveNotes);
-const octavesShawzin = [];
+const octavesShawzin = [// leave empty string for vanila shawzin, it doesn't have a name
+	'Zariman','Corbu','Narmer','Lotus','Sentient','ZarimanVoid','Prime',''
+];
 Object.freeze(octavesShawzin);
 
 // Event listeners
@@ -161,7 +163,7 @@ window.onload = () => {
 	updateShawzinPic();
 	(() => { //display last update date in local date format
 		const updateDisplay = document.getElementById('last-update');
-		let lastUpdateDate = new Date(Date.UTC(2023, 5, 30)); //y-m-d, months are 0 indexed
+		let lastUpdateDate = new Date(Date.UTC(2023, 7, 13)); //y-m-d, months are 0 indexed
 		let displayedDate = lastUpdateDate.toLocaleString(undefined, {timezone: 'UTC'});
 		updateDisplay.innerText = displayedDate.slice(0,10);
 	})();
@@ -715,18 +717,12 @@ async function getAudio(filePath) {
 async function setupAudioSamples(notes) {
 	let audioBuffers = [];
 	let selectedScale = scaleSelector.options[scaleSelector.selectedIndex].text.split(' ');
-	// map selected shawzin to file names array
-	let turnedArr = Array.apply(null, shawzinsSelect.options);
-	let shawzinArray = [];
-	for (let i=0; i<turnedArr.length; i++) {
-		shawzinArray.push(turnedArr[i].value);
-	}						
-	console.log(shawzinArray.indexOf(shawzinsSelect.value));
-	for (let i=0; i<notes.length; i++) {			//what shawzin 												//what note (octave)
-		let sample = await getAudio(`audio/Octaves/${octavesShawzin[shawzinArray.indexOf(shawzinsSelect.value)]}${notes[Number(scaleSelector.value)][i]}.ogg`);
+	for (let i=0; i<notes[0].length; i++) {			//what shawzin 												//what note (octave)
+		let sample = await getAudio(`audio/Octaves/${octavesShawzin[shawzinsSelect.selectedIndex]}Shawzin${notes[scaleSelector.selectedIndex][i]}.ogg`);
 		audioBuffers.push(sample);
 	}
 	return audioBuffers;
+	//it works but kinda not because there are actually 28 notes, OctOnex12 OctTwox12 OctThreex4.
 }
 
 // Play columns of notes
