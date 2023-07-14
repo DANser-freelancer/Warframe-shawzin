@@ -1,28 +1,5 @@
 // Dev tools
-function FUNC_LIST() {
-	let list = `
-	Onloads - line 92
-	translateNotes() - line 105
-	convertTiming(timing, position) - line 148
-	convertNote(note, position) - line 290
-	errorStyle() - line 325
-	copyCode() - line 341
-	transposeNotes() - line 349
-	showScale() - line 389
-	changeScale(transposedLines) - line 407
-	fetchDatabase() - line 425 *async
-	searchDatabase() - line 447
-	copyDatabase() - line 478
-	updateShawzinPic() - line 496
-	generateNoteSheet(noteLength) - line 501
-	updateNoteCell(event) - line 537
-	setupTrack(event) - line 555
-	CustomError(message) - line 565
-	`;
-	console.log(list);
-}
 
-window.FUNC_LIST = FUNC_LIST; //Makes it accessible through console.
 window.CHECKBOX_CONTROL = () => {
 	console.log(`${localStorage.getItem(slowModeToggle.id)} and ${slowModeToggle.checked}`);
 	slowModeToggle.click();
@@ -47,6 +24,8 @@ const databaseSearchBar = document.getElementById('database-search-bar');
 const noteSheet = document.getElementById('note-sheet');
 const noteSheetHeader = document.getElementById('sheet-header-table');
 const playerPlayBtn = document.getElementById('player-Play-button');
+const playerLeftBtn = document.getElementById('player-Left-button');
+const playerRightBtn = document.getElementById('player-Right-button');
 const shawzinsSelect = document.getElementById('shawzins-select');
 const shawzinPic = document.getElementById('shawzin-pic');
 const shawzinPicModal = document.getElementById('shawzin-pic-modal');
@@ -109,11 +88,19 @@ const linesForTransposition =
 Object.freeze(linesForTransposition); 
 const octaveNotes = 
 [
-	['OctThreeDSharp', 'OctThreeC', 'OctTwoASharp', 'OctTwoG', 'OctTwoF', 'OctTwoDSharp', 'OctTwoC', 'OctOneASharp', 'OctOneG', 'OctOneF', 'OctOneDSharp', 'OctOneC']
+	['ThreeDSharp','ThreeC','TwoASharp','TwoG','TwoF','TwoDSharp','TwoC','OneASharp','OneG','OneF','OneDSharp','OneC'],
+	['ThreeD','ThreeC','TwoA','TwoG','TwoE','TwoD','TwoC','OneA','OneG','OneE','OneD','OneC'],
+	['OneB','OneASharp','OneA','OneGSharp','OneG','OneFSharp','OneF','OneE','OneDSharp','OneD','OneCSharp','OneC'],
+	['TwoASharp','TwoG','TwoFSharp','TwoF','TwoDSharp','TwoC','OneASharp','OneG','OneFSharp','OneF','OneDSharp','OneC'],
+	['TwoG','TwoF','TwoE','TwoD','TwoC','OneB','OneA','OneG','OneF','OneE','OneD','OneC'],
+	['TwoG','TwoF','TwoDSharp','TwoD','TwoC','OneASharp','OneGSharp','OneG','OneF','OneDSharp','OneD','OneC'],
+	['ThreeCSharp','ThreeC','TwoA','TwoFSharp','TwoF','TwoCSharp','TwoC','OneASharp','OneFSharp','OneF','OneCSharp','OneC'],
+	['TwoG','TwoF','TwoE','TwoCSharp','TwoC','OneASharp','OneGSharp','OneG','OneF','OneE','OneCSharp','OneC'],
+	['ThreeDSharp','ThreeCSharp','TwoASharp','TwoGSharp','TwoFSharp','TwoDSharp','TwoCSharp','OneASharp','OneGSharp','OneFSharp','OneDSharp','OneCSharp']
 ];
 Object.freeze(octaveNotes);
 const octavesShawzin = [// leave empty string for vanila shawzin, it doesn't have a name
-	'Zariman','Corbu','Narmer','Lotus','Sentient','ZarimanVoid','Prime',''
+	'Zariman','Grineer','Narmer','Lotus','Sentient','ZarimanVoid','Prime',''
 ];
 Object.freeze(octavesShawzin);
 
@@ -129,6 +116,8 @@ transpositionIndex.addEventListener('click', transposeNotes);
 databaseSearchBar.addEventListener('click', searchDatabase);
 databaseSearchBar.addEventListener('keyup', searchDatabase);
 playerPlayBtn.addEventListener('click', setupTrack);
+playerRightBtn.addEventListener('click', () => { stateOfPlay.startingTime<=4091 ? stateOfPlay.startingTime+=5 : stateOfPlay.startingTime+=stateOfPlay.startingTime });
+playerLeftBtn.addEventListener('click', () => { stateOfPlay.startingTime>=5 ? stateOfPlay.startingTime-=5 : stateOfPlay.startingTime-=stateOfPlay.startingTime });
 scaleSelector.addEventListener('click', () => { WasSampled = false });
 shawzinsSelect.addEventListener('click', updateShawzinPic);
 shawzinsSelect.addEventListener('click', () => { WasSampled = false });
@@ -159,14 +148,14 @@ window.onload = () => {
 	}
 	volumeOutput.value = `${volumeSlider.value}%`;
 	transposeNotes();
-	sheetBinding.generateNoteSheet(1100);
+	sheetBinding.generateNoteSheet(4097); //+1 for the note lables
 	updateShawzinPic();
 	(() => { //display last update date in local date format
 		const updateDisplay = document.getElementById('last-update');
-		let lastUpdateDate = new Date(Date.UTC(2023, 7, 13)); //y-m-d, months are 0 indexed
+		let lastUpdateDate = new Date(Date.UTC(2023, 6, 11)); //y-m-d, months are 0 indexed
 		let displayedDate = lastUpdateDate.toLocaleString(undefined, {timezone: 'UTC'});
 		updateDisplay.innerText = displayedDate.slice(0,10);
-	})();
+	});
 };
 
 // Loads progress from local storage (if empty - save progress)
@@ -556,7 +545,7 @@ class NoteTableBinding {
 				newTD.id = `td-${x}-tr-${y}`;
 				newTD.className = `sheet-table-cells`;
 				let div = document.createElement('div'); //insert into cells for better control over size and content
-				div.style.width = "30px";
+				/*div.style.width = "30px";
 				div.style.height = "35px";
 				div.style.color = "#CB23DE";
 				div.style.overflow = "visible";
@@ -564,7 +553,8 @@ class NoteTableBinding {
 				div.style.display = "flex";
 				div.style.flexDirection = "row-reverse";
 				div.style.alignItems = "flex-end";
-				div.style.padding = "0 2px 4px 2px";
+				div.style.padding = "0 2px 4px 2px";*/
+				div.classList.add('cell-divs-basic');
 				if (x !== 0) {
 					newTD.addEventListener('click', this.updateNoteCell.bind(this));// overwrite 'this' to be the class and not the source of the event.
 					this.noteSheetArr[y].push(0);
@@ -615,8 +605,8 @@ class NoteTableBinding {
 				}
 			}
 			if (activeNotes.length>=1) { //connect notes by "+" if we have more than one 
-				let finalNotes = `${x+1}${activeNotes.join('+')}`;//add correct timing number
-				returnedNotes.push(finalNotes);//{timing}{note/s and +},{timing}{note/s and +}......
+				let finalNotes = `${x+1}${activeNotes.join('+')}`; //add correct timing number
+				returnedNotes.push(finalNotes); //{timing}{note/s and +},{timing}{note/s and +}......
 			}	
 		}
 		return returnedNotes;
@@ -665,12 +655,17 @@ class NoteTableBinding {
 const sheetBinding = new NoteTableBinding(noteSheet);
 
 // Sets up the track
-async function setupTrack(event, speed = 62.5) {
+const stateOfPlay = {
+	continuePlaying: true,
+	startingTime: 0
+}  
+async function setupTrack(event, speed = 62.5, time = stateOfPlay.startingTime) {
 	if (slowModeToggle.checked) {
 		speed = 125;
 	}
 	if (event.target.src.includes(`images/player-buttons-play.png`)) {
 		event.target.src = `images/player-buttons-pause.png`;
+		stateOfPlay.continuePlaying = true;
 		if (!WasSetup) {
 			try {
 				audioContext = new AudioContext();
@@ -689,19 +684,30 @@ async function setupTrack(event, speed = 62.5) {
 				console.log(`Something went wrong: ${err}`);
 			}
 		}
-		for (let x=0; x<sheetBinding.noteSheetArr[0].length; x++) { //loop for columns to be played
+		for (let x=0||time; x<sheetBinding.noteSheetArr[0].length; x++) { //loop for columns to be played
 			let activeNotes = []; 
 			for (let y=0; y<sheetBinding.noteSheetArr.length; y++) { //loop for rows to be played
 				if (sheetBinding.noteSheetArr[y][x] === 1) {
 					//console.log(audioSamples[y]);
 					activeNotes.push(audioSamples[y]);
 				}
+				let currentCell = document.getElementById(`td-${x}-tr-${y}`);
+				currentCell.classList.add('cell-playing');
+				if (x>0) {
+					let previousCell = document.getElementById(`td-${x-1}-tr-${y}`);
+					previousCell.classList.remove('cell-playing');
+				}
 			}
 			await Delay(speed); //16 notes(columns) per second max
 			playTrack(activeNotes);
+			if (stateOfPlay.continuePlaying == false) {
+				stateOfPlay.startingTime = x;
+				return
+			}
 		}
 	} else {
 		event.target.src = `images/player-buttons-play.png`;
+		stateOfPlay.continuePlaying = false;
 	}
 }
 
@@ -718,11 +724,10 @@ async function setupAudioSamples(notes) {
 	let audioBuffers = [];
 	let selectedScale = scaleSelector.options[scaleSelector.selectedIndex].text.split(' ');
 	for (let i=0; i<notes[0].length; i++) {			//what shawzin 												//what note (octave)
-		let sample = await getAudio(`audio/Octaves/${octavesShawzin[shawzinsSelect.selectedIndex]}Shawzin${notes[scaleSelector.selectedIndex][i]}.ogg`);
+		let sample = await getAudio(`audio/Octaves/${octavesShawzin[shawzinsSelect.selectedIndex]}ShawzinOct${notes[scaleSelector.selectedIndex][i]}.ogg`);
 		audioBuffers.push(sample);
 	}
 	return audioBuffers;
-	//it works but kinda not because there are actually 28 notes, OctOnex12 OctTwox12 OctThreex4.
 }
 
 // Play columns of notes
