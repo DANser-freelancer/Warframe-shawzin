@@ -1,0 +1,19 @@
+[
+	{
+		"title":"Update 0.2.0",
+		"date":"2023,6,24", 
+		"description": ["Added the 'Patchnotes' section", "Made minor upgrade to the 'Interactable note sheet'"], 
+		"subdescription": {
+			"0": ["You will be able to see changes across versions.","Update dates will be displayed in your local date format."]
+		}		
+	},
+	{
+		"title":"Update 0.1.0",
+		"date":"2023,6,14",
+		"description": ["Released version 0.1.0","Made 'Interactable note sheet' fully functional","Revised the rules and some styling"],
+		"subdescription": {
+			"1": ["The rest of shawzins will be available in the future versions.","Added a playhead and skip buttons."],
+			"2": ["Added some note clarifications.", "Added info on 'Interactable note sheet'."]
+		}
+	}
+]

@@ -18,12 +18,11 @@
 <body>
 <article class="body">
 	<!-- Description and rules -->
-	<div name="body-div">
 	<a href="https://discord.gg/VyjFwKn8AY"><img src="images/AristeiShawzinIcon.png" id="big-favicon" alt="Shawzin icon" title="Made by DANser-freelancer, click to check out discord server 'Warframe Musicians'" target="_blank"/></a>
 	<h1>Shawzin music compiler</h1>
 	<p>Hi, this app will translate musical notes into shawzin code that you can copy&paste to play your favourite shawzin.<br>
 	<p>Made by <code>DANser-freelancer (github), danser.3_3 (discord).</code></p>
-	<h3>Rules:</h3>
+	<h3>Rules/Tips:</h3>
 	<ul id='rules'>
 		<li>
 			Shawzin has a concrete set of notes for each scale, you cannot transition over to the other scale mid-play as you would do with a piano for example.
@@ -85,10 +84,13 @@
 			</ul> 
 		</li>
 		<li>
-			You can add notes to the "Interactable note sheet" by clicking on cells, the small numbers below represent the timeline order of notes (4096 max). You are able to make and copy a functional shawzin code using this tool. The left and right skip buttons will skip 5 notes (columns) per click, forwards or backwards.
+			You can add notes to the "Interactable note sheet" by clicking on cells, the small numbers below represent the timeline order of notes (4096 max). You are able to make and copy a functional shawzin code using this tool. The left and right skip buttons will skip 4 notes (columns) per click, forwards or backwards.
 		</li>
 		<li>
 			The "Interactable note sheet" <b>doesn't</b> get saved, so if you close or refresh the page your notes will be gone.
+		</li>
+		<li>
+			If something is broken or the version of this app changed you should refresh the page without cache, press Ctrl+F5.
 		</li>
 		<li>
 			Click on the logo (top of the page) to join discord server for Warframe musical stuff.
@@ -193,12 +195,19 @@
 			</div>
 		</div>
 	</div>
-	</div>
 </article>
+<!-- Patch notes -->
+<details id="patch-notes-board">
+	<summary>Patch notes</summary>
+	<div id="patch-notes-container">
+		<ol><!-- populated by javascript -->
+		</ol>
+	</div>
+</details>
 <!-- Credits section -->
 <footer>
 	<div class="foot">
-		<p>Version: <code id="last-update">0.1.0</code></p>
+		<p>Version: <code id="last-update"></code></p>
 		<p>Some of my own research, with more <a href="https://docs.google.com/spreadsheets/d/1Zd0L6b1W8ic7s9b8DKJHDBNRB-Z0tdwQEhvQl6axFCU/edit?usp=sharing" target="_blank">keys</a>.</p>
 		<p>Credit to everybody here for gathering <a href="https://docs.google.com/document/d/1VvlM4IQr8bfUV8pCJMVNRaG6piJTR9_t-xq7wQaxpho/edit" target="_blank">info</a>!</p>
 		<p>Do you wish to report a <a href="https://github.com/DANser-freelancer/Warframe-shawzin/issues/new" target="_blank">bug</a> or give some <a href="https://github.com/DANser-freelancer/Warframe-shawzin/issues/1" target="_blank">feedback</a>?</p>

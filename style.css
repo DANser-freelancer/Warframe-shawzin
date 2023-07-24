@@ -115,6 +115,26 @@ code {
 	border: 1px solid black;
 	padding: 1px 6px 1px 6px;
 }
+details {
+	font-family: 'Montserrat', sans-serif, 'PT Serif', serif;
+	font-size: 1.2rem;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    padding: 0.5em 0.5em 0;
+}
+summary {
+	font-size: 1.5rem;
+    font-weight: bold;
+    margin: -0.5em -0.5em 0;
+    padding: 0.5em;
+}
+details[open] {
+    padding: 0.5em;
+}
+details[open] summary {
+    border-bottom: 1px solid #aaa;
+    margin-bottom: 0.5em;
+}
 ::-webkit-resizer {
 	background-color: blueviolet;
 }
@@ -433,6 +453,46 @@ code {
   }
 }
 
+/*Patch notes*/
+#patch-notes-board {
+	background-image: url("images/patchnotes.jpg");
+	background-size: cover;
+	background-repeat: no-repeat;
+	min-width: 1000px;
+	height: fit-content;
+	margin: 100px 0 0 0;
+}
+#patch-notes-board[open] {
+	width: auto;
+	height: fit-content;
+	min-width: 1000px;
+	padding: 20px;
+}
+#patch-notes-board > summary {
+	max-width: fit-content;
+	background-image: radial-gradient(circle at center, rgba(127, 127, 127, 0.8) 0%, rgba(127, 127, 127, 0.2) 100%);
+	background-clip: padding-box;
+	background-repeat: no-repeat;
+	border-radius: 100%;
+	cursor: zoom-in;
+	margin-top: 0.5px;
+}	
+#patch-notes-container {
+	overflow: scroll;
+	overflow-x: hidden;
+	max-height: 20rem;
+	padding: 1rem 2rem;
+	margin: 1rem 2rem;
+	background-image: linear-gradient(to right, rgba(0, 131, 131, 0.9) 0%, rgba(0, 131, 131, 0.1) 100%);
+	background-size: cover;
+	background-repeat: no-repeat;
+	box-shadow: 0 0 20px 10px rgb(0, 131, 131);
+}
+#patch-notes-container > ul:first-of-type {
+	margin: 0;
+	padding: 1.5rem;
+}
+
 /*Footer wit credit to people*/
 .foot {
 	position: sticky;
@@ -444,15 +504,15 @@ code {
 	color: black;
 	background-image: linear-gradient(to bottom, lightgray, grey);
 	height: fit-content;
-	margin-top: 120px;
+	margin-top: 40px;
 	padding: 10px 0 0 0;
 	line-height: 0.9rem;
 }
-.foot p {
+.foot > p {
 	margin: 5px;
 	font-size: 18px;
 }
-.foot a {
+.foot > a {
 	font-size: 18px;
 	margin: 5px;
 }

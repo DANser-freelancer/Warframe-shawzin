@@ -116,8 +116,8 @@ transpositionIndex.addEventListener('click', transposeNotes);
 databaseSearchBar.addEventListener('click', searchDatabase);
 databaseSearchBar.addEventListener('keyup', searchDatabase);
 playerPlayBtn.addEventListener('click', setupTrack);
-playerRightBtn.addEventListener('click', () => { stateOfPlay.startingTime<=4091 ? stateOfPlay.startingTime+=5 : stateOfPlay.startingTime+=stateOfPlay.startingTime });
-playerLeftBtn.addEventListener('click', () => { stateOfPlay.startingTime>=5 ? stateOfPlay.startingTime-=5 : stateOfPlay.startingTime-=stateOfPlay.startingTime });
+playerRightBtn.addEventListener('click', skipNotes);
+playerLeftBtn.addEventListener('click', skipNotes);
 scaleSelector.addEventListener('click', () => { WasSampled = false });
 shawzinsSelect.addEventListener('click', updateShawzinPic);
 shawzinsSelect.addEventListener('click', () => { WasSampled = false });
@@ -150,12 +150,7 @@ window.onload = () => {
 	transposeNotes();
 	sheetBinding.generateNoteSheet(4097); //+1 for the note lables
 	updateShawzinPic();
-	(() => { //display last update date in local date format
-		const updateDisplay = document.getElementById('last-update');
-		let lastUpdateDate = new Date(Date.UTC(2023, 6, 11)); //y-m-d, months are 0 indexed
-		let displayedDate = lastUpdateDate.toLocaleString(undefined, {timezone: 'UTC'});
-		updateDisplay.innerText = displayedDate.slice(0,10);
-	});
+	versionControl();
 };
 
 // Loads progress from local storage (if empty - save progress)
@@ -529,6 +524,8 @@ class NoteTableBinding {
 		this.tableElement = element;
 		this.noteSheetArr = []; //2d array representation of the note sheet table
 		this.id = 'sheetBinding';
+		this.continuePlaying = true;
+		this.startingTime = 0;
 	}
 
 	// Generates interactable note sheet
@@ -654,18 +651,33 @@ class NoteTableBinding {
 }
 const sheetBinding = new NoteTableBinding(noteSheet);
 
+// Deals with forward/backward skip buttons  
+function skipNotes(event, time = sheetBinding.startingTime) {
+	let x=0||time;
+	for (let y=0; y<sheetBinding.noteSheetArr.length; y++) { //loop for rows to be cleared
+		let currentCell = document.getElementById(`td-${x}-tr-${y}`);
+		currentCell.classList.remove('cell-playing');
+	}
+	if (event.currentTarget.id == 'player-Right-button') {
+		sheetBinding.startingTime<=4092 ? sheetBinding.startingTime+=4 : sheetBinding.startingTime+=sheetBinding.startingTime;
+	} else {
+		sheetBinding.startingTime>=4 ? sheetBinding.startingTime-=4 : sheetBinding.startingTime-=sheetBinding.startingTime;
+	}
+	x = sheetBinding.startingTime;
+	for (let y=0; y<sheetBinding.noteSheetArr.length; y++) { //loop for rows to be colored
+		let currentCell = document.getElementById(`td-${x}-tr-${y}`);
+		currentCell.classList.add('cell-playing');
+	}
+}
+
 // Sets up the track
-const stateOfPlay = {
-	continuePlaying: true,
-	startingTime: 0
-}  
-async function setupTrack(event, speed = 62.5, time = stateOfPlay.startingTime) {
+async function setupTrack(event, speed = 62.5, time = sheetBinding.startingTime) {
 	if (slowModeToggle.checked) {
 		speed = 125;
 	}
 	if (event.target.src.includes(`images/player-buttons-play.png`)) {
 		event.target.src = `images/player-buttons-pause.png`;
-		stateOfPlay.continuePlaying = true;
+		sheetBinding.continuePlaying = true;
 		if (!WasSetup) {
 			try {
 				audioContext = new AudioContext();
@@ -700,14 +712,14 @@ async function setupTrack(event, speed = 62.5, time = stateOfPlay.startingTime) 
 			}
 			await Delay(speed); //16 notes(columns) per second max
 			playTrack(activeNotes);
-			if (stateOfPlay.continuePlaying == false) {
-				stateOfPlay.startingTime = x;
+			if (sheetBinding.continuePlaying == false) {
+				sheetBinding.startingTime = x;
 				return
 			}
 		}
 	} else {
 		event.target.src = `images/player-buttons-play.png`;
-		stateOfPlay.continuePlaying = false;
+		sheetBinding.continuePlaying = false;
 	}
 }
 
@@ -748,6 +760,56 @@ async function playTrack(audioBufferArr, time = 0) {
 	for (let i=0; i<samplesArr.length; i++) { //samples being played
 		samplesArr[i].start(time);
 	}
+}
+
+// Version control
+async function versionControl() {
+ 	const containerList = document.querySelector('#patch-notes-container > ol');
+ 	const response = await fetch('patchnotes.json');
+	const patchnotes = await response.json();
+	for (let i=0; i<patchnotes.length; i++) {
+		let onion = { //complicated nesting
+			layer1: document.createElement('li'), 
+			layer2: document.createElement('span'),
+			layer3: document.createElement('ul'),
+			get layers() {
+				this.layer2.innerHTML = `<h3 style="display: inline-block">${patchnotes[i].title}</h3> <code style="display: inline-block">${digestDate(patchnotes[i].date)}</code>`;
+				for (let x=0; x<patchnotes[i].description.length; x++) {
+					let newLi = document.createElement('li');
+					newLi.innerText = `${patchnotes[i].description[x]}`;
+					if (patchnotes[i].subdescription[`${x}`] && patchnotes[i].subdescription[`${x}`].length>0) {
+						let newUl = document.createElement('ul');
+						for (let y=0; y<patchnotes[i].subdescription[`${x}`].length; y++) {
+							let newSubLi = document.createElement('li');
+							newSubLi.innerText = `${patchnotes[i].subdescription[`${x}`][y]}`;
+							newUl.appendChild(newSubLi);
+						}
+						newLi.appendChild(newUl);
+					}
+					this.layer3.appendChild(newLi);
+				}
+				this.layer1.appendChild(this.layer2);
+				this.layer1.appendChild(this.layer3);
+				return this.layer1;
+			}
+		}
+		containerList.appendChild(onion.layers);
+	}
+ 			
+	function digestDate(date) { //display dates in local date format
+		let processedDate = date.split(',');
+		let lastUpdateDate = new Date(Date.UTC(...processedDate)); //y-m-d, months are 0 indexed
+		let displayedDate = lastUpdateDate.toLocaleString(undefined, {timezone: 'UTC'});
+		return displayedDate.slice(0,10);
+	}
+
+	function lastVersion() {
+		const versionWindow = document.getElementById('last-update');
+		const versionRegex = /\d\.\d\.\d/;
+		const match = patchnotes[0].title.match(versionRegex);
+		versionWindow.innerText = match;
+	}
+	lastVersion();
 }
 
 // Custom delay
