@@ -1,8 +1,17 @@
 // Dev tools
-
 window.CHECKBOX_CONTROL = () => {
 	console.log(`${localStorage.getItem(slowModeToggle.id)} and ${slowModeToggle.checked}`);
 	slowModeToggle.click();
+};
+
+window.SHEET_ARR = () => {
+	console.log(sheetBinding.noteSheetArr);
+	console.log(JSON.parse(localStorage.getItem(noteSheet.id)));
+};
+
+window.START_TIME = () => {
+	console.log(sheetBinding.startingTime);
+	console.log(JSON.parse(localStorage.getItem('starting_time')));
 };
 
 // Global variables
@@ -38,6 +47,7 @@ const volumeSlider = document.getElementById('volume');
 const volumeOutput = document.getElementById('volume-value');
 const slowModeToggle = document.getElementById('slow-mode');
 const SAVES = document.querySelectorAll('.saveable');
+const playheadSkipDial = document.getElementById('column-skip-amount');
 const findTimingRegex = /[0-9]+/;
 const findNoteRegex = /\D+/i;
 const findDoubleNoteRegex = /[a-z]+[+]+[a-z]+/i;
@@ -100,7 +110,7 @@ const octaveNotes =
 ];
 Object.freeze(octaveNotes);
 const octavesShawzin = [// leave empty string for vanila shawzin, it doesn't have a name
-	'Zariman','Grineer','Narmer','Lotus','Sentient','ZarimanVoid','Prime',''
+	'Zariman','Grineer','Narmer','Lotus','Sentient','ZarimanVoid','DuviriErsatz','Duviri','Prime',''
 ];
 Object.freeze(octavesShawzin);
 
@@ -113,6 +123,7 @@ copyBtn.addEventListener('click', copyCode);
 showScaleBtn.addEventListener('click', showScale);
 databaseCopyBtn.addEventListener('click', copyDatabase);
 transpositionIndex.addEventListener('click', transposeNotes);
+transpositionIndex.addEventListener('keyup', transposeNotes);
 databaseSearchBar.addEventListener('click', searchDatabase);
 databaseSearchBar.addEventListener('keyup', searchDatabase);
 playerPlayBtn.addEventListener('click', setupTrack);
@@ -128,6 +139,8 @@ progressResetModal.addEventListener('click', progressClear);
 resetPrompt.addEventListener('click', progressClear);
 resetPrompt.addEventListener('keyup', progressClear);
 volumeSlider.addEventListener('input', () => { volumeOutput.value = `${volumeSlider.value}%` });
+playheadSkipDial.addEventListener('click', setSkipAmount);
+playheadSkipDial.addEventListener('keyup', setSkipAmount);
 
 // Onloads
 window.onload = () => {
@@ -148,14 +161,16 @@ window.onload = () => {
 	}
 	volumeOutput.value = `${volumeSlider.value}%`;
 	transposeNotes();
-	sheetBinding.generateNoteSheet(4097); //+1 for the note lables
+	//sheetBinding.generateNoteSheet(4097); //+1 for the note lables
 	updateShawzinPic();
 	versionControl();
+	setSkipAmount();
 };
 
 // Loads progress from local storage (if empty - save progress)
 function progressLoad() {
 	for (let i=0; i<SAVES.length; i++) {
+		if (SAVES[i].id === noteSheet.id || SAVES[i].classList.contains('player-buttons')) { continue };
 		let load = JSON.parse(localStorage.getItem(SAVES[i].id));
 		if (load != null) {
 			if (SAVES[i].type === 'checkbox') {
@@ -165,36 +180,41 @@ function progressLoad() {
 			}
 		} else {
 			progressSave.call(SAVES[i]);
-		}
-	}
-}
+		};
+	};
+};
+
 // Saves progress to local storage
 function progressSave() {
-	if (this.type === 'checkbox') {
+	if (this.id === noteSheet.id) {
+		localStorage.setItem(this.id, JSON.stringify(sheetBinding.noteSheetArr));
+	} else if (this.classList.contains('player-buttons')) {
+		localStorage.setItem('starting_time', JSON.stringify(sheetBinding.startingTime));
+	} else if (this.type === 'checkbox') {
 		localStorage.setItem(this.id, JSON.stringify(this.checked));
 	} else {
 		localStorage.setItem(this.id, JSON.stringify(this.value));
-	}
-}
+	};
+};
 // Clears progress from local storage
 function progressClear(event) {
 	if (this.id === 'reset-progress') {
 		progressResetModal.style.display = "block";
 		resetPrompt.focus();
-	} 
+	}; 
 	if (event.key === 'Escape' || event.target.id === 'reset-modal') {
 		progressResetModal.style.display = "none";
 		resetPrompt.value = '';
-	}
+	};
 	if (this.value) {
 		if (this.value.toLowerCase() === 'override') {
 			localStorage.clear();
 			alert(`All saved progress was deleted.`);
 			progressResetModal.style.display = "none";
 			resetPrompt.value = '';
-		}
-	}
-}
+		};
+	};
+};
 
 // Translates notes and timings from the main input field
 function translateNotes(event) {
@@ -351,13 +371,13 @@ function transposeNotes() {
 	let transposedLines = linesForTransposition.slice();
 	if (transpositionIndex.value == 0) {
 		changeScale(linesForTransposition);
-	}
+	};
 	if (transpositionIndex.value > 12) {
 		transpositionIndex.value = 12;
-	}
+	};
 	if (transpositionIndex.value < -12) {
 		transpositionIndex.value = -12;
-	}
+	};
 
 	for (let i=0; i<Math.abs(transpositionIndex.value); i++) {
 		if (transpositionIndex.value<=-1) {
@@ -370,7 +390,7 @@ function transposeNotes() {
 				transposedLines.unshift(last-7);
 			} else {
 				transposedLines.unshift(last);
-			}
+			};
 		} else if (transpositionIndex.value>0) {
 			let first = transposedLines.shift();
 			if (typeof first === 'number' && first === -1) {
@@ -379,11 +399,11 @@ function transposeNotes() {
 				transposedLines.push(first+6);
 			} else {
 				transposedLines.push(first);
-			}
-		} else { return; }
-	}
+			};
+		} else { return; };
+	};
 	changeScale(transposedLines);
-}
+};
 
 //Shows\hides scale
 function showScale() {
@@ -526,54 +546,47 @@ class NoteTableBinding {
 		this.id = 'sheetBinding';
 		this.continuePlaying = true;
 		this.startingTime = 0;
-	}
+		this.skipSize = 4;
+	};
 
 	// Generates interactable note sheet
-	generateNoteSheet(noteLength) {
-		this.noteSheetArr.length = 0; // clear array
+	generateNoteSheet(noteLength, mode = 0) {
+		//this.noteSheetArr.length = 0; // clear array
 		for (let y=0; y < 12; y++) {
 			let newTR = document.createElement('tr');
 			newTR.id = `tr-${y}`;
 			newTR.className = `sheet-table-rows`;
 			this.tableElement.appendChild(newTR);
-			this.noteSheetArr.push([]);	
+			if (mode === 0) { this.noteSheetArr.push([]); };
 			for (let x=0; x<noteLength; x++) {
 				let newTD = document.createElement('td');
 				newTD.id = `td-${x}-tr-${y}`;
 				newTD.className = `sheet-table-cells`;
 				let div = document.createElement('div'); //insert into cells for better control over size and content
-				/*div.style.width = "30px";
-				div.style.height = "35px";
-				div.style.color = "#CB23DE";
-				div.style.overflow = "visible";
-				div.style.whiteSpace = "nowrap";
-				div.style.display = "flex";
-				div.style.flexDirection = "row-reverse";
-				div.style.alignItems = "flex-end";
-				div.style.padding = "0 2px 4px 2px";*/
 				div.classList.add('cell-divs-basic');
+				if (mode !== 0 && this.noteSheetArr[y][x-1] === 1) { div.classList.add('cell-on'); };
 				if (x !== 0) {
 					newTD.addEventListener('click', this.updateNoteCell.bind(this));// overwrite 'this' to be the class and not the source of the event.
-					this.noteSheetArr[y].push(0);
+					if (mode === 0) { this.noteSheetArr[y].push(0); };
 					div.style.fontSize = "22px";
 					div.style.fontWeight = "bold";
-				}
+				};
 				if (x%16 === 0) {
 					newTD.style.borderRight = "3px solid rgb(178, 51, 3)";
 					if (y === 11) {
 						div.innerText = `${x}`;
-					}
+					};
 				} else if (x%8 === 0) {
 					newTD.style.borderRight = "2px solid rgb(255, 95, 35)";
 					if (y === 11) {
 						div.innerText = `${x}`;
-					}
+					};
 				} else if (x%4 === 0) {
 					newTD.style.borderRight = "1px solid rgb(25, 0, 103)"
 					if (y === 11) {
 						div.innerText = `${x}`;
-					}
-				}
+					};
+				};
 				if (x === 0) {
 					div.innerText = `${notesAudioNames[y]}`;
 					div.style.flexDirection = "row";
@@ -584,12 +597,12 @@ class NoteTableBinding {
 					div.style.fontFamily = "Arial";
 					div.style.textAlign = "center";
 					div.style.fontWeight = "bold";
-				}
+				};
 				newTD.appendChild(div);
 				newTR.appendChild(newTD);
-			}
-		}
-	}
+			};
+		};
+	};
 
 	// Collects notes from note sheet
 	noteSheetCollector() {
@@ -599,22 +612,22 @@ class NoteTableBinding {
 			for (let y=0; y<this.noteSheetArr.length; y++) { //loop for rows to be played
 				if (this.noteSheetArr[y][x] === 1) {
 					activeNotes.push(`${notesAudioNames[y]}`);
-				}
-			}
+				};
+			};
 			if (activeNotes.length>=1) { //connect notes by "+" if we have more than one 
 				let finalNotes = `${x+1}${activeNotes.join('+')}`; //add correct timing number
 				returnedNotes.push(finalNotes); //{timing}{note/s and +},{timing}{note/s and +}......
-			}	
-		}
+			};
+		};
 		return returnedNotes;
-	}
+	};
 
 	// Updates note sheet cells
 	updateNoteCell(event) { 
 		let cell = event.currentTarget;
 		let div = cell.children[0];
-		let cellY = cell.id.match(/(?<=tr-)\d+/i)[0];
-		let cellX = cell.id.match(/(?<=td-)\d+/i)[0]-1;
+		let cellY = Number(cell.id.match(/(?<=tr-)\d+/i)[0]);
+		let cellX = Number(cell.id.match(/(?<=td-)\d+/i)[0]-1);
 		if (this.noteSheetArr[cellY][cellX] !== 1) {
 			//Note ON
 			div.classList.remove(...['cell-on-err', 'cell-off-err']);
@@ -626,10 +639,10 @@ class NoteTableBinding {
 			div.classList.remove(...['cell-on', 'cell-on-err', 'cell-off-err']);
 			this.noteSheetArr[cellY][cellX] = 0;
 			div.innerText = div.innerText.replace('⚠️', '');
-		}
+		};
 		translateNotes(this);
 		this.errorCell(div, {y: cellY, x: cellX});
-	}
+	};
 
 	// Make cell display an error 
 	errorCell(div, coords) {
@@ -642,33 +655,76 @@ class NoteTableBinding {
 				//Note ON err
 				div.classList.remove(...['cell-off-err', 'cell-on']);
 				div.classList.add('cell-on-err');
-			}
+			};
 			if (!div.innerText.includes('⚠️')) {
 				div.innerText = `${div.innerText}⚠️`;
-			}
-		}
-	}
-}
+			};
+		};
+	};
+
+	// Render the playhead at the page reload
+	initPlayhead(time = this.startingTime) {
+		let x=0||time;
+		for (let y=0; y<this.noteSheetArr.length; y++) { //loop for rows to be colored
+			let currentCell = document.getElementById(`td-${x}-tr-${y}`);
+			currentCell.classList.add('cell-playing');
+		};
+	};
+
+	// Special progress load
+	progress_load() {
+		let loadA = JSON.parse(localStorage.getItem(noteSheet.id));
+		let loadB = JSON.parse(localStorage.getItem('starting_time'));
+		if (loadA != null) {
+			this.noteSheetArr = loadA;
+			this.generateNoteSheet(4097, 1);
+		} else {
+			this.generateNoteSheet(4097, 0);
+			progressSave.call(noteSheet);
+		};
+		if (loadB != null) {
+			this.startingTime = loadB;
+		} else {
+			progressSave.call(playerPlayBtn); //any player button will do
+		};
+		this.initPlayhead.bind(this);
+		this.initPlayhead();
+	};
+};
 const sheetBinding = new NoteTableBinding(noteSheet);
+sheetBinding.progress_load();
 
 // Deals with forward/backward skip buttons  
-function skipNotes(event, time = sheetBinding.startingTime) {
+function skipNotes(event, time = sheetBinding.startingTime, skipSize = sheetBinding.skipSize) {
 	let x=0||time;
 	for (let y=0; y<sheetBinding.noteSheetArr.length; y++) { //loop for rows to be cleared
 		let currentCell = document.getElementById(`td-${x}-tr-${y}`);
 		currentCell.classList.remove('cell-playing');
-	}
+	};
 	if (event.currentTarget.id == 'player-Right-button') {
-		sheetBinding.startingTime<=4092 ? sheetBinding.startingTime+=4 : sheetBinding.startingTime+=sheetBinding.startingTime;
+		sheetBinding.startingTime<=(4096-skipSize) ? sheetBinding.startingTime+=skipSize : sheetBinding.startingTime+=sheetBinding.startingTime;
 	} else {
-		sheetBinding.startingTime>=4 ? sheetBinding.startingTime-=4 : sheetBinding.startingTime-=sheetBinding.startingTime;
-	}
+		sheetBinding.startingTime>=skipSize ? sheetBinding.startingTime-=skipSize : sheetBinding.startingTime-=sheetBinding.startingTime;
+	};
 	x = sheetBinding.startingTime;
 	for (let y=0; y<sheetBinding.noteSheetArr.length; y++) { //loop for rows to be colored
 		let currentCell = document.getElementById(`td-${x}-tr-${y}`);
 		currentCell.classList.add('cell-playing');
-	}
-}
+	};
+};
+
+// Sets amount of columns(notes) to skip
+function setSkipAmount() {
+	if (playheadSkipDial.value != '') {
+		if (playheadSkipDial.value > 4096) {
+			playheadSkipDial.value = 4096;
+		};
+		if (playheadSkipDial.value < 1) {
+			playheadSkipDial.value = 1;
+		};
+	};
+	sheetBinding.skipSize = Number(playheadSkipDial.value);
+};
 
 // Sets up the track
 async function setupTrack(event, speed = 62.5, time = sheetBinding.startingTime) {
@@ -714,6 +770,7 @@ async function setupTrack(event, speed = 62.5, time = sheetBinding.startingTime)
 			playTrack(activeNotes);
 			if (sheetBinding.continuePlaying == false) {
 				sheetBinding.startingTime = x;
+				progressSave.call(this);
 				return
 			}
 		}
@@ -805,8 +862,7 @@ async function versionControl() {
 
 	function lastVersion() {
 		const versionWindow = document.getElementById('last-update');
-		const versionRegex = /\d\.\d\.\d/;
-		const match = patchnotes[0].title.match(versionRegex);
+		const match = patchnotes[0].title.match(/\d+\.\d+\.\d+/);
 		versionWindow.innerText = match;
 	}
 	lastVersion();

@@ -28,7 +28,7 @@
 			Shawzin has a concrete set of notes for each scale, you cannot transition over to the other scale mid-play as you would do with a piano for example.
 		</li>
 		<li>
-			Try to correlate the highest notes and work with that, use the "Transpose notes" feature, 
+			You will need to approximate the melody, use the "Transpose notes" feature as a visual aid, 
 			click on the field to transpose, line 2 is where you would find the clef.
 		</li>
 		<li>
@@ -54,7 +54,7 @@
 			The input field is case insensitive, you can write "A" or "a". Also you can use spaces and newlines, and you can resize it. 
 		</li>
 		<li>
-			All progress on the page is saved and can be reset(deleted). Your notes, notes duration, notes transpossition, scale, shawzin, slow mode, and music volume persist even if you close the window. The page <b>doesn't</b> reload after you reset the progress, as your last failsafe, you can click on the windows and selections you want to be saved again. 
+			All progress on the page is saved and can be reset(deleted). Your text notes, notes duration, notes transpossition, scale, shawzin, slow mode, music volume, note sheet notes, and skip amount persist even if you close the window. The page <b>doesn't</b> reload after you reset the progress, as your last failsafe, you can click on the windows and selections you want to be saved again. 
 		</li>
 		<li>
 			The database shows name of the song + name of the band + approximate length of the track<sup>*(It may vary if you enable slow mode)</sup>. When searching for a song - write song/band name and click on the field to search.
@@ -84,13 +84,13 @@
 			</ul> 
 		</li>
 		<li>
-			You can add notes to the "Interactable note sheet" by clicking on cells, the small numbers below represent the timeline order of notes (4096 max). You are able to make and copy a functional shawzin code using this tool. The left and right skip buttons will skip 4 notes (columns) per click, forwards or backwards.
-		</li>
-		<li>
-			The "Interactable note sheet" <b>doesn't</b> get saved, so if you close or refresh the page your notes will be gone.
+			You can add notes to the 'Interactable note sheet' by clicking on cells, the small numbers below represent the timeline order of notes (4096 max). You are able to make and copy a functional shawzin code using this tool. The left and right skip buttons will skip 4 notes (columns) per click, forwards or backwards.
 		</li>
 		<li>
 			If something is broken or the version of this app changed you should refresh the page without cache, press Ctrl+F5.
+		</li>
+		<li>
+			Keep an eye on the 'Patchnotes' section, this app is still in development.
 		</li>
 		<li>
 			Click on the logo (top of the page) to join discord server for Warframe musical stuff.
@@ -102,9 +102,9 @@
 	<input type="button" name="reset progress" id="reset-progress" value="Reset Progress"/>
 	<div id="reset-modal" class="modal">
 		<div class="modal-caption">
-			Are you sure you want to delete all saved progress?<br> 
+			<p>Are you sure you want to delete all saved progress?<br> 
 			Type "OVERRIDE" to reset.<br> 
-			Press <b><code>'Escape'</code></b> to exit.
+			Press <b><code class="button-indicator">'Escape'</code></b> to exit.</p>
 		</div>
 		<input type="text" id="reset-prompt" class="modal-content"/>
 	</div>
@@ -148,13 +148,13 @@
 	</div>
 	<!-- Everything related to interactable note sheet -->
 	<div class="sheet-music-1">
-		<p><sup>*more updates coming</sup>Interactable note sheet:</p>
+		<p>Interactable note sheet:</p>
 		<div class="sheet-music-2">
 			<div id="player-buttons-container">
 				<!-- Buttons -->
-				<img src="images/player-buttons-skip-left.png" id="player-Left-button" class="player-buttons"/>
-				<img src="images/player-buttons-play.png" id="player-Play-button" class="player-buttons"/>
-				<img src="images/player-buttons-skip-right.png" id="player-Right-button" class="player-buttons"/>
+				<img src="images/player-buttons-skip-left.png" id="player-Left-button" class="player-buttons saveable"/>
+				<img src="images/player-buttons-play.png" id="player-Play-button" class="player-buttons saveable"/>
+				<img src="images/player-buttons-skip-right.png" id="player-Right-button" class="player-buttons saveable"/>
 				<div id="volume-container">
 					<div>
 						<label for="volume">Volume</label>
@@ -164,16 +164,19 @@
 					<div>
 						<label for="slow-mode">Slow mode</label>
 						<input type="checkbox" name="slow mode toggle" id="slow-mode" class="saveable" autocomplete="off"/>
+						<input type="number" min="1" max="4096" placeholder="Skip x notes" id="column-skip-amount" class="saveable">
 					</div>
 				</div>
 				<!-- Shawzin selector -->
 				<select id="shawzins-select" class="saveable">
 					<option value="KiraShawzin">Kira Shawzin (Synth Guitar)</option>
-					<option value="CorbuShawzin">Corbu Shawzin (Electric Guitar, Overdrive)</option>
+					<option value="CorbuShawzin">Corbu/Iridos Shawzin (Electric Guitar, Overdrive)</option>
 					<option value="NarmerShawzin">Narmer Shawzin (Electric Guitar, Distortion)</option>
 					<option value="NelumboShawzin">Nelumbo Shawzin (Acoustic Guitar)</option>
 					<option value="TiamatShawzin">Tiamat Shawzin (Bass Guitar)</option>
 					<option value="VoidsSongShawzin">Voids Song Shawzin (Acapella)</option>
+					<option value="LonesomeShawzin">Lonesome Shawzin (Bell)</option>
+					<option value="CourtlyShawzin">Courtly Shawzin (Sitar)</option>
 					<option value="AristeiPrimeShawzin">Aristei Prime Shawzin (Harp)</option>
 					<option value="Other">Other (Shamisen)</option>
 				</select>
@@ -186,7 +189,7 @@
   				</div>
 			</div>
 			<div id="note-sheet-container">
-				<table id="note-sheet"></table>
+				<table id="note-sheet" class="saveable"></table>
 			</div>
 			<sup>*All sound files are created&owned by Digital Extremes.</sup>
 			<div>

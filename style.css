@@ -141,6 +141,9 @@ details[open] summary {
 ::-webkit-resizer:hover {
 	cursor: move;
 }
+.button-indicator {
+	color: red;
+}
 
 /* Favicon-logo */
 #big-favicon {
@@ -257,6 +260,7 @@ details[open] summary {
 	border-bottom: 1px solid rgb(25, 0, 103);
 	background: rgb(245, 245, 245);
 	padding: 2px;
+	cursor: pointer;
 }
 /*highlight cell*/
 .sheet-table-rows:hover .sheet-table-cells:hover {
@@ -297,6 +301,7 @@ details[open] summary {
 }
 
 /* === Player block === */
+
 /* Buttons */
 #player-buttons-container {
 	width: fit-content;
@@ -366,6 +371,9 @@ details[open] summary {
 	background: blue;
 	cursor: ew-resize;
 	transition: background .3s ease-in-out;
+}
+#column-skip-amount {
+	min-width: 120px;
 }
 
 /* Slow mode toggle */
@@ -453,7 +461,12 @@ details[open] summary {
   }
 }
 
-/*Patch notes*/
+/* Reset Progress modal */
+#reset-modal .modal-caption > p {
+	text-shadow: 0px 0px 20px white;
+}
+
+/* Patch notes */
 #patch-notes-board {
 	background-image: url("images/patchnotes.jpg");
 	background-size: cover;

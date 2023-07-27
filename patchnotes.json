@@ -1,4 +1,15 @@
-[
+[	
+	{
+		"title":"Update 0.3.0",
+		"date":"2023,6,27", 
+		"description": ["Added duviri shawzins to the app", "Updated the 'Interactable note sheet'", "Added step control for moving the playhead right/left", "Added minor changes to style and rules"], 
+		"subdescription": {
+			"0": ["The list of shawzins is now complete as of Warframe update 33.1."],
+			"1": ["The notes will be saved, they will persist after closing or refreshing the page.", "The playhead position will be saved, it will persist after closing or refreshing the page.", "The playhead will be visible from the start."],
+			"2": ["You can choose to skip notes forwards/backwards in steps between 1 and 4096."],
+			"3": ["The rules now state that the note sheet will be auto saved.", "The cursor icon is changed when hovering over note sheet cells.", "The 'Reset Progress' prompt text is now more readable."]
+		}		
+	},
 	{
 		"title":"Update 0.2.0",
 		"date":"2023,6,24", 
