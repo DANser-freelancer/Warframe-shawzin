@@ -1,5 +1,13 @@
 [	
 	{
+		"title":"Patch 0.3.1",
+		"date":"2023,6,27", 
+		"description": ["Fixed the mechanism responsible for translating note timing"], 
+		"subdescription": {
+			"0": ["Any part of the 'Interactable note sheet' and/or high note positions in the text field would trigger the 'wrong range' error."]
+		}		
+	},
+	{
 		"title":"Update 0.3.0",
 		"date":"2023,6,27", 
 		"description": ["Added duviri shawzins to the app", "Updated the 'Interactable note sheet'", "Added step control for moving the playhead right/left", "Added minor changes to style and rules"], 

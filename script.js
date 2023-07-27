@@ -288,13 +288,13 @@ function convertTiming(timing, position) {
 		} else if (timing < (64*i)) {
 			finalCode.push(range+timingConvertRules[timing-(64*(i-1))]);
 			break;
-		} else if (i>=64) { 
+		} else if (i>64) { 
 			WrongNote = true;
 			errorStyle;
 			alert(`Error: Wrong timeline position, note #${position} range must be 1-4096.`)
 			break; 
-		}
-	}
+		};
+	};
 	
 	//	reference 09.04.2023
 	/* 
@@ -304,9 +304,9 @@ function convertTiming(timing, position) {
 		finalCode.push(range+timingConvertRules[timing-64*63]);
 	} 
 	*/
-}
+};
 
-//Checks and converts note
+// Checks and converts note
 function convertNote(note, position) {
 	if (note.includes('+')) {
 		let matchedNoteKey = false;
@@ -669,6 +669,9 @@ class NoteTableBinding {
 			let currentCell = document.getElementById(`td-${x}-tr-${y}`);
 			currentCell.classList.add('cell-playing');
 		};
+		let interest = document.getElementById('note-sheet-container');
+		let noteSize = 38.439;
+		interest.scrollTo((noteSize*x), 0); //put the playhead in view
 	};
 
 	// Special progress load
@@ -687,7 +690,7 @@ class NoteTableBinding {
 		} else {
 			progressSave.call(playerPlayBtn); //any player button will do
 		};
-		this.initPlayhead.bind(this);
+		//this.initPlayhead.bind(this);
 		this.initPlayhead();
 	};
 };
@@ -702,15 +705,16 @@ function skipNotes(event, time = sheetBinding.startingTime, skipSize = sheetBind
 		currentCell.classList.remove('cell-playing');
 	};
 	if (event.currentTarget.id == 'player-Right-button') {
-		sheetBinding.startingTime<=(4096-skipSize) ? sheetBinding.startingTime+=skipSize : sheetBinding.startingTime+=sheetBinding.startingTime;
+		sheetBinding.startingTime<=(4096-skipSize) ? sheetBinding.startingTime+=skipSize : sheetBinding.startingTime=4096;
 	} else {
-		sheetBinding.startingTime>=skipSize ? sheetBinding.startingTime-=skipSize : sheetBinding.startingTime-=sheetBinding.startingTime;
+		sheetBinding.startingTime>=skipSize ? sheetBinding.startingTime-=skipSize : sheetBinding.startingTime=0;
 	};
 	x = sheetBinding.startingTime;
 	for (let y=0; y<sheetBinding.noteSheetArr.length; y++) { //loop for rows to be colored
 		let currentCell = document.getElementById(`td-${x}-tr-${y}`);
 		currentCell.classList.add('cell-playing');
 	};
+	sheetBinding.initPlayhead(x);
 };
 
 // Sets amount of columns(notes) to skip
@@ -722,15 +726,17 @@ function setSkipAmount() {
 		if (playheadSkipDial.value < 1) {
 			playheadSkipDial.value = 1;
 		};
+		sheetBinding.skipSize = Number(playheadSkipDial.value);
+	} else {
+		sheetBinding.skipSize = 4;
 	};
-	sheetBinding.skipSize = Number(playheadSkipDial.value);
 };
 
 // Sets up the track
 async function setupTrack(event, speed = 62.5, time = sheetBinding.startingTime) {
 	if (slowModeToggle.checked) {
 		speed = 125;
-	}
+	};
 	if (event.target.src.includes(`images/player-buttons-play.png`)) {
 		event.target.src = `images/player-buttons-pause.png`;
 		sheetBinding.continuePlaying = true;
@@ -741,8 +747,8 @@ async function setupTrack(event, speed = 62.5, time = sheetBinding.startingTime)
 				WasSetup = true;
 			} catch(err) {
 				console.log(`Something went wrong: ${err}`);
-			}
-		}
+			};
+		};
 		if (!WasSampled) {
 			try {
 				audioSamples = await setupAudioSamples(octaveNotes);
@@ -750,35 +756,38 @@ async function setupTrack(event, speed = 62.5, time = sheetBinding.startingTime)
 				WasSampled = true;
 			} catch(err) {
 				console.log(`Something went wrong: ${err}`);
-			}
-		}
+			};
+		};
 		for (let x=0||time; x<sheetBinding.noteSheetArr[0].length; x++) { //loop for columns to be played
 			let activeNotes = []; 
 			for (let y=0; y<sheetBinding.noteSheetArr.length; y++) { //loop for rows to be played
 				if (sheetBinding.noteSheetArr[y][x] === 1) {
 					//console.log(audioSamples[y]);
 					activeNotes.push(audioSamples[y]);
-				}
+				};
 				let currentCell = document.getElementById(`td-${x}-tr-${y}`);
 				currentCell.classList.add('cell-playing');
 				if (x>0) {
 					let previousCell = document.getElementById(`td-${x-1}-tr-${y}`);
 					previousCell.classList.remove('cell-playing');
-				}
-			}
+				};
+			};
 			await Delay(speed); //16 notes(columns) per second max
 			playTrack(activeNotes);
+			if (x%31 === 0) {
+				sheetBinding.initPlayhead(x);
+			};
 			if (sheetBinding.continuePlaying == false) {
 				sheetBinding.startingTime = x;
 				progressSave.call(this);
-				return
-			}
-		}
+				return;
+			};
+		};
 	} else {
 		event.target.src = `images/player-buttons-play.png`;
 		sheetBinding.continuePlaying = false;
-	}
-}
+	};
+};
 
 // Load audio file
 async function getAudio(filePath) { 
@@ -786,7 +795,7 @@ async function getAudio(filePath) {
 	const arrayBuffer = await response.arrayBuffer();
 	const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
 	return audioBuffer;
-}
+};
 
 // Handle audio files
 async function setupAudioSamples(notes) {
@@ -795,9 +804,9 @@ async function setupAudioSamples(notes) {
 	for (let i=0; i<notes[0].length; i++) {			//what shawzin 												//what note (octave)
 		let sample = await getAudio(`audio/Octaves/${octavesShawzin[shawzinsSelect.selectedIndex]}ShawzinOct${notes[scaleSelector.selectedIndex][i]}.ogg`);
 		audioBuffers.push(sample);
-	}
+	};
 	return audioBuffers;
-}
+};
 
 // Play columns of notes
 async function playTrack(audioBufferArr, time = 0) {

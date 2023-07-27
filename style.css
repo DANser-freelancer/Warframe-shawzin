@@ -236,6 +236,7 @@ details[open] summary {
 	max-height: fit-content;
 	overflow-y: hidden;
 	overflow-x: scroll;
+	scroll-behavior: smooth;
 	border: 7px solid;
  	border-image-slice: 1;
 	border-image-source: linear-gradient(to right, #261C63, #4433AF);
