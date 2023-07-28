@@ -48,13 +48,13 @@
 		</li>
 		<li>
 			Shawzin can only play 1/16 notes with 4/4 musical time, in other words you can play 16 consecutive notes in one second, max length of the track is therefore 8min 32sec. 
-			If you will only need 1/4 or 1/8 notes you can change all or neither of them using the "Choose note duration" feature, this will essentially add space between your notes as if they were longer. These are really small notes so if your music seems to run too fast try enabling slow mode in your shawzin.
+			These are really small notes so if your music seems to run too fast try enabling slow mode in your shawzin.
 		</li>
 		<li>
 			The input field is case insensitive, you can write "A" or "a". Also you can use spaces and newlines, and you can resize it. 
 		</li>
 		<li>
-			All progress on the page is saved and can be reset(deleted). Your text notes, notes duration, notes transpossition, scale, shawzin, slow mode, music volume, note sheet notes, and skip amount persist even if you close the window. The page <b>doesn't</b> reload after you reset the progress, as your last failsafe, you can click on the windows and selections you want to be saved again. 
+			All progress on the page is saved and can be reset(deleted). Your text notes, notes duration, notes transpossition, scale, shawzin, slow mode, music volume, note sheet notes, skip amount, playhead position persist even if you close the window. The page <b>doesn't</b> reload after you reset the progress, as your last failsafe, you can click on the windows and selections you want to be saved again. 
 		</li>
 		<li>
 			The database shows name of the song + name of the band + approximate length of the track<sup>*(It may vary if you enable slow mode)</sup>. When searching for a song - write song/band name and click on the field to search.
@@ -84,7 +84,8 @@
 			</ul> 
 		</li>
 		<li>
-			You can add notes to the 'Interactable note sheet' by clicking on cells, the small numbers below represent the timeline order of notes (4096 max). You are able to make and copy a functional shawzin code using this tool. The left and right skip buttons will skip 4 notes (columns) per click, forwards or backwards.
+			You can add notes to the 'Interactable note sheet' by clicking on cells, the small numbers below represent the timeline order of notes (1-4096). You are able to make and copy a functional shawzin code using this tool. The left and right skip buttons will skip 4 notes (columns) per click forwards or backwards, you can change the skip amount in the number field near the 'slow mode' toggle. 
+			To scroll with your mouse wheel hold SHIFT.
 		</li>
 		<li>
 			If something is broken or the version of this app changed you should refresh the page without cache, press Ctrl+F5.
@@ -122,12 +123,6 @@
 		<option value="7">Phrygian</option>
 		<option value="8">Yo</option>
 	</select>
-	<label>Choose note duration:</label>
-	<select id="note-length-selector" class="saveable">
-		<option value="4">1/4</option>
-		<option value="2">1/8</option>
-		<option value="1">1/16</option>
-	</select><br>
 	<!-- Everything related to note scale -->
 	<label>Transpose notes:</label><input type="number" name="transposition-index" id="transposition-index" class="saveable" max="12" min="-12" value="0" title="Click on the field to transpose the scale."/>
 	<input type="button" name="show-scale" id="show-scale" value="Hide scale"/>
@@ -164,7 +159,7 @@
 					<div>
 						<label for="slow-mode">Slow mode</label>
 						<input type="checkbox" name="slow mode toggle" id="slow-mode" class="saveable" autocomplete="off" title="Click to toggle slow mode, playing shawzin in slow mode will let you play longer songs."/>
-						<input type="number" min="1" max="4096" placeholder="Skip x notes" id="column-skip-amount" class="saveable" title="Set the amount of notes(columns) to skip over.">
+						<input type="number" min="0" max="4096" placeholder="Skip x notes" id="column-skip-amount" class="saveable" title="Set the amount of notes(columns) to skip over.">
 					</div>
 				</div>
 				<!-- Shawzin selector -->

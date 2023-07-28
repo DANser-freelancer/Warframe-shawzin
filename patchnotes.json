@@ -1,38 +1,94 @@
 [	
 	{
+		"title":"Update 0.4.0",
+		"date":"2023,6,28", 
+		"description": [
+			"Fixed the mechanism responsible for translating note timing, better this time", 
+			"Minor changes to the 'Rules/Tips' section",
+			"Upgraded the 'Interactable note sheet' playhead, and 'skip amount' input"
+		], 
+		"subdescription": {
+			"0": [
+				"The 'Choose note duration' feature was a complete disaster for the timing system and had to be removed."
+			],
+			"2": [
+				"The playhead will scroll into view on page refresh, when skipping, when playing or stopping.",
+				"The skip amount value will persist.",
+				"Improved the skip amount input validation."
+			]
+		}		
+	},
+	{
 		"title":"Patch 0.3.1",
 		"date":"2023,6,27", 
-		"description": ["Fixed the mechanism responsible for translating note timing"], 
+		"description": [
+			"Fixed the mechanism responsible for translating note timing"
+		], 
 		"subdescription": {
-			"0": ["Any part of the 'Interactable note sheet' and/or high note positions in the text field would trigger the 'wrong range' error."]
+			"0": [
+				"Any part of the 'Interactable note sheet' and/or high note positions in the text field would trigger the 'wrong range' error."
+			]
 		}		
 	},
 	{
 		"title":"Update 0.3.0",
 		"date":"2023,6,27", 
-		"description": ["Added duviri shawzins to the app", "Updated the 'Interactable note sheet'", "Added step control for moving the playhead right/left", "Added minor changes to style and rules"], 
+		"description": [
+			"Added duviri shawzins to the app", 
+			"Updated the 'Interactable note sheet'", 
+			"Added step control for moving the playhead right/left", 
+			"Added minor changes to style and rules"
+		], 
 		"subdescription": {
-			"0": ["The list of shawzins is now complete as of Warframe update 33.1."],
-			"1": ["The notes will be saved, they will persist after closing or refreshing the page.", "The playhead position will be saved, it will persist after closing or refreshing the page.", "The playhead will be visible from the start."],
-			"2": ["You can choose to skip notes forwards/backwards in steps between 1 and 4096."],
-			"3": ["The rules now state that the note sheet will be auto saved.", "The cursor icon is changed when hovering over note sheet cells.", "The 'Reset Progress' prompt text is now more readable."]
+			"0": [
+				"The list of shawzins is now complete as of Warframe update 33.1."
+			],
+			"1": [
+				"The notes will be saved, they will persist after closing or refreshing the page.", 
+				"The playhead position will be saved, it will persist after closing or refreshing the page.", 
+				"The playhead will be visible from the start."
+			],
+			"2": [
+				"You can choose to skip notes forwards/backwards in steps between 1 and 4096."
+			],
+			"3": [
+				"The rules now state that the note sheet will be auto saved.", 
+				"The cursor icon is changed when hovering over note sheet cells.", 
+				"The 'Reset Progress' prompt text is now more readable."
+			]
 		}		
 	},
 	{
 		"title":"Update 0.2.0",
 		"date":"2023,6,24", 
-		"description": ["Added the 'Patchnotes' section", "Made minor upgrade to the 'Interactable note sheet'"], 
+		"description": [
+			"Added the 'Patchnotes' section", 
+			"Made minor upgrade to the 'Interactable note sheet'"
+		], 
 		"subdescription": {
-			"0": ["You will be able to see changes across versions.","Update dates will be displayed in your local date format."]
+			"0": [
+				"You will be able to see changes across versions.",
+				"Update dates will be displayed in your local date format."
+			]
 		}		
 	},
 	{
 		"title":"Update 0.1.0",
 		"date":"2023,6,14",
-		"description": ["Released version 0.1.0","Made 'Interactable note sheet' fully functional","Revised the rules and some styling"],
+		"description": [
+			"Released version 0.1.0",
+			"Made 'Interactable note sheet' fully functional",
+			"Revised the rules and some styling"
+		],
 		"subdescription": {
-			"1": ["The rest of shawzins will be available in the future versions.","Added a playhead and skip buttons."],
-			"2": ["Added some note clarifications.", "Added info on 'Interactable note sheet'."]
+			"1": [
+				"The rest of shawzins will be available in the future versions.",
+				"Added a playhead and skip buttons."
+			],
+			"2": [
+				"Added some note clarifications.", 
+				"Added info on 'Interactable note sheet'."
+			]
 		}
 	}
 ]

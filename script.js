@@ -28,7 +28,6 @@ const databaseSelector = document.getElementById('database-selector');
 const databaseCopyBtn = document.getElementById('copy-database');
 const transpositionIndex = document.getElementById('transposition-index');
 const noteLengths = document.getElementById('note-lengths');
-const noteLengthSelector = document.getElementById('note-length-selector');
 const databaseSearchBar = document.getElementById('database-search-bar');
 const noteSheet = document.getElementById('note-sheet');
 const noteSheetHeader = document.getElementById('sheet-header-table');
@@ -264,7 +263,7 @@ function translateNotes(event) {
 			}
 		}
 		convertNote(note, timing+1);
-		convertTiming(timing*noteLengthSelector.value, timing+1);
+		convertTiming(timing);
 		if (WrongNote === true) {
 			return;
 		}
@@ -274,36 +273,27 @@ function translateNotes(event) {
 }
 
 //Converts timing into shawzin code: ranges from [AA-AZ, Aa-Az, A0-A9, A+, A/] to [/A-/Z, /a-/z, /0-/9, /+, //]
-function convertTiming(timing, position) {
-	let range = timingConvertRules[Math.floor(timing/64)];
+function convertTiming(position) {
+	let range = timingConvertRules[Math.floor(position/64)];
 	for (let i=2; i<=64; i++) {
-		if (timing <= -1) {
+		if (position <= -1) {
 			WrongNote = true;
 			errorStyle;
 			alert(`Error: start first note position from 1+.`);
 			break;
-		} else if (timing < 64) {
-			finalCode.push(range+timingConvertRules[timing]);
+		} else if (position < 64) {
+			finalCode.push(range+timingConvertRules[position]);
 			break;
-		} else if (timing < (64*i)) {
-			finalCode.push(range+timingConvertRules[timing-(64*(i-1))]);
+		} else if (position < (64*i)) {
+			finalCode.push(range+timingConvertRules[position-(64*(i-1))]);
 			break;
-		} else if (i>64) { 
+		} else if (i>=64) { 
 			WrongNote = true;
 			errorStyle;
 			alert(`Error: Wrong timeline position, note #${position} range must be 1-4096.`)
 			break; 
 		};
 	};
-	
-	//	reference 09.04.2023
-	/* 
-	} else if (timing < 64*63) {
-		finalCode.push(range+timingConvertRules[timing-64*62]);
-	} else if (timing < 64*64) {
-		finalCode.push(range+timingConvertRules[timing-64*63]);
-	} 
-	*/
 };
 
 // Checks and converts note
@@ -663,11 +653,13 @@ class NoteTableBinding {
 	};
 
 	// Render the playhead at the page reload
-	initPlayhead(time = this.startingTime) {
+	initPlayhead(time = this.startingTime, loading) {
 		let x=0||time;
-		for (let y=0; y<this.noteSheetArr.length; y++) { //loop for rows to be colored
-			let currentCell = document.getElementById(`td-${x}-tr-${y}`);
-			currentCell.classList.add('cell-playing');
+		if (loading) {
+			for (let y=0; y<this.noteSheetArr.length; y++) { //loop for rows to be colored
+				let currentCell = document.getElementById(`td-${x}-tr-${y}`);
+				currentCell.classList.add('cell-playing');
+			};
 		};
 		let interest = document.getElementById('note-sheet-container');
 		let noteSize = 38.439;
@@ -691,7 +683,7 @@ class NoteTableBinding {
 			progressSave.call(playerPlayBtn); //any player button will do
 		};
 		//this.initPlayhead.bind(this);
-		this.initPlayhead();
+		this.initPlayhead(...[,true]);
 	};
 };
 const sheetBinding = new NoteTableBinding(noteSheet);
@@ -714,21 +706,21 @@ function skipNotes(event, time = sheetBinding.startingTime, skipSize = sheetBind
 		let currentCell = document.getElementById(`td-${x}-tr-${y}`);
 		currentCell.classList.add('cell-playing');
 	};
-	sheetBinding.initPlayhead(x);
+	sheetBinding.initPlayhead(x, false);
 };
 
 // Sets amount of columns(notes) to skip
-function setSkipAmount() {
-	if (playheadSkipDial.value != '') {
-		if (playheadSkipDial.value > 4096) {
+function setSkipAmount(event, skipSize = Number(playheadSkipDial.value)) {
+	if (skipSize == '') {
+		sheetBinding.skipSize = 4;
+	} else {
+		if (skipSize > 4096) {
 			playheadSkipDial.value = 4096;
 		};
-		if (playheadSkipDial.value < 1) {
+		if (skipSize < 1) {
 			playheadSkipDial.value = 1;
 		};
-		sheetBinding.skipSize = Number(playheadSkipDial.value);
-	} else {
-		sheetBinding.skipSize = 4;
+		sheetBinding.skipSize = skipSize;
 	};
 };
 
@@ -774,11 +766,12 @@ async function setupTrack(event, speed = 62.5, time = sheetBinding.startingTime)
 			};
 			await Delay(speed); //16 notes(columns) per second max
 			playTrack(activeNotes);
-			if (x%31 === 0) {
-				sheetBinding.initPlayhead(x);
+			if (x%20 === 0) { //scroll every 20 cells
+				sheetBinding.initPlayhead(x, false);
 			};
 			if (sheetBinding.continuePlaying == false) {
 				sheetBinding.startingTime = x;
+				sheetBinding.initPlayhead(...[,false]);
 				progressSave.call(this);
 				return;
 			};
@@ -786,6 +779,7 @@ async function setupTrack(event, speed = 62.5, time = sheetBinding.startingTime)
 	} else {
 		event.target.src = `images/player-buttons-play.png`;
 		sheetBinding.continuePlaying = false;
+		sheetBinding.initPlayhead(...[,false]);
 	};
 };
 
