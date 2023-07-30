@@ -68,6 +68,9 @@ input:not([type='range']):focus {
 	outline: 1px solid rgb(151, 112, 255);
 	border-radius: 30px;
 }
+label[for='slow-mode'] {
+	cursor: pointer;
+}
 select {
 	padding: 5px;
 	margin: 10px;
@@ -300,9 +303,42 @@ details[open] summary {
 .cell-playing {
 	background: rgb(255, 223, 66);
 }
+/* - heat map classes - */
+.cell-heat-1 {
+	box-shadow: inset 0px 0px 40px rgba(0, 170, 255, 1);
+}
+.cell-heat-2 {
+	box-shadow: inset 0px 0px 40px rgba(0, 255, 255, 1);
+}
+.cell-heat-3 {
+	box-shadow: inset 0px 0px 40px rgba(0, 255, 170, 1);
+}
+.cell-heat-4 {
+	box-shadow: inset 0px 0px 40px rgba(0, 255, 85, 1);
+}
+.cell-heat-5 {
+	box-shadow: inset 0px 0px 40px rgba(0, 255, 0, 1);
+}
+.cell-heat-6 {
+	box-shadow: inset 0px 0px 40px rgba(85, 255, 0, 1);
+}
+.cell-heat-7 {
+	box-shadow: inset 0px 0px 40px rgba(170, 255, 0, 1);
+}
+.cell-heat-8 {
+	box-shadow: inset 0px 0px 40px rgba(255, 255, 0, 1);
+}
+.cell-heat-9 {
+	box-shadow: inset 0px 0px 40px rgba(255, 170, 0, 1);
+}
+.cell-heat-10 {
+	box-shadow: inset 0px 0px 40px rgba(255, 85, 0, 1);
+}
+.cell-heat-11 {
+	box-shadow: inset 0px 0px 40px rgba(255, 0, 0, 1);
+}
 
 /* === Player block === */
-
 /* Buttons */
 #player-buttons-container {
 	width: fit-content;
@@ -398,6 +434,7 @@ details[open] summary {
 	position: absolute;
 	color: black;
 }
+
 
 /* Shawzin selector */
 #shawzins-select {

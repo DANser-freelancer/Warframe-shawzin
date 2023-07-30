@@ -315,7 +315,7 @@ function convertNote(note, position) {
     	if (matchedNoteKey === false) {
 			WrongNote = true;
 			errorStyle;
-			alert(`Error: Notes #${position} can't be played together.`);
+			alert(`Error: Combination #${position} is not valid.`);
     	}
 	} else {
 		let result = noteConvertRules[note];
@@ -630,13 +630,13 @@ class NoteTableBinding {
 			this.noteSheetArr[cellY][cellX] = 0;
 			div.innerText = div.innerText.replace('⚠️', '');
 		};
-		translateNotes(this);
-		this.errorCell(div, {y: cellY, x: cellX});
+		//this.errorCell(div, {y: cellY, x: cellX});
+		this.combinationHint(undefined, {y: cellY, x: cellX});
 	};
 
 	// Make cell display an error 
 	errorCell(div, coords) {
-		if (WrongNote) {
+		/*if (WrongNote) {
 			if (this.noteSheetArr[coords.y][coords.x] === 0) {
 				//Note OFF err
 				div.classList.remove(...['cell-on-err', 'cell-on']);
@@ -648,6 +648,45 @@ class NoteTableBinding {
 			};
 			if (!div.innerText.includes('⚠️')) {
 				div.innerText = `${div.innerText}⚠️`;
+			};
+		};*/
+		this.combinationHint();
+	};
+
+	// Hint allowed combinations
+	combinationHint(notes = this.noteSheetCollector(), coords) {
+		for (let y=0; y<this.noteSheetArr.length; y++) { //iterate over cells on the note sheet 
+			const currentCell = document.getElementById(`td-${coords.x+1}-tr-${y}`);
+			currentCell.classList.remove(`${currentCell.className.match(/(cell-heat-)+\d+/ig)}`); //clear the heat class
+		};
+		if (notes.length < 1) { //empty note sheet
+			return;
+		};  
+		const noteRules = {
+			a:11,b:10,c:9,d:8,e:7,f:6,g:5,h:4,i:3,j:2,k:1,l:0
+		};
+		const entries = Object.entries(multiNoteConvertRules);
+		for (let n=0; n<notes.length; n++) { //iterate over notes ---needs reworking into an array-overlap instead of looking for a single value
+			const match = notes[n].match(/[a-z]+/gi).join('').toLowerCase();
+			let regexBuild = `.*`;
+			for (let s=0; s<match.length; s++) { //find all (match[0]|match[1]|......)characters in any order and space apart at least once
+				regexBuild += `[${match}]+.*`;
+			};
+			const regex = new RegExp(regexBuild, 'ig');
+			//const regex = new RegExp(`.*(${match}){${match.replaceAll('|', '').length}}.*`, 'ig'); //find (match[0]|match[1]|......)characters (match length without '|')times in a row
+			let accumulator = '';
+			for (let i=0; i<entries.length; i++) {//iterate over all keys in rules
+				if (regex.test(entries[i][0])) {
+					accumulator += `${entries[i][0]}`;
+				};
+			};
+			const result = [...new Set(accumulator)]; //a trick to turn a set into array
+			const x = Number(`${notes[n].match(/\d+/gi)}`);
+			for (let y=0; y<result.length; y++) {//iterate over cells on the note sheet 
+				const currentCell = document.getElementById(`td-${x}-tr-${noteRules[`${result[y]}`]}`);
+				const cellRegex = new RegExp(`${result[y]}{1}`, 'ig');
+				currentCell.classList.remove(`${currentCell.className.match(/(cell-heat-)+\d+/ig)}`); //clear the heat class
+				currentCell.classList.add(`cell-heat-${accumulator.match(cellRegex).length}`);
 			};
 		};
 	};

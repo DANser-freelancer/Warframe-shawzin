@@ -63,25 +63,36 @@
 			Notes written on the transposable scale do not carry the actual musical names, they are intended for easier visualisation. To see true note relations visit this <a href="https://warframe.fandom.com/wiki/Shawzin#Note_Relations" target="_blank">table</a>, where 4 is lowest and 6 is highest pitch.
 		</li>
 		<li>
-			"Interactable note sheet" legend:
+			'Interactable note sheet' heat map:
 			<ul>
 				<li style="display: flex; align-items: center;">
-					inactive note: 
-					<div style="border-width: 2px; border-style: solid; border-color: black; margin-left: 10px; margin-right: 10px;" class="cell-divs-basic">
+					<div style="border-width: 2px; border-style: solid; border-color: black;" class="cell-divs-basic cell-heat-1">
+						1
 					</div>
-					active note: 
-					<div style="border-width: 2px; border-style: solid; border-color: black; margin-left: 10px; margin-right: 10px;" class="cell-divs-basic cell-on">
+					<div style="border-width: 2px; border-style: solid; border-color: black;" class="cell-divs-basic cell-heat-2">
 					</div>
-					inactive note error: 
-					<div style="border-width: 2px; border-style: solid; border-color: black; margin-left: 10px; margin-right: 10px;" class="cell-divs-basic cell-off-err">
-						⚠️
+					<div style="border-width: 2px; border-style: solid; border-color: black;" class="cell-divs-basic cell-heat-3">
 					</div>
-					active note error: 
-					<div style="border-width: 2px; border-style: solid; border-color: black; margin-left: 10px; margin-right: 10px;" class="cell-divs-basic cell-on-err">
-						⚠️
+					<div style="border-width: 2px; border-style: solid; border-color: black;" class="cell-divs-basic cell-heat-4">
+					</div>
+					<div style="border-width: 2px; border-style: solid; border-color: black;" class="cell-divs-basic cell-heat-5">
+					</div>
+					<div style="border-width: 2px; border-style: solid; border-color: black;" class="cell-divs-basic cell-heat-6">
+					</div>
+					<div style="border-width: 2px; border-style: solid; border-color: black;" class="cell-divs-basic cell-heat-7">
+					</div> 
+					<div style="border-width: 2px; border-style: solid; border-color: black;" class="cell-divs-basic cell-heat-8">
+					</div>
+					<div style="border-width: 2px; border-style: solid; border-color: black;" class="cell-divs-basic cell-heat-9">
+					</div>
+					<div style="border-width: 2px; border-style: solid; border-color: black;" class="cell-divs-basic cell-heat-10">
+					</div>
+					<div style="border-width: 2px; border-style: solid; border-color: black;" class="cell-divs-basic cell-heat-11">
+						11
 					</div>
 				</li>
-			</ul> 
+			</ul>
+			From 1 to 11 color it shows the amount of combinations that have this particular note. If you see more than one note of the same "heat" it (usually) means that all the notes in that color must be active to produce valid shawzin code. If you are not sure, you can always click [Translate sheet] and see if you get any errors.
 		</li>
 		<li>
 			You can add notes to the 'Interactable note sheet' by clicking on cells, the small numbers below represent the timeline order of notes (1-4096). You are able to make and copy a functional shawzin code using this tool. The left and right skip buttons will skip 4 notes (columns) per click forwards or backwards, you can change the skip amount in the number field near the 'slow mode' toggle. 
@@ -105,7 +116,7 @@
 		<div class="modal-caption">
 			<p>Are you sure you want to delete all saved progress?<br> 
 			Type "OVERRIDE" to reset.<br> 
-			Press <b><code class="button-indicator">'Escape'</code></b> to exit.</p>
+			Press <b><code class="button-indicator">[Escape]</code></b> to exit.</p>
 		</div>
 		<input type="text" id="reset-prompt" class="modal-content"/>
 	</div>
