@@ -842,7 +842,7 @@ class NoteTableBinding {
 	};
 
 	// Render the playhead at the page reload
-	initPlayhead(time = this.startingTime, loading) {
+	initPlayhead(time = this.startingTime, loading, animation) {
 		const x=0||time;
 		if (loading) {
 			for (let y=0; y<this.noteSheetArr.length; y++) { //loop for rows to be colored
@@ -851,6 +851,11 @@ class NoteTableBinding {
 			};
 		};
 		const interest = document.getElementById('note-sheet-container');
+		if (animation === 'fast') {
+			interest.style.scrollBehavior = 'auto';
+		} else {
+			interest.style.scrollBehavior = 'smooth';
+		};
 		const noteSize = 38.437;
 		interest.scrollTo(((noteSize*x)-4), 0); //put the playhead in view
 	};
@@ -882,8 +887,7 @@ class NoteTableBinding {
 		} else {
 			progressSave.call(playerPlayBtn); //any player button will do
 		};
-		//this.initPlayhead.bind(this);
-		this.initPlayhead(...[,true]);
+		this.initPlayhead(...[,true,'fast']);
 	};
 };
 const sheetBinding = new NoteTableBinding(noteSheet, document.getElementById("notes-list"));
@@ -906,7 +910,7 @@ function skipNotes(event, time = sheetBinding.startingTime, skipSize = sheetBind
 		let currentCell = document.getElementById(`td-${x}-tr-${y}`);
 		currentCell.classList.add('cell-playing');
 	};
-	sheetBinding.initPlayhead(x, false);
+	sheetBinding.initPlayhead(x, false, '');
 };
 
 // Sets amount of columns(notes) to skip
@@ -967,11 +971,11 @@ async function setupTrack(event, speed = 62.5, time = sheetBinding.startingTime)
 			await Delay(speed); //16 notes(columns) per second max
 			playTrack(activeNotes);
 			if (x%20 === 0) { //scroll every 20 cells
-				sheetBinding.initPlayhead(x, false);
+				sheetBinding.initPlayhead(x, false, 'fast');
 			};
 			if (sheetBinding.continuePlaying == false) {
 				sheetBinding.startingTime = x;
-				sheetBinding.initPlayhead(...[,false]);
+				sheetBinding.initPlayhead(...[,false,'']);
 				progressSave.call(this);
 				return;
 			};
@@ -979,7 +983,7 @@ async function setupTrack(event, speed = 62.5, time = sheetBinding.startingTime)
 	} else {
 		event.target.src = `images/player-buttons-play.png`;
 		sheetBinding.continuePlaying = false;
-		sheetBinding.initPlayhead(...[,false]);
+		sheetBinding.initPlayhead(...[,false,'']);
 	};
 };
 
@@ -1148,4 +1152,3 @@ async function handleKeyboard({ type, key, repeat, metaKey }) {
  		delete keyLog[key];
 	};
 };
-

@@ -1,5 +1,17 @@
 [	
 	{
+		"title":"Patch 1.0.1",
+		"date":"2023,7,4", 
+		"description": [
+			"Updated the 'Interactable note sheet'"
+		], 
+		"subdescription": {
+			"0": [
+				"Fixed scroll functionality while playing the track, previously smooth scroll caused sound delay."
+			]
+		}		
+	},
+	{
 		"title":"Update 1.0.0",
 		"date":"2023,7,4", 
 		"description": [
