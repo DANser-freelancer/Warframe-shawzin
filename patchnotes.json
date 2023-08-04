@@ -1,5 +1,50 @@
 [	
 	{
+		"title":"Update 1.0.0",
+		"date":"2023,7,4", 
+		"description": [
+			"Upgraded the 'Interactable note sheet'",
+			"Implemented keyboard combinations",
+			"Updated 'Rules/Tips' section",
+			"Updated style handling for [Translate] and [Copy] buttons",
+			"Reworked 'Transpose notes' feature",
+			"Updated the database",
+			"Implemented progress export/import"
+		], 
+		"subdescription": {
+			"0": [
+				"Minor changes to style.",
+				"Minor changes to playhead skip function.",
+				"Updated the heat map feature.",
+				"Note names will stay visible on the left side at all times.",
+				"Note names will also show transposed positions.",
+				"Now hovering over a note name will show you the real musical notation."
+			],
+			"2": [
+				"Added the list of keyboard combinations.",
+				"Reflected recent changes.",
+				"Restructured the list design.",
+				"Added some explanations."
+			],
+			"3": [
+				"Buttons will indicate the result of the operation more clearly."
+			],
+			"4": [
+				"Changed transposition handling and transposition limit.",
+				"Redesigned the transposable note scale.",
+				"Now hovering over a note name will show you the real musical notation."
+			],
+			"5": [
+				"Added new codes."
+			],
+			"6": [
+				"Added new entry to localStorage.",
+				"You can share your settings and notes with other users, or save yours for later.",
+				"More info in 'Rules/Tips' section."
+			]
+		}		
+	},
+	{
 		"title":"Update 0.5.0",
 		"date":"2023,6,30", 
 		"description": [

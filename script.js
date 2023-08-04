@@ -14,12 +14,23 @@ window.START_TIME = () => {
 	console.log(JSON.parse(localStorage.getItem('starting_time')));
 };
 
+window.FUNC_TEST = () => {
+	const testF = function(a,b){
+		console.log(a+b);
+	};
+	testF.try = function(a,b){
+		console.log(a-b);
+	}
+	testF(3,2);
+	testF.try(3,2);
+}
+
 // Global variables
 const translateBtn = document.getElementById('translate');
+const translateBtns = document.querySelectorAll('.translate-btns');
 const translateSheetBtn = document.getElementById('translate-sheet');
 const notesInput = document.getElementById('notes-input');
-const copyBtn = document.getElementById('copy-code');
-const copyBtnDouble = document.querySelectorAll('.copy-code-double');
+const copyBtns = document.querySelectorAll('.copy-code');
 const scaleSelector = document.getElementById('scale-selector');
 const showScaleBtn = document.getElementById('show-scale');
 const scaleDisplay = document.getElementById('scale-display');
@@ -30,7 +41,6 @@ const transpositionIndex = document.getElementById('transposition-index');
 const noteLengths = document.getElementById('note-lengths');
 const databaseSearchBar = document.getElementById('database-search-bar');
 const noteSheet = document.getElementById('note-sheet');
-const noteSheetHeader = document.getElementById('sheet-header-table');
 const playerPlayBtn = document.getElementById('player-Play-button');
 const playerLeftBtn = document.getElementById('player-Left-button');
 const playerRightBtn = document.getElementById('player-Right-button');
@@ -46,7 +56,13 @@ const volumeSlider = document.getElementById('volume');
 const volumeOutput = document.getElementById('volume-value');
 const slowModeToggle = document.getElementById('slow-mode');
 const SAVES = document.querySelectorAll('.saveable');
-const playheadSkipDial = document.getElementById('column-skip-amount');
+const playheadSkipRange = document.getElementById('column-skip-amount');
+const progressExportBtn = document.getElementById('export-progress');
+const importPrompt = document.getElementById('import-prompt');
+const progressImportBtn = document.getElementById('import-label');
+const progressImportModal = document.getElementById('import-modal');
+const progressImportInput = document.getElementById('import-progress');
+const versionCompatibilityToggle = document.getElementById('import-compatibility');
 const findTimingRegex = /[0-9]+/;
 const findNoteRegex = /\D+/i;
 const findDoubleNoteRegex = /[a-z]+[+]+[a-z]+/i;
@@ -61,6 +77,11 @@ let WasSetup = false;
 let WasSampled = false;
 
 // I cal this stuff 'rules', it translates input notes to shawzin code according to key - value pairs
+const linesForTransposition = 
+[
+	0.5,1,1.5,2,2.5,3,3.5,4,4.5,5,5.5,6 //🎼
+];
+Object.freeze(linesForTransposition); 
 const timingConvertRules = 
 [
 	'A','B','C','D','E','F','G','H','I','J','K','L','M',
@@ -90,11 +111,6 @@ const notesAudioNames =
 	'L', 'K', 'J', 'I', 'H', 'G', 'F', 'E', 'D', 'C', 'B', 'A'
 ];
 Object.freeze(notesAudioNames);
-const linesForTransposition = 
-[
-	'-1#', '=#', '1#', '=#', '2🎼', '=#', '3#', '=#', '4#', '=#', '5#', '=#'
-];
-Object.freeze(linesForTransposition); 
 const octaveNotes = 
 [
 	['ThreeDSharp','ThreeC','TwoASharp','TwoG','TwoF','TwoDSharp','TwoC','OneASharp','OneG','OneF','OneDSharp','OneC'],
@@ -108,29 +124,38 @@ const octaveNotes =
 	['ThreeDSharp','ThreeCSharp','TwoASharp','TwoGSharp','TwoFSharp','TwoDSharp','TwoCSharp','OneASharp','OneGSharp','OneFSharp','OneDSharp','OneCSharp']
 ];
 Object.freeze(octaveNotes);
-const octavesShawzin = [// leave empty string for vanila shawzin, it doesn't have a name
+const octavesShawzin = [ //leave empty string for vanila shawzin, it doesn't have a name
 	'Zariman','Grineer','Narmer','Lotus','Sentient','ZarimanVoid','DuviriErsatz','Duviri','Prime',''
 ];
 Object.freeze(octavesShawzin);
+const noteRelations = [//absolute ass, not real
+	['C4','D#4','F4','G4','A#4','C5','D#5','F5','G5','A#5','C6','D#6'],
+	['C4','D4','E4','G4','A4','C5','D5','E5','G5','A5','C6','D6'],
+	['C4','C#4','D4','D#4','E4','F4','F#4','G4','G#4','A4','A#4','B4'],
+	['C4','D#4','F4','F#4','G4','A#4','C5','D#5','F5','F#5','G5','A#5'],
+	['C4','D4','E4','F4','G4','A4','B4','C5','D5','E5','F5','G5'],
+	['C4','D4','D#4','F4','G4','G#4','A#4','C5','D5','D#5','F5','G5'],
+	['C4','C#4','F4','F#4','A#4','C5','C#5','F5','F#5','A5','C6','C#6'],
+	['C4','C#4','E4','F4','G4','G#4','A#4','C5','C#5','E5','F5','G5'],
+	['C#4','D#4','F#4','G#4','A#4','C#5','D#5','F#5','G#5','A#5','C#6','D#6']
+];
+Object.freeze(noteRelations);
 
 // Event listeners
 translateBtn.addEventListener('click', translateNotes);
-translateBtn.addEventListener('click', errorStyle);
 translateSheetBtn.addEventListener('click', translateNotes);
-translateSheetBtn.addEventListener('click', errorStyle);
-copyBtn.addEventListener('click', copyCode);
 showScaleBtn.addEventListener('click', showScale);
 databaseCopyBtn.addEventListener('click', copyDatabase);
-transpositionIndex.addEventListener('click', transposeNotes);
-transpositionIndex.addEventListener('keyup', transposeNotes);
+transpositionIndex.addEventListener('click', () => {changeScale(); sheetBinding.transpose_lines();});
+transpositionIndex.addEventListener('input', () => {changeScale(); sheetBinding.transpose_lines();});
 databaseSearchBar.addEventListener('click', searchDatabase);
-databaseSearchBar.addEventListener('keyup', searchDatabase);
+databaseSearchBar.addEventListener('input', searchDatabase);
 playerPlayBtn.addEventListener('click', setupTrack);
 playerRightBtn.addEventListener('click', skipNotes);
 playerLeftBtn.addEventListener('click', skipNotes);
-scaleSelector.addEventListener('click', () => { WasSampled = false });
+scaleSelector.addEventListener('click', () => { WasSampled = false; changeScale(); sheetBinding.transpose_lines(); });
 shawzinsSelect.addEventListener('click', updateShawzinPic);
-shawzinsSelect.addEventListener('click', () => { WasSampled = false });
+shawzinsSelect.addEventListener('click', () => { WasSampled = false; });
 shawzinPic.addEventListener('click', toggleShawzinModal);
 shawzinPicModal.addEventListener('click', toggleShawzinModal);
 progressResetBtn.addEventListener('click', progressClear);
@@ -138,15 +163,19 @@ progressResetModal.addEventListener('click', progressClear);
 resetPrompt.addEventListener('click', progressClear);
 resetPrompt.addEventListener('keyup', progressClear);
 volumeSlider.addEventListener('input', () => { volumeOutput.value = `${volumeSlider.value}%` });
-playheadSkipDial.addEventListener('click', setSkipAmount);
-playheadSkipDial.addEventListener('keyup', setSkipAmount);
+playheadSkipRange.addEventListener('click', setSkipAmount);
+playheadSkipRange.addEventListener('input', setSkipAmount);
+progressExportBtn.addEventListener('click', () => { exportProgress('ShawzinMC', JSON.parse(JSON.stringify(localStorage))); });
+importPrompt.addEventListener('click', importProgressWarn);
+importPrompt.addEventListener('keyup', importProgressWarn);
+progressImportBtn.addEventListener('click', importProgressWarn);
+progressImportModal.addEventListener('click', importProgressWarn);
+progressImportInput.addEventListener('input', function() { importProgress(Array.from(this.files)); });
 
-// Onloads
+// Window/Document
 window.onload = () => {
-	copyBtn.style.disabled = true; 
-	copyBtn.style.border = "3px dotted black";
-	copyBtn.style.background = "grey";
 	progressLoad();
+	sheetBinding.progress_load();
 	for (let i=0; i<SAVES.length; i++) {
 		SAVES[i].addEventListener('keydown', progressSave);
 		SAVES[i].addEventListener('keyup', progressSave);
@@ -154,22 +183,30 @@ window.onload = () => {
 		SAVES[i].addEventListener('input', progressSave);
 		SAVES[i].addEventListener('change', progressSave);
 	}
-	for (let i=0; i<copyBtnDouble.length; i++){//doubles for one actual copy code button, probably should rework into a css class...
-		copyBtnDouble[i].addEventListener('click', ()=>{copyBtn.focus({focusVisible: true})});
-		copyBtnDouble[i].addEventListener('click', ()=>{copyBtn.click()});
+	for (const button of copyBtns) { //multiple copy buttons for the same code
+		button.addEventListener('click', copyCode);
+		button.classList.add('translation-block');
+	}
+	for (const button of translateBtns) { //multiple copy buttons for the same code
+		button.addEventListener('click', errorStyle);
 	}
 	volumeOutput.value = `${volumeSlider.value}%`;
-	transposeNotes();
-	//sheetBinding.generateNoteSheet(4097); //+1 for the note lables
+	changeScale();
+	sheetBinding.transpose_lines();
+	//sheetBinding.generateNoteSheet(4097); //+1 for the note labels
 	updateShawzinPic();
 	versionControl();
 	setSkipAmount();
+	document.addEventListener('keyup', handleKeyboard);
+	document.addEventListener('keydown', handleKeyboard);
 };
 
-// Loads progress from local storage (if empty - save progress)
+// Loads progress from local storage (if empty -> save progress)
 function progressLoad() {
 	for (let i=0; i<SAVES.length; i++) {
-		if (SAVES[i].id === noteSheet.id || SAVES[i].classList.contains('player-buttons')) { continue };
+		if (SAVES[i].id === noteSheet.id || SAVES[i].classList.contains('player-buttons')) { 
+			continue; 
+		};
 		let load = JSON.parse(localStorage.getItem(SAVES[i].id));
 		if (load != null) {
 			if (SAVES[i].type === 'checkbox') {
@@ -195,22 +232,128 @@ function progressSave() {
 		localStorage.setItem(this.id, JSON.stringify(this.value));
 	};
 };
+
 // Clears progress from local storage
 function progressClear(event) {
-	if (this.id === 'reset-progress') {
+	if (this.id === progressResetBtn.id) {
 		progressResetModal.style.display = "block";
 		resetPrompt.focus();
-	}; 
-	if (event.key === 'Escape' || event.target.id === 'reset-modal') {
+	};
+
+	if (event.key === 'Escape' || event.target.id === progressResetModal.id) {
 		progressResetModal.style.display = "none";
 		resetPrompt.value = '';
 	};
+
 	if (this.value) {
-		if (this.value.toLowerCase() === 'override') {
+		if (this.value.toLowerCase() === 'confirm') {
+			alert(`All saved progress will be deleted.`);
 			localStorage.clear();
-			alert(`All saved progress was deleted.`);
 			progressResetModal.style.display = "none";
 			resetPrompt.value = '';
+		};
+	};
+};
+
+// Exports progress.json file
+function exportProgress(fileName, file) {
+	fileName = `${fileName}_${new Date().toLocaleString().split(', ')[0]}`;
+	const fileBlob = new Blob([JSON.stringify(file, undefined, 2)], {
+    	type: 'application/json'
+	});
+
+	if (window.navigator.msSaveOrOpenBlob) {
+    	window.navigator.msSaveBlob(fileBlob, `${fileName}.json`);
+    	return;
+  	};
+  	//fallback 🡓
+ 	const elem = window.document.createElement('a');
+  	elem.href = window.URL.createObjectURL(fileBlob);
+  	elem.download = `${fileName}.json`;
+  	elem.style = 'display: none';        
+  	document.body.appendChild(elem);
+  	elem.click(); //dispatching an event didn't work...        
+  	document.body.removeChild(elem);
+  	console.log(window.URL.createObjectURL(fileBlob));
+};
+
+// Imports progress.json file
+function importProgress(filesArr) {
+	if (filesArr.length < 1) {
+		alert(`Error: 0 files selected.`);
+		return;
+	};
+
+	const fileFilter = [];
+	for (const file of filesArr) {
+		if (file.type !== 'application/json') {
+			alert(`Error: only '.json' files are accepted.`);
+			return;
+		}
+		fileFilter.push(file);
+	};
+
+	let previous = 0;
+	let newestFile = null; 
+	for (const file of fileFilter) { //fish out the fresh file 
+		if (file.lastModified > previous) {
+			newestFile = file;
+			previous = file.lastModified;
+		};
+	};
+	const fReader = new FileReader();
+	fReader.addEventListener('load', () => { load_progress(fReader.result); });
+	if (newestFile) {
+		fReader.readAsText(newestFile);
+	};
+
+	function load_progress(file) {
+		try {
+			const importStorage = JSON.parse(file);
+			const versionWindow = document.getElementById('last-update');
+			const currentMatch = versionWindow.innerText.match(/\d+/g);
+			let importMatch;
+			try {
+				importMatch = importStorage.version.match(/\d+/g);
+			} catch (err) {
+				alert(`Import Error: import file doesn't contain app version.`);
+				return;
+			};
+			const currentVersion = (Number(currentMatch[0])*100) + (Number(currentMatch[1])*10) + (Number(currentMatch[2])*1);
+			const importVersion = (Number(importMatch[0])*100) + (Number(importMatch[1])*10) + (Number(importMatch[2])*1);	
+			if (versionCompatibilityToggle.checked && currentVersion>importVersion) {
+				alert(`Import Error: import version is older than app version.`);
+				return;
+			};
+			localStorage.clear();
+			for (const [key, value] of Object.entries(importStorage)) {
+				localStorage.setItem(key, value);
+			};
+			location.reload();
+		} catch (err) {
+			alert(`Unexpected Error: ${err}`);
+		};
+	};
+};
+
+// Asks for confirmation before importing progress
+function importProgressWarn(event) {
+	if (this.id === progressImportBtn.id) {
+		progressImportModal.style.display = "block";
+		importPrompt.focus();
+	};
+
+	if (event.key === 'Escape' || event.target.id === progressImportModal.id) {
+		progressImportModal.style.display = "none";
+		importPrompt.value = '';
+	};
+
+	if (this.value) {
+		if (this.value.toLowerCase() === 'override') {
+			alert(`All saved progress will be rewritten.`);
+			progressImportInput.click();
+			progressImportModal.style.display = "none";
+			importPrompt.value = '';
 		};
 	};
 };
@@ -333,69 +476,66 @@ function convertNote(note, position) {
 
 //Style changes if translation error occurs
 function errorStyle() {
-	if (WrongNote === false) {
-		translateBtn.style.border = "revert-layer";
-		copyBtn.style.disabled = false;
-		copyBtn.style.border = "revert-layer";
-		copyBtn.style.background = "revert-layer";
-		copyBtn.style.border = "3px solid green";
-	} else if (copyBtn.style.disabled === true || WrongNote === true) {
-		copyBtn.style.border = "3px dotted black";
-		copyBtn.style.background = "grey";
-		translateBtn.style.border = "3px dashed red";
-		copyBtn.style.disabled = true;
-	}
-}
+	if (!WrongNote) {
+		for (const button of translateBtns) {
+			button.classList.remove('translation-error');
+			button.classList.add('translation-success');
+		};
+		for (const button of copyBtns) {
+			button.classList.remove('translation-block');
+		};
+	} else {
+		for (const button of translateBtns) {
+			button.classList.remove('translation-success');
+			button.classList.add('translation-error');
+		};
+		for (const button of copyBtns) {
+			button.classList.add('translation-block');
+		};
+	};
+};
 
 //Copies final code to clipboard
 function copyCode() {
-	let result = finalCode.join('');
-	if (copyBtn.style.disabled === false) {
+	const result = finalCode.join('');
+	if (!WrongNote) {
 		navigator.clipboard.writeText(result);
-	} 
-}
-
-//Transposes notes by moving the lines number and updates the scale display
-function transposeNotes() {
-	//Input checks
-	let transposedLines = linesForTransposition.slice();
-	if (transpositionIndex.value == 0) {
-		changeScale(linesForTransposition);
-	};
-	if (transpositionIndex.value > 12) {
-		transpositionIndex.value = 12;
-	};
-	if (transpositionIndex.value < -12) {
-		transpositionIndex.value = -12;
-	};
-
-	for (let i=0; i<Math.abs(transpositionIndex.value); i++) {
-		if (transpositionIndex.value<=-1) {
-			let last = transposedLines.pop();
-			if (typeof last === 'number' && last === 5) {
-				transposedLines.unshift(last-7);
-			} else if (typeof last === 'number' && last === -1) {
-				transposedLines.unshift(last-6);
-			} else if (typeof last === 'number') {
-				transposedLines.unshift(last-7);
-			} else {
-				transposedLines.unshift(last);
-			};
-		} else if (transpositionIndex.value>0) {
-			let first = transposedLines.shift();
-			if (typeof first === 'number' && first === -1) {
-				transposedLines.push(first+7);
-			} else if (typeof first === 'number') {
-				transposedLines.push(first+6);
-			} else {
-				transposedLines.push(first);
-			};
-		} else { return; };
-	};
-	changeScale(transposedLines);
+		for (const button of copyBtns) {
+			button.classList.add('translation-success');
+			clearEfects(button,'translation-success',2000);
+		};
+	}; 
 };
 
-//Shows\hides scale
+// Transposes notes by moving the lines number up or down
+function transposeNotes(event) {
+	if (transpositionIndex.value > 11) {
+		transpositionIndex.value = 11;
+	};
+	if (transpositionIndex.value < -11) {
+		transpositionIndex.value = -11;
+	};
+	const num = (transpositionIndex.value*0.5);
+	let transposedLines = [];
+	for (let i=linesForTransposition.length-1; i>-1; i--) {
+		let item = linesForTransposition[i] + num;
+		if (item<1) { //get rid of 0 and extra =#, 'pull up' the numbers a bit 
+			item-=1;
+		};
+		if (Number.isInteger(item)) {
+			if (item === 2) {
+				transposedLines.push(`(${item})🎼`);//\uD834\uDD1E
+			} else {
+				transposedLines.push(`(${item})`);
+			}
+		} else {
+			transposedLines.push('==)');
+		};
+	};
+	return transposedLines;
+};
+
+// Shows\hides scale
 function showScale() {
 	showScaleClicks+=1;
 	if (showScaleClicks % 2 === 0) {
@@ -414,23 +554,28 @@ function showScale() {
 } 
 
 //Changes scale display
-function changeScale(transposedLines) {
-	scaleNotes.innerText = 
-	`${transposedLines[11]}-----------------------------------------------(L)---												
-	${transposedLines[10]}-------------------------------------------(K)---------
-	${transposedLines[9]}---------------------------------------(J)-------------							
-	${transposedLines[8]}-----------------------------------(I)------------------
-	${transposedLines[7]}-------------------------------(H)----------------------
-	${transposedLines[6]}---------------------------(G)-------------------------
-	${transposedLines[5]}-----------------------(F)------------------------------										
-	${transposedLines[4]}-------------------(E)---------------------------------
-	${transposedLines[3]}---------------(D)--------------------------------------		
-	${transposedLines[2]}-----------(C)------------------------------------------		
-	${transposedLines[1]}-------(B)---------------------------------------------
-	${transposedLines[0]}---(A)--------------------------------------------------`;
-}
+function changeScale() {
+	let transposedLines = transposeNotes();
+	scaleNotes.innerHTML = '';
+	for (let y=0; y<12; y++) {
+		const newTR = document.createElement('tr');
+		for (let x=0; x<13; x++) {
+			const newTD = document.createElement('td');
+			if (x<1) {
+				newTD.innerText = `${transposedLines[y]}`;
+			};
+			if (x === 12-y) {
+				newTD.innerText = `[${notesAudioNames[y]}]`;
+				newTD.setAttribute('title', `${noteRelations[scaleSelector.value][11-y]}`);
+				newTD.style.cursor = 'help';
+			};
+			newTR.appendChild(newTD);
+		};
+		scaleNotes.appendChild(newTR);
+	};
+};
 
-let database;//has to be global because it's spread between 3 functions
+let database;//has to be global because it's spread between 3 functions, should probably be a class
 //Fetch database
 async function fetchDatabase() {
 	const response = await fetch('database.json');
@@ -464,7 +609,7 @@ fetchDatabase();
 
 //Searches for a name/band of the songs in the database
 function searchDatabase() {
-	if (databaseSearchBar.value.match(/\S/ig) == null || databaseSearchBar.value == null) {
+	if (databaseSearchBar.value == '') {
 		return;
 	}
 	let matches = 0;
@@ -507,15 +652,15 @@ function copyDatabase() {
 		} else {
 			databaseCopyBtn.style.border = "3px dotted black";
 			databaseCopyBtn.style.background = "grey";
-		}
-	}
-}
+		};
+	};
+};
 
 // Updates shawzin picture near shawzin selector
 function updateShawzinPic() {
 	shawzinPic.src = `images/${shawzinsSelect.value}.png`;
 	shawzinPic.alt = `${shawzinsSelect.value}`;
-}
+};
 
 // Toggles shawzin modal
 function toggleShawzinModal() {
@@ -530,8 +675,9 @@ function toggleShawzinModal() {
 
 // Creates js-html binding
 class NoteTableBinding {
-	constructor(element) {
-		this.tableElement = element;
+	constructor(table, label) {
+		this.labelElement = label;
+		this.tableElement = table;
 		this.noteSheetArr = []; //2d array representation of the note sheet table
 		this.id = 'sheetBinding';
 		this.continuePlaying = true;
@@ -540,24 +686,24 @@ class NoteTableBinding {
 	};
 
 	// Generates interactable note sheet
-	generateNoteSheet(noteLength, mode = 0) {
+	generateNoteSheet(noteLength, generate) {
 		//this.noteSheetArr.length = 0; // clear array
 		for (let y=0; y < 12; y++) {
-			let newTR = document.createElement('tr');
+			const newTR = document.createElement('tr');
 			newTR.id = `tr-${y}`;
 			newTR.className = `sheet-table-rows`;
 			this.tableElement.appendChild(newTR);
-			if (mode === 0) { this.noteSheetArr.push([]); };
+			if (generate) { this.noteSheetArr.push([]); };
 			for (let x=0; x<noteLength; x++) {
-				let newTD = document.createElement('td');
+				const newTD = document.createElement('td');
 				newTD.id = `td-${x}-tr-${y}`;
 				newTD.className = `sheet-table-cells`;
-				let div = document.createElement('div'); //insert into cells for better control over size and content
+				const div = document.createElement('div'); //insert into cells for better control over size and content
 				div.classList.add('cell-divs-basic');
-				if (mode !== 0 && this.noteSheetArr[y][x-1] === 1) { div.classList.add('cell-on'); };
+				if (!generate && this.noteSheetArr[y][x-1] === 1) { div.classList.add('cell-on'); };
 				if (x !== 0) {
 					newTD.addEventListener('click', this.updateNoteCell.bind(this));// overwrite 'this' to be the class and not the source of the event.
-					if (mode === 0) { this.noteSheetArr[y].push(0); };
+					if (generate) { this.noteSheetArr[y].push(0); };
 					div.style.fontSize = "22px";
 					div.style.fontWeight = "bold";
 				};
@@ -578,18 +724,22 @@ class NoteTableBinding {
 					};
 				};
 				if (x === 0) {
-					div.innerText = `${notesAudioNames[y]}`;
-					div.style.flexDirection = "row";
-					div.style.alignItems = "center";
-					div.style.justifyContent = "center";
-					div.style.color = "red";
-					div.style.fontSize = "25px";
-					div.style.fontFamily = "Arial";
-					div.style.textAlign = "center";
-					div.style.fontWeight = "bold";
+					const labelTR = document.createElement('tr');
+					labelTR.id = `tr-${y}`;
+					labelTR.className = `sheet-table-rows`;
+					newTD.style.border = "1px solid black";
+					div.classList.remove('cell-divs-basic');
+					div.classList.add('cell-divs-labels');
+					newTD.appendChild(div);
+					labelTR.appendChild(newTD);
+					this.labelElement.appendChild(labelTR);
+					this.labelElement.style.boxShadow = "0px 0px 10px 5px rgba(31, 28, 99, 1.0)";
+					this.labelElement.style.border = "8px solid #261C63"; 
+					this.labelElement.style.borderRight = "0";
+				} else {
+					newTD.appendChild(div);
+					newTR.appendChild(newTD);
 				};
-				newTD.appendChild(div);
-				newTR.appendChild(newTD);
 			};
 		};
 	};
@@ -693,27 +843,38 @@ class NoteTableBinding {
 
 	// Render the playhead at the page reload
 	initPlayhead(time = this.startingTime, loading) {
-		let x=0||time;
+		const x=0||time;
 		if (loading) {
 			for (let y=0; y<this.noteSheetArr.length; y++) { //loop for rows to be colored
-				let currentCell = document.getElementById(`td-${x}-tr-${y}`);
+				const currentCell = document.getElementById(`td-${x}-tr-${y}`);
 				currentCell.classList.add('cell-playing');
 			};
 		};
-		let interest = document.getElementById('note-sheet-container');
-		let noteSize = 38.439;
-		interest.scrollTo((noteSize*x), 0); //put the playhead in view
+		const interest = document.getElementById('note-sheet-container');
+		const noteSize = 38.437;
+		interest.scrollTo(((noteSize*x)-4), 0); //put the playhead in view
+	};
+
+	// Updates line numbers near the note names
+	transpose_lines() {
+		const transposedLines = transposeNotes();
+		for (let y=0; y<this.noteSheetArr.length; y++) { //loop for rows to be colored
+			const div = document.getElementById(`td-0-tr-${y}`).children[0];
+			div.innerHTML = `${notesAudioNames[y]} <sub>${transposedLines[y]}</sub>`;
+			div.setAttribute('title', `${noteRelations[scaleSelector.value][11-y]}`);
+			div.style.cursor = 'help'; 
+		};
 	};
 
 	// Special progress load
 	progress_load() {
-		let loadA = JSON.parse(localStorage.getItem(noteSheet.id));
-		let loadB = JSON.parse(localStorage.getItem('starting_time'));
+		const loadA = JSON.parse(localStorage.getItem(noteSheet.id));
+		const loadB = JSON.parse(localStorage.getItem('starting_time'));
 		if (loadA != null) {
 			this.noteSheetArr = loadA;
-			this.generateNoteSheet(4097, 1);
+			this.generateNoteSheet(4097, false);
 		} else {
-			this.generateNoteSheet(4097, 0);
+			this.generateNoteSheet(4097, true);
 			progressSave.call(noteSheet);
 		};
 		if (loadB != null) {
@@ -725,8 +886,8 @@ class NoteTableBinding {
 		this.initPlayhead(...[,true]);
 	};
 };
-const sheetBinding = new NoteTableBinding(noteSheet);
-sheetBinding.progress_load();
+const sheetBinding = new NoteTableBinding(noteSheet, document.getElementById("notes-list"));
+
 
 // Deals with forward/backward skip buttons  
 function skipNotes(event, time = sheetBinding.startingTime, skipSize = sheetBinding.skipSize) {
@@ -735,7 +896,7 @@ function skipNotes(event, time = sheetBinding.startingTime, skipSize = sheetBind
 		let currentCell = document.getElementById(`td-${x}-tr-${y}`);
 		currentCell.classList.remove('cell-playing');
 	};
-	if (event.currentTarget.id == 'player-Right-button') {
+	if (event?.currentTarget?.id === playerRightBtn.id || event === 'right') { 
 		sheetBinding.startingTime<=(4096-skipSize) ? sheetBinding.startingTime+=skipSize : sheetBinding.startingTime=4096;
 	} else {
 		sheetBinding.startingTime>=skipSize ? sheetBinding.startingTime-=skipSize : sheetBinding.startingTime=0;
@@ -749,15 +910,15 @@ function skipNotes(event, time = sheetBinding.startingTime, skipSize = sheetBind
 };
 
 // Sets amount of columns(notes) to skip
-function setSkipAmount(event, skipSize = Number(playheadSkipDial.value)) {
+function setSkipAmount(event, skipSize = Number(playheadSkipRange.value)) {
 	if (skipSize == '') {
 		sheetBinding.skipSize = 4;
 	} else {
 		if (skipSize > 4096) {
-			playheadSkipDial.value = 4096;
+			playheadSkipRange.value = 4096;
 		};
 		if (skipSize < 1) {
-			playheadSkipDial.value = 1;
+			playheadSkipRange.value = 1;
 		};
 		sheetBinding.skipSize = skipSize;
 	};
@@ -906,6 +1067,7 @@ async function versionControl() {
 		const versionWindow = document.getElementById('last-update');
 		const match = patchnotes[0].title.match(/\d+\.\d+\.\d+/);
 		versionWindow.innerText = match;
+		localStorage.setItem('version', JSON.stringify(match));
 	}
 	lastVersion();
 }
@@ -914,12 +1076,76 @@ async function versionControl() {
 function Delay(ms) {
 	return new Promise((resolve) => {
 		setTimeout(resolve, ms);
-	})
-}
+	});
+};
+
+// General function for effect timeout
+async function clearEfects(element, effect, time) {
+	await Delay(time);
+	element.classList.remove(effect);
+};
 
 // Custom error
 function CustomError(message) {
 	const error = new Error(message);
 	return error;
-}
+};
 CustomError.prototype = Object.create(Error.prototype);
+
+// Custom keyboard combinations
+const keyLog = {};
+async function handleKeyboard({ type, key, repeat, metaKey }) {
+	if (repeat) { //delay the function by 100ms, not enough to notice but enough to decrease lag when playing the track
+		await Delay(100);
+	};
+	key = key.toLowerCase();
+	if (type === 'keydown') {
+		keyLog[key] = true;
+		if (keyLog.shift) {
+			if (key === 'arrowright') {
+				playerRightBtn.dispatchEvent(new Event('click'));
+	    	};
+	    	if (key === 'arrowleft') {
+				playerLeftBtn.dispatchEvent(new Event('click'));
+   			};
+   			if (key === 'arrowup') {
+				++playheadSkipRange.value;
+				playheadSkipRange.dispatchEvent(new Event('input'));
+   			};
+   			if (key === 'arrowdown') {
+   				--playheadSkipRange.value;
+				playheadSkipRange.dispatchEvent(new Event('input'));
+   			};
+   			if (key === 'p') {
+				playerPlayBtn.dispatchEvent(new Event('click'));
+   			};
+		};
+   		if (keyLog.v) {
+   			if (key === '=' || key === '+') {
+				++volumeSlider.value;
+				volumeSlider.dispatchEvent(new Event('input'));
+   			};
+   			if (key === '-' || key === '_') {
+				--volumeSlider.value;
+				volumeSlider.dispatchEvent(new Event('input'));
+   			};
+   		};
+   		if (keyLog.t) {
+   			if (key === '=' || key === '+') {
+				++transpositionIndex.value;
+				transpositionIndex.dispatchEvent(new Event('input'));
+   			};
+   			if (key === '-' || key === '_') {
+				--transpositionIndex.value;
+				transpositionIndex.dispatchEvent(new Event('input'));
+   			};
+   		};
+   		if (keyLog.d && keyLog.a && keyLog.n && keyLog.s && keyLog.e && keyLog.r) {
+   			console.log(`easter egg`);
+   		}
+	};
+	if (type === 'keyup') { //remove the key from the log on keyup.
+ 		delete keyLog[key];
+	};
+};
+

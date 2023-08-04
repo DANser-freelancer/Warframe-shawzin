@@ -7,13 +7,13 @@
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<meta name="http-equiv" content="content-security-policy">
 	<meta charset="utf-8">
-	<meta name="keywords" content="shawzin, compiler, music, song, warframe, notes, note, sahzin, songs, wrframe, translate, translator, translating, compose, compositor, composing, frame, composin">
+	<meta name="keywords" content="shawzin, compiler, music, song, warframe, notes, note, shazin, songs, wrframe, translate, translator, translating, compose, compositor, composing, frame, composin, composer, shawzin music, shawzin compiler, ShawzinComposer, Compozin, code, shawzin code, shawzin codes, shawzin code database">
 	<meta name="description" content="Online shawzin music compiler, translates any music you want into shawzin code">
 	<meta name="application-name" content="Shawzin music compiler">
 	<meta name="author" content="DANser-freelancer">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<style> @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&family=PT+Serif&display=swap');</style>
-	<script type="module" src="script.js"></script>
+	<script type="module" src="script.js" defer></script>
 </head>
 <body>
 <article class="body">
@@ -25,81 +25,122 @@
 	<h3>Rules/Tips:</h3>
 	<ul id='rules'>
 		<li>
-			Shawzin has a concrete set of notes for each scale, you cannot transition over to the other scale mid-play as you would do with a piano for example.
+			App notes explanation:
+			<ul>
+				<li>
+					The structure of the notes is such: (1-4096)+(A/B/C/D/E/F/G/H/I/J/K/L)?(+)(A/B/C/D/E/F/G/H/I/J/K/L).
+				</li>
+				<li>
+					Each note must be separated by a comma (2A, 34F,...).
+				</li>
+				<li>
+					You must add number (1-4096) before each note to indicate it's position on the timeline, you can start from any position.
+				</li>
+				<li>
+					The input field is case insensitive, you can write "A" or "a". Also you can use spaces and newlines, and you can resize it. 
+				</li>
+				<li>
+					To play a combination of notes in the same moment you must write them using '+'
+					with only one timing indication, and with no repeating notes.<br> 
+					e.g. (25A+B+C, ...)✔️|||(25C+A+B, ...)✔️|||(25C+A+B+B, ...)❌|||(25A,25B,25C, ...)❌|||(25A+25B+25C, ...)❌.<br>
+					Unfortunately not all notes can be played together, more info <a href="https://docs.google.com/spreadsheets/d/1Zd0L6b1W8ic7s9b8DKJHDBNRB-Z0tdwQEhvQl6axFCU/edit?usp=sharing" target="_blank">here</a>.
+				</li>
+				<li>
+					You will need to approximate the melody, use the 'Transpose notes' feature as a visual aid, it will display the line numbers in the 'Iteractable note sheet' as well. Line 2 is where you would find the clef 🎼<!--&#119070;-->.
+				</li>
+				<li>
+					Notes written on the transposable scale do not carry the actual musical names, they are intended for easier visualisation. To see true note relations visit this <a href="https://warframe.fandom.com/wiki/Shawzin#Note_Relations" target="_blank">table</a>, or hover over note names in the transposable note scale and 'Interactable note sheet'.
+				</li>
+			</ul>
 		</li>
 		<li>
-			You will need to approximate the melody, use the "Transpose notes" feature as a visual aid, 
-			click on the field to transpose, line 2 is where you would find the clef.
+			Shawzin explanation:
+			<ul>
+				<li>
+					Shawzin has a concrete set of notes for each scale, you cannot transition over to the other scale mid-play as you would do with a piano for example.
+				</li>
+				<li>
+					Shawzin can only play 1/16 notes with 4/4 musical time, in other words you can play 16 consecutive notes in one second, max length of the track is therefore 8min 32sec.<br> 
+					These are really small notes so if your music seems to run too fast try enabling slow mode in your shawzin.<br>
+					Note that while notes are small, the sounds can be quite long, in particular the sounds of Voids song, Aristei prime, and Lonesome shawzins. 
+				</li>
+			</ul>
 		</li>
 		<li>
-			The structure of the notes is such: (1-4096)+(A/B/C/D/E/F/G/H/I/J/K/L).
+			Export/Import feature explanation:
+			<ul>
+				<li>You can click [Export Progress] to save a file containing current app version number, all your settings, and all your notes.</li>
+				<li>You can click [Import Progress] to load your or someone else's saved file.</li>
+				<li>[Check version compatibility] toggle will stop the app from importing old save files, they can potentially break your progress completely. I recommend you first export your current progress before importing old or unknown files.</li>
+				<li>The app only makes use of one file, in case you select multiple files it will use the one that has been created/changed most recently.</li>
+				<li>I have placed some safeguards for imported files, however I can't guarantee the safety of your progress if you import invalid files, so... just don't do it?</li>
+				<li>The name of the exported file is always "ShawzinMC_{date in your local format}.json", however you can rename them as there are no name restrictions for imported files (except for ".json" extention, don't touch that).</li>
+			</ul>
 		</li>
 		<li>
-			Each note must be separated by a comma (2A, 34F,...).
+			All progress on the page is saved and can be reset(deleted). Your text notes, notes duration, notes transpossition, scale, shawzin, slow mode, music volume, note sheet notes, skip amount, playhead position persist even if you close the window.
+			The page <b>doesn't</b> reload after you reset the progress, as your last failsafe, you can click on the windows and selections you want to be saved again. 
 		</li>
 		<li>
-			You must add number (1-4096) before each note to indicate it's position on the timeline, you can start from any position.
-		</li>
-		<li>
-			To play a combination of notes in the same moment you must write them using '+'
-			with only one timing indication, and with no repeating notes.<br> 
-			e.g. (25A+B+C, ...)✔️|||(25C+A+B, ...)✔️|||(25C+A+B+B, ...)❌|||(25A,25B,25C, ...)❌|||(25A+25B+25C, ...)❌.<br>
-			Unfortunately not all notes can be played together, more info <a href="https://docs.google.com/spreadsheets/d/1Zd0L6b1W8ic7s9b8DKJHDBNRB-Z0tdwQEhvQl6axFCU/edit?usp=sharing" target="_blank">here</a>.
-		</li>
-		<li>
-			Shawzin can only play 1/16 notes with 4/4 musical time, in other words you can play 16 consecutive notes in one second, max length of the track is therefore 8min 32sec. 
-			These are really small notes so if your music seems to run too fast try enabling slow mode in your shawzin.
-		</li>
-		<li>
-			The input field is case insensitive, you can write "A" or "a". Also you can use spaces and newlines, and you can resize it. 
-		</li>
-		<li>
-			All progress on the page is saved and can be reset(deleted). Your text notes, notes duration, notes transpossition, scale, shawzin, slow mode, music volume, note sheet notes, skip amount, playhead position persist even if you close the window. The page <b>doesn't</b> reload after you reset the progress, as your last failsafe, you can click on the windows and selections you want to be saved again. 
-		</li>
-		<li>
-			The database shows name of the song + name of the band + approximate length of the track<sup>*(It may vary if you enable slow mode)</sup>. When searching for a song - write song/band name and click on the field to search.
-		</li>
-		<li>
-			Notes written on the transposable scale do not carry the actual musical names, they are intended for easier visualisation. To see true note relations visit this <a href="https://warframe.fandom.com/wiki/Shawzin#Note_Relations" target="_blank">table</a>, where 4 is lowest and 6 is highest pitch.
+			The database shows name of the song + name of the band + approximate length of the track.<sub>*(may vary if you enable slow mode)</sub><br> 
+			When searching for a song - write song/band name and click on the field to search.
 		</li>
 		<li>
 			'Interactable note sheet' heat map:
 			<ul>
 				<li style="display: flex; align-items: center;">
-					<div style="border-width: 2px; border-style: solid; border-color: black;" class="cell-divs-basic cell-heat-1">
-						1
+					<div class="cell-divs-basic cell-heat-1 showcase-heat-cells">
+						<p>1</p>
 					</div>
-					<div style="border-width: 2px; border-style: solid; border-color: black;" class="cell-divs-basic cell-heat-2">
+					<div class="cell-divs-basic cell-heat-2 showcase-heat-cells">
 					</div>
-					<div style="border-width: 2px; border-style: solid; border-color: black;" class="cell-divs-basic cell-heat-3">
+					<div class="cell-divs-basic cell-heat-3 showcase-heat-cells">
 					</div>
-					<div style="border-width: 2px; border-style: solid; border-color: black;" class="cell-divs-basic cell-heat-4">
+					<div class="cell-divs-basic cell-heat-4 showcase-heat-cells">
 					</div>
-					<div style="border-width: 2px; border-style: solid; border-color: black;" class="cell-divs-basic cell-heat-5">
+					<div class="cell-divs-basic cell-heat-5 showcase-heat-cells">
 					</div>
-					<div style="border-width: 2px; border-style: solid; border-color: black;" class="cell-divs-basic cell-heat-6">
+					<div class="cell-divs-basic cell-heat-6 showcase-heat-cells">
 					</div>
-					<div style="border-width: 2px; border-style: solid; border-color: black;" class="cell-divs-basic cell-heat-7">
+					<div class="cell-divs-basic cell-heat-7 showcase-heat-cells">
 					</div> 
-					<div style="border-width: 2px; border-style: solid; border-color: black;" class="cell-divs-basic cell-heat-8">
+					<div class="cell-divs-basic cell-heat-8 showcase-heat-cells">
 					</div>
-					<div style="border-width: 2px; border-style: solid; border-color: black;" class="cell-divs-basic cell-heat-9">
+					<div class="cell-divs-basic cell-heat-9 showcase-heat-cells">
 					</div>
-					<div style="border-width: 2px; border-style: solid; border-color: black;" class="cell-divs-basic cell-heat-10">
+					<div class="cell-divs-basic cell-heat-10 showcase-heat-cells">
 					</div>
-					<div style="border-width: 2px; border-style: solid; border-color: black;" class="cell-divs-basic cell-heat-11">
-						11
+					<div class="cell-divs-basic cell-heat-11 showcase-heat-cells">
+						<p>11</p>
 					</div>
 				</li>
 			</ul>
-			From 1 to 11 color it shows the amount of combinations that have this particular note. If you see more than one note of the same "heat" it (usually) means that all the notes in that color must be active to produce valid shawzin code. If you are not sure, you can always click [Translate sheet] and see if you get any errors.
+			From 1 to 11 color it shows the amount of combinations that have this particular note. If you see more than one note of the same "heat" it (usually) means that all the notes in that color must be active to produce valid shawzin code. If you aren't sure, you can always click [Translate sheet] and see if you get any errors.
 		</li>
 		<li>
-			You can add notes to the 'Interactable note sheet' by clicking on cells, the small numbers below represent the timeline order of notes (1-4096). You are able to make and copy a functional shawzin code using this tool. The left and right skip buttons will skip 4 notes (columns) per click forwards or backwards, you can change the skip amount in the number field near the 'slow mode' toggle. 
-			To scroll with your mouse wheel hold SHIFT.
+			You can add notes to the 'Interactable note sheet' by clicking on cells, the small numbers below represent the timeline order of notes (1-4096). You are able to make and copy a functional shawzin code using this tool. The left and right skip buttons will skip 4 notes (columns) per click forwards or backwards, you can change the skip amount in the number field near the [Slow mode] toggle. 
+			To scroll with your mouse wheel <code>Hold[Shift]</code> then <code>Scroll</code>.
 		</li>
 		<li>
-			If something is broken or the version of this app changed you should refresh the page without cache, press Ctrl+F5.
+			Keyboard combinations: <sub>*(may lag when held down)</sub>
+			<ul>
+				<li><code>Hold[Shift]</code>+<code>Press/Hold[🡒]</code> skip forwards x notes.</li>
+				<li><code>Hold[Shift]</code>+<code>Press/Hold[🡐]</code> skip backwards x notes.</li>
+				<li><code>Hold[Shift]</code>+<code>Press/Hold[🡑]</code> increase skip amount.</li>
+				<li><code>Hold[Shift]</code>+<code>Press/Hold[🡓]</code> decrease skip amount.</li>
+				<li><code>Hold[Shift]</code>+<code>Press/Hold[P]</code> play/pause note sheet.</li>
+				<li><code>Hold[V]</code>+<code>Press/Hold[+]</code> increase volume.</li>
+				<li><code>Hold[V]</code>+<code>Press/Hold[-]</code> decrease volume.</li>
+				<li><code>Hold[T]</code>+<code>Press/Hold[+]</code> transpose notes up.</li>
+				<li><code>Hold[T]</code>+<code>Press/Hold[-]</code> transpose notes down.</li>
+			</ul>
+		</li>
+		<li>
+			This app uses <a href="https://en.wikipedia.org/wiki/Web_storage" target="_blank">localStorage</a> of your browser to save non-expiring data, with limited max size. If you get "QuotaExceededError" you might want to clear entries you received on other websites that you don't visit anymore.<br>
+			Export progress to see how much space this particular app occupies (the size of the file will be approximately equal to current localStorage usage).
+		</li>
+		<li>
+			If something is broken or the version of this app changed you should refresh the page without cache, press <code>[Ctrl]+[F5]</code>.
 		</li>
 		<li>
 			Keep an eye on the 'Patchnotes' section, this app is still in development.
@@ -109,20 +150,40 @@
 		</li>
 	</ul>
 	<!-- Everything related to note input and translation parameters -->
-	<textarea name="notes-input" id="notes-input" class="saveable" placeholder="Write your notes here" cols="55" rows ="5" maxlength="200000" wrap="soft" autofocus required></textarea><br>
+	<textarea name="notes-input" id="notes-input" class="saveable" placeholder="Write your notes here" cols="90" rows ="8" maxlength="200000" wrap="soft" autofocus required></textarea><br>
 	<!-- Progress reset and warning -->
 	<input type="button" name="reset progress" id="reset-progress" value="Reset Progress"/>
 	<div id="reset-modal" class="modal">
 		<div class="modal-caption">
 			<p>Are you sure you want to delete all saved progress?<br> 
-			Type "OVERRIDE" to reset.<br> 
+			Type "CONFIRM" to reset.<br> 
 			Press <b><code class="button-indicator">[Escape]</code></b> to exit.</p>
 		</div>
 		<input type="text" id="reset-prompt" class="modal-content"/>
 	</div>
-	<input type="button" name="translate" id="translate" value="Translate field"/>
-	<input type="button" name="copy code" id="copy-code" value="Copy code"/><br>
-	<label>Choose a scale:</label>
+	<input type="button" name="translate" id="translate" class="translate-btns" value="Translate field"/>
+	<input type="button" name="copy code" class="copy-code" value="Copy code"/>
+	<input type="button" name="export" id="export-progress" value="Export Progress"/>
+	<label class="label-button" id="import-label">
+		Import Progress
+	</label>
+	<input type="file" name="import" id="import-progress" value="Import Progress" accept=".json"
+	style="display: none;" multiple>
+	<div id="import-modal" class="modal">
+		<div class="modal-caption">
+			<p>This action will rewrite all saveable values.<br>
+			I recommend you export your progress first.<br> 
+			Type "OVERRIDE" to import.<br> 
+			Press <b><code class="button-indicator">[Escape]</code></b> to exit.</p>
+		</div>
+		<input type="text" id="import-prompt" class="modal-content"/>
+	</div>
+	<label class="label-button" title="Click to toggle import compatibility check.">
+		Check version compatibility
+		<input type="checkbox" name="import compatibility toggle" id="import-compatibility" 
+		title="Click to toggle import compatibility check." checked/>
+	</label><br>
+	<label for="scale-selector">Choose a scale:</label>
 	<select name="Scale" id="scale-selector" class="saveable">
 		<option value="0">Pentatonic Minor</option>
 		<option value="1">Pentatonic Major</option>
@@ -135,20 +196,20 @@
 		<option value="8">Yo</option>
 	</select>
 	<!-- Everything related to note scale -->
-	<label>Transpose notes:</label><input type="number" name="transposition-index" id="transposition-index" class="saveable" max="12" min="-12" value="0" title="Click on the field to transpose the scale."/>
+	<label for="transposition-index">Transpose notes:</label><input type="number" name="transposition-index" id="transposition-index" class="saveable" max="11" min="-11" step="1" value="0" title="Click on the field to move the notes up/down a position."/>
 	<input type="button" name="show-scale" id="show-scale" value="Hide scale"/>
 	<div id="note-displays">
 		<div  id="scale-display"> 
-			<p id="scale-notes">
-			</p> 
+			<table id="scale-notes">
+			</table> 
 			<p>Low ============================>> High</p>
 		</div>
 		<img id="note-lengths" src="images/note-lengths-diagram.jpg" alt="note lengths diagram"/>
 	</div>
 	<!-- Everything related to database -->
 	<div class="database">
-		<p>Here you can copy song codes from our database:</p>
-		<input type="text" name="database-search-bar" id="database-search-bar" size="30" maxlength="100" placeholder="Search for name/band of the song" title="Click on the field to search"/>
+		<p>Shawzin codes database:</p>
+		<input type="text" name="database-search-bar" id="database-search-bar" size="60" maxlength="100" placeholder="Search for name/band of the song" title="Click on the field to search"/>
 		<input type="button" id="copy-database" value="Copy code"/><br>
 		<select name="Database selector" id="database-selector"></select>
 	</div>
@@ -180,7 +241,7 @@
 					<option value="NarmerShawzin">Narmer Shawzin (Electric Guitar, Distortion)</option>
 					<option value="NelumboShawzin">Nelumbo Shawzin (Acoustic Guitar)</option>
 					<option value="TiamatShawzin">Tiamat Shawzin (Bass Guitar)</option>
-					<option value="VoidsSongShawzin">Voids Song Shawzin (Acapella)</option>
+					<option value="VoidsSongShawzin">Void's Song Shawzin (Acapella)</option>
 					<option value="LonesomeShawzin">Lonesome Shawzin (Bell)</option>
 					<option value="CourtlyShawzin">Courtly Shawzin (Sitar)</option>
 					<option value="AristeiPrimeShawzin">Aristei Prime Shawzin (Harp)</option>
@@ -194,13 +255,18 @@
   					<div id="shawzin-pic-caption"></div>
   				</div>
 			</div>
-			<div id="note-sheet-container">
-				<table id="note-sheet" class="saveable"></table>
+			<div class="flex-div-row">
+				<table id="notes-list"></table>
+				<div id="note-sheet-container">
+					<table id="note-sheet" class="saveable"></table>
+				</div>
 			</div>
 			<sup>*All sound files are created&owned by Digital Extremes.</sup>
 			<div>
-				<input type="button" name="translate sheet" id="translate-sheet" value="Translate sheet"/>
-				<input type="button" name="copy code from sheet" value="Copy code" class="copy-code-double"/>
+				<input type="button" name="translate sheet" id="translate-sheet" 
+				class="translate-btns" value="Translate sheet"/>
+				<input type="button" name="copy code from sheet" value="Copy code" 
+				class="copy-code"/>
 			</div>
 		</div>
 	</div>
@@ -216,10 +282,9 @@
 <!-- Credits section -->
 <footer>
 	<div class="foot">
-		<p>Version: <code id="last-update"></code></p>
-		<p>Some of my own research, with more <a href="https://docs.google.com/spreadsheets/d/1Zd0L6b1W8ic7s9b8DKJHDBNRB-Z0tdwQEhvQl6axFCU/edit?usp=sharing" target="_blank">keys</a>.</p>
-		<p>Credit to everybody here for gathering <a href="https://docs.google.com/document/d/1VvlM4IQr8bfUV8pCJMVNRaG6piJTR9_t-xq7wQaxpho/edit" target="_blank">info</a>!</p>
-		<p>Do you wish to report a <a href="https://github.com/DANser-freelancer/Warframe-shawzin/issues/new" target="_blank">bug</a> or give some <a href="https://github.com/DANser-freelancer/Warframe-shawzin/issues/1" target="_blank">feedback</a>?</p>
+		<p>Version: <code id="last-update"></code> ©GNU Affero General Public License v3.0</p>
+		<p>Credit to <a href="https://www.youtube.com/@Buff00n/featured">Buff00n</a> for being the biggest.. 'involuntary contributor'.<sub>(that is for shawzin codes, not source code)</sub></p>
+		<p>Credit to everybody here for gathering <a href="https://docs.google.com/document/d/1VvlM4IQr8bfUV8pCJMVNRaG6piJTR9_t-xq7wQaxpho/edit" target="_blank">info</a>! Some of my own research, with more <a href="https://docs.google.com/spreadsheets/d/1Zd0L6b1W8ic7s9b8DKJHDBNRB-Z0tdwQEhvQl6axFCU/edit?usp=sharing" target="_blank">keys</a>. Do you wish to report a <a href="https://github.com/DANser-freelancer/Warframe-shawzin/issues/new" target="_blank">bug</a> or give some <a href="https://github.com/DANser-freelancer/Warframe-shawzin/issues/1" target="_blank">feedback</a>?</p>
 	</div>
 </footer>
 </body>
