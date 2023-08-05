@@ -57,69 +57,128 @@
 			Shawzin explanation:
 			<ul>
 				<li>
-					Shawzin has a concrete set of notes for each scale, you cannot transition over to the other scale mid-play as you would do with a piano for example.
+					Shawzin has a concrete set of notes for each scale, you cannot transition over to the other scale mid-play as you would do with a piano for example. Unless you don't use autoplay, then you can press tab a bunch of times at the right moment. <sub>(at that point you're better off fiddling with a midi bot)</sub>
 				</li>
 				<li>
-					Shawzin can only play 1/16 notes with 4/4 musical time, in other words you can play 16 consecutive notes in one second, max length of the track is therefore 8min 32sec.<br> 
-					These are really small notes so if your music seems to run too fast try enabling slow mode in your shawzin.<br>
-					Note that while notes are small, the sounds can be quite long, in particular the sounds of Voids song, Aristei prime, and Lonesome shawzins. 
+					Shawzin note spacing allows for 16 notes/s or 8 notes/s in slow mode, max length of the track is therefore 8min 32sec.<br>  
+				</li>
+				<li>
+					You cannot "stretch" the note out like a piano or a violin because of how shawzin codes work, if you don't use autoplay then you can use whammy but it will lower the notes by a semitone.
+				</li>
+				<li>
+					These are really small notes so if your music seems to run too fast try enabling slow mode in your shawzin.
+				</li>
+				<li>
+					Note that while note spacing is small, the note sounds can be quite long, in particular the sounds of Void's song, Aristei prime, and Lonesome shawzins.
+				</li>
+			</ul>
+		</li>
+		<li>
+			Interactable note sheet explanation:
+			<ul>
+				<li>
+					'Interactable note sheet' heat map:
+					<ul>
+						<li style="display: flex; align-items: center;">
+							<div class="cell-divs-basic cell-heat-1 showcase-heat-cells">
+								<p>1</p>
+							</div>
+							<div class="cell-divs-basic cell-heat-2 showcase-heat-cells">
+							</div>
+							<div class="cell-divs-basic cell-heat-3 showcase-heat-cells">
+							</div>
+							<div class="cell-divs-basic cell-heat-4 showcase-heat-cells">
+							</div>
+							<div class="cell-divs-basic cell-heat-5 showcase-heat-cells">
+							</div>
+							<div class="cell-divs-basic cell-heat-6 showcase-heat-cells">
+							</div>
+							<div class="cell-divs-basic cell-heat-7 showcase-heat-cells">
+							</div> 
+							<div class="cell-divs-basic cell-heat-8 showcase-heat-cells">
+							</div>
+							<div class="cell-divs-basic cell-heat-9 showcase-heat-cells">
+							</div>
+							<div class="cell-divs-basic cell-heat-10 showcase-heat-cells">
+							</div>
+							<div class="cell-divs-basic cell-heat-11 showcase-heat-cells">
+								<p>11</p>
+							</div>
+						</li>
+						<li>
+							From 1 to 11 color it shows the amount of combinations that have this particular note.
+						</li>
+						<li>
+							If you see more than one note of the same "heat" it usually means that all the notes in that color must be active to produce valid shawzin code. 
+						</li>
+						<li>
+							If you aren't sure, you can always click [Translate sheet] and see if you get any errors.
+						</li>
+					</ul>
+				</li>
+				<li>
+					You can add notes to the 'Interactable note sheet' by clicking on cells, the small numbers below represent the timeline position of notes (1-4096) and position of a 4/4 bar(measure) in "{}" brackets, e.g. note n1213 bar n{82}.
+				</li>
+				<li>
+					The left and right skip buttons will skip 4 notes (columns) per click forwards or backwards, you can change the skip amount in the number field near the [Slow mode] toggle.
+				</li>
+				<li>
+					You are able to make and copy a functional shawzin code using this tool.
+				</li> 
+				<li>
+					To scroll with your mouse wheel <code>Hold[Shift]</code> then <code>Scroll</code>.
+				</li>
+			</ul>
+		</li>
+		<li>
+			Progress explanation:
+			<ul>
+				<li>
+					<p>All progress on the page is saved and can be reset(deleted).</p>
+					<ul>
+						<table>
+							<tr><td>Text field notes</td><td>Set music volume</td></tr>
+							<tr><td>Notes transposition</td><td>Note sheet notes</td></tr>
+							<tr><td>Selected scale</td><td>Set skip amount</td></tr>
+							<tr><td>Selected shawzin</td><td>Playhead position</td></tr>
+							<tr><td>Toggled slow mode</td><td></td></tr>
+						</table>
+					</ul> 
+					<p>All persist even if you close the window.</p>
+				</li>
+				<li>
+					The page <u>doesn't</u> reload after you reset the progress, as your last failsafe, you can click and change the windows and selections you want to be saved again.
+				</li>
+				<li>
+					This app uses <a href="https://en.wikipedia.org/wiki/Web_storage" target="_blank">localStorage</a> of your browser to save the progress as non-expiring data, with limited max size. If you get "QuotaExceededError" you might want to clear entries you received on other websites that you don't visit anymore.<br>
+				</li>
+				<li>
+					Export progress to see how much space this particular app occupies (the size of the file will be approximately equal to current localStorage usage).
 				</li>
 			</ul>
 		</li>
 		<li>
 			Export/Import feature explanation:
 			<ul>
-				<li>You can click [Export Progress] to save a file containing current app version number, all your settings, and all your notes.</li>
-				<li>You can click [Import Progress] to load your or someone else's saved file.</li>
-				<li>[Check version compatibility] toggle will stop the app from importing old save files, they can potentially break your progress completely. I recommend you first export your current progress before importing old or unknown files.</li>
-				<li>The app only makes use of one file, in case you select multiple files it will use the one that has been created/changed most recently.</li>
-				<li>I have placed some safeguards for imported files, however I can't guarantee the safety of your progress if you import invalid files, so... just don't do it?</li>
-				<li>The name of the exported file is always "ShawzinMC_{date in your local format}.json", however you can rename them as there are no name restrictions for imported files (except for ".json" extention, don't touch that).</li>
-			</ul>
-		</li>
-		<li>
-			All progress on the page is saved and can be reset(deleted). Your text notes, notes duration, notes transpossition, scale, shawzin, slow mode, music volume, note sheet notes, skip amount, playhead position persist even if you close the window.
-			The page <b>doesn't</b> reload after you reset the progress, as your last failsafe, you can click on the windows and selections you want to be saved again. 
-		</li>
-		<li>
-			The database shows name of the song + name of the band + approximate length of the track.<sub>*(may vary if you enable slow mode)</sub><br> 
-			When searching for a song - write song/band name and click on the field to search.
-		</li>
-		<li>
-			'Interactable note sheet' heat map:
-			<ul>
-				<li style="display: flex; align-items: center;">
-					<div class="cell-divs-basic cell-heat-1 showcase-heat-cells">
-						<p>1</p>
-					</div>
-					<div class="cell-divs-basic cell-heat-2 showcase-heat-cells">
-					</div>
-					<div class="cell-divs-basic cell-heat-3 showcase-heat-cells">
-					</div>
-					<div class="cell-divs-basic cell-heat-4 showcase-heat-cells">
-					</div>
-					<div class="cell-divs-basic cell-heat-5 showcase-heat-cells">
-					</div>
-					<div class="cell-divs-basic cell-heat-6 showcase-heat-cells">
-					</div>
-					<div class="cell-divs-basic cell-heat-7 showcase-heat-cells">
-					</div> 
-					<div class="cell-divs-basic cell-heat-8 showcase-heat-cells">
-					</div>
-					<div class="cell-divs-basic cell-heat-9 showcase-heat-cells">
-					</div>
-					<div class="cell-divs-basic cell-heat-10 showcase-heat-cells">
-					</div>
-					<div class="cell-divs-basic cell-heat-11 showcase-heat-cells">
-						<p>11</p>
-					</div>
+				<li>
+					You can click [Export Progress] to save a file containing current app version number, and everything that is saved as "progress".
+				</li>
+				<li>
+					You can click [Import Progress] to load your or someone else's saved file.
+				</li>
+				<li>
+					[Check version compatibility] toggle will stop the app from importing old save files, they can potentially break your progress completely. I recommend you first export your current progress before importing old or unknown files.
+				</li>
+				<li>	
+					The app only makes use of one file, in case you select multiple files it will use the one that has been created/changed most recently.
+				</li>
+				<li>
+					I have placed some safeguards for imported files, however I can't guarantee the safety of your progress if you import invalid files, so... just don't do it?
+				</li>
+				<li>
+					The name of the exported file is always "ShawzinMC_{date in your local format}.json", however you can rename them as there are no name restrictions for imported files (except for ".json" extention, don't touch that).
 				</li>
 			</ul>
-			From 1 to 11 color it shows the amount of combinations that have this particular note. If you see more than one note of the same "heat" it (usually) means that all the notes in that color must be active to produce valid shawzin code. If you aren't sure, you can always click [Translate sheet] and see if you get any errors.
-		</li>
-		<li>
-			You can add notes to the 'Interactable note sheet' by clicking on cells, the small numbers below represent the timeline order of notes (1-4096). You are able to make and copy a functional shawzin code using this tool. The left and right skip buttons will skip 4 notes (columns) per click forwards or backwards, you can change the skip amount in the number field near the [Slow mode] toggle. 
-			To scroll with your mouse wheel <code>Hold[Shift]</code> then <code>Scroll</code>.
 		</li>
 		<li>
 			Keyboard combinations: <sub>*(may lag when held down)</sub>
@@ -136,8 +195,8 @@
 			</ul>
 		</li>
 		<li>
-			This app uses <a href="https://en.wikipedia.org/wiki/Web_storage" target="_blank">localStorage</a> of your browser to save non-expiring data, with limited max size. If you get "QuotaExceededError" you might want to clear entries you received on other websites that you don't visit anymore.<br>
-			Export progress to see how much space this particular app occupies (the size of the file will be approximately equal to current localStorage usage).
+			The database shows name of the song + name of the band + approximate length of the track.<sub>*(length may vary if you enable slow mode)</sub><br> 
+			When searching for a song - write song or band name and click on the field to search.
 		</li>
 		<li>
 			If something is broken or the version of this app changed you should refresh the page without cache, press <code>[Ctrl]+[F5]</code>.
@@ -198,6 +257,7 @@
 	<!-- Everything related to note scale -->
 	<label for="transposition-index">Transpose notes:</label><input type="number" name="transposition-index" id="transposition-index" class="saveable" max="11" min="-11" step="1" value="0" title="Click on the field to move the notes up/down a position."/>
 	<input type="button" name="show-scale" id="show-scale" value="Hide scale"/>
+	<table id="scale-tooltip-container"></table>
 	<div id="note-displays">
 		<div  id="scale-display"> 
 			<table id="scale-notes">

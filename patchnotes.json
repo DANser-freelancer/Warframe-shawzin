@@ -1,5 +1,23 @@
 [	
 	{
+		"title":"Update 1.0.2",
+		"date":"2023,7,5", 
+		"description": [
+			"Updated the transposable note scale",
+			"Updated 'Rules/Tips' section",
+			"Minor changes to style"
+		], 
+		"subdescription": {
+			"0": [
+				"Hovering over the scale will show note relations for all notes at once."
+			],
+			"1": [
+				"Changed the structure.",
+				"Reflected recent changes."
+			]
+		}		
+	},
+	{
 		"title":"Patch 1.0.1",
 		"date":"2023,7,4", 
 		"description": [

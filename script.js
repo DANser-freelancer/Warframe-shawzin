@@ -14,17 +14,6 @@ window.START_TIME = () => {
 	console.log(JSON.parse(localStorage.getItem('starting_time')));
 };
 
-window.FUNC_TEST = () => {
-	const testF = function(a,b){
-		console.log(a+b);
-	};
-	testF.try = function(a,b){
-		console.log(a-b);
-	}
-	testF(3,2);
-	testF.try(3,2);
-}
-
 // Global variables
 const translateBtn = document.getElementById('translate');
 const translateBtns = document.querySelectorAll('.translate-btns');
@@ -63,6 +52,8 @@ const progressImportBtn = document.getElementById('import-label');
 const progressImportModal = document.getElementById('import-modal');
 const progressImportInput = document.getElementById('import-progress');
 const versionCompatibilityToggle = document.getElementById('import-compatibility');
+const tooltipContainer = document.getElementById('tooltip-container');
+const scaleNotesTooltip = document.getElementById('scale-tooltip-container');
 const findTimingRegex = /[0-9]+/;
 const findNoteRegex = /\D+/i;
 const findDoubleNoteRegex = /[a-z]+[+]+[a-z]+/i;
@@ -142,6 +133,8 @@ const noteRelations = [//absolute ass, not real
 Object.freeze(noteRelations);
 
 // Event listeners
+scaleNotes.addEventListener('mouseenter', handleTooltip);
+scaleNotes.addEventListener('mouseleave', handleTooltip);
 translateBtn.addEventListener('click', translateNotes);
 translateSheetBtn.addEventListener('click', translateNotes);
 showScaleBtn.addEventListener('click', showScale);
@@ -272,7 +265,7 @@ function exportProgress(fileName, file) {
   	elem.download = `${fileName}.json`;
   	elem.style = 'display: none';        
   	document.body.appendChild(elem);
-  	elem.click(); //dispatching an event didn't work...        
+  	elem.dispatchEvent(new MouseEvent('click'));     
   	document.body.removeChild(elem);
   	console.log(window.URL.createObjectURL(fileBlob));
 };
@@ -311,7 +304,7 @@ function importProgress(filesArr) {
 		try {
 			const importStorage = JSON.parse(file);
 			const versionWindow = document.getElementById('last-update');
-			const currentMatch = versionWindow.innerText.match(/\d+/g);
+			const currentMatch = versionWindow.textContent.match(/\d+/g);
 			let importMatch;
 			try {
 				importMatch = importStorage.version.match(/\d+/g);
@@ -502,7 +495,7 @@ function copyCode() {
 		navigator.clipboard.writeText(result);
 		for (const button of copyBtns) {
 			button.classList.add('translation-success');
-			clearEfects(button,'translation-success',2000);
+			clearEfects(button,'translation-success',1500);
 		};
 	}; 
 };
@@ -550,28 +543,45 @@ function showScale() {
 			scaleDisplay.style.animation = 'fade-out 1000ms forwards';
 			noteLengths.style.animation = 'fade-out 1000ms forwards';
 		}, 100);
-	}	
-} 
+	};	
+}; 
 
 //Changes scale display
 function changeScale() {
-	let transposedLines = transposeNotes();
+	const transposedLines = transposeNotes();
+	const rect = scaleNotes.getBoundingClientRect();
 	scaleNotes.innerHTML = '';
+	scaleNotesTooltip.innerHTML = '';
 	for (let y=0; y<12; y++) {
 		const newTR = document.createElement('tr');
-		for (let x=0; x<13; x++) {
+		for (let x=0; x<14; x++) {
 			const newTD = document.createElement('td');
 			if (x<1) {
-				newTD.innerText = `${transposedLines[y]}`;
+				newTD.textContent = `${transposedLines[y]}`;
 			};
 			if (x === 12-y) {
-				newTD.innerText = `[${notesAudioNames[y]}]`;
-				newTD.setAttribute('title', `${noteRelations[scaleSelector.value][11-y]}`);
-				newTD.style.cursor = 'help';
-			};
+				newTD.textContent = `[${notesAudioNames[y]}]`;
+				//newTD.setAttribute('data-title', `${noteRelations[scaleSelector.value][11-y]}`);
+			} else if (x === 13-y) {
+				newTD.textContent = `{${noteRelations[scaleSelector.value][11-y]}}`;
+				newTD.classList.add('mouseover-notes');
+			}
 			newTR.appendChild(newTD);
 		};
 		scaleNotes.appendChild(newTR);
+	};
+};
+
+// Custom tooltip handling
+function handleTooltip(event) {
+	if (event.type === 'mouseenter') {
+		for (const cell of document.querySelectorAll('.mouseover-notes')) {
+			cell.style.visibility = 'visible';
+		}
+	} else {
+		for (const cell of document.querySelectorAll('.mouseover-notes')) {
+			cell.style.visibility = 'hidden';
+		}
 	};
 };
 
@@ -601,7 +611,7 @@ async function fetchDatabase() {
  		//For each song creates an option element and appends it to the database selector
 		let opt = document.createElement('option');
 		opt.value = i;
-		opt.innerText = `${database[i].name} - ${database[i].band} - ~${runtime}`;
+		opt.textContent = `${database[i].name} - ${database[i].band} - ~${runtime}`;
 		databaseSelector.appendChild(opt);
 	}
 }
@@ -629,7 +639,7 @@ function searchDatabase() {
  			//For each song creates an option element and appends it to the database selector
 			let opt = document.createElement('option');
 			opt.value = i;
-			opt.innerText = `${database[i].name} - ${database[i].band} - ~${runtime}`;
+			opt.textContent = `${database[i].name} - ${database[i].band} - ~${runtime}`;
 			databaseSelector.appendChild(opt);
 		}
 	}
@@ -667,7 +677,7 @@ function toggleShawzinModal() {
 	if (this.id === 'shawzin-pic') {
 		shawzinPicModal.style.display = "block";
 		shawzinPicModalImg.src = shawzinPic.src;
-		shawzinPicModalCaption.innerText = shawzinPic.alt;
+		shawzinPicModalCaption.textContent = shawzinPic.alt;
 	} else {
 		shawzinPicModal.style.display = "none";
 	}
@@ -708,20 +718,23 @@ class NoteTableBinding {
 					div.style.fontWeight = "bold";
 				};
 				if (x%16 === 0) {
-					newTD.style.borderRight = "3px solid rgb(178, 51, 3)";
+					newTD.style.borderRight = "4px solid rgb(178, 51, 3)";
 					if (y === 11) {
-						div.innerText = `${x}`;
+						div.textContent = `${x} {${x/16}}`;
 					};
 				} else if (x%8 === 0) {
 					newTD.style.borderRight = "2px solid rgb(255, 95, 35)";
 					if (y === 11) {
-						div.innerText = `${x}`;
+						div.textContent = `${x}`;
 					};
 				} else if (x%4 === 0) {
 					newTD.style.borderRight = "1px solid rgb(25, 0, 103)"
 					if (y === 11) {
-						div.innerText = `${x}`;
+						div.textContent = `${x}`;
 					};
+				};
+				if (y === 11) {
+					div.style.padding = '5px 2px 0 2px';
 				};
 				if (x === 0) {
 					const labelTR = document.createElement('tr');
@@ -773,12 +786,12 @@ class NoteTableBinding {
 			div.classList.remove(...['cell-on-err', 'cell-off-err']);
 			div.classList.add('cell-on');
 			this.noteSheetArr[cellY][cellX] = 1;
-			div.innerText = div.innerText.replace('⚠️', '');
+			div.textContent = div.textContent.replace('⚠️', '');
 		} else {
 			//Note OFF
 			div.classList.remove(...['cell-on', 'cell-on-err', 'cell-off-err']);
 			this.noteSheetArr[cellY][cellX] = 0;
-			div.innerText = div.innerText.replace('⚠️', '');
+			div.textContent = div.textContent.replace('⚠️', '');
 		};
 		//this.errorCell(div, {y: cellY, x: cellX});
 		this.combinationHint(undefined, {y: cellY, x: cellX});
@@ -796,8 +809,8 @@ class NoteTableBinding {
 				div.classList.remove(...['cell-off-err', 'cell-on']);
 				div.classList.add('cell-on-err');
 			};
-			if (!div.innerText.includes('⚠️')) {
-				div.innerText = `${div.innerText}⚠️`;
+			if (!div.textContent.includes('⚠️')) {
+				div.textContent = `${div.textContent}⚠️`;
 			};
 		};*/
 		this.combinationHint();
@@ -1040,12 +1053,12 @@ async function versionControl() {
 				this.layer2.innerHTML = `<h3 style="display: inline-block">${patchnotes[i].title}</h3> <code style="display: inline-block">${digestDate(patchnotes[i].date)}</code>`;
 				for (let x=0; x<patchnotes[i].description.length; x++) {
 					let newLi = document.createElement('li');
-					newLi.innerText = `${patchnotes[i].description[x]}`;
+					newLi.textContent = `${patchnotes[i].description[x]}`;
 					if (patchnotes[i].subdescription[`${x}`] && patchnotes[i].subdescription[`${x}`].length>0) {
 						let newUl = document.createElement('ul');
 						for (let y=0; y<patchnotes[i].subdescription[`${x}`].length; y++) {
 							let newSubLi = document.createElement('li');
-							newSubLi.innerText = `${patchnotes[i].subdescription[`${x}`][y]}`;
+							newSubLi.textContent = `${patchnotes[i].subdescription[`${x}`][y]}`;
 							newUl.appendChild(newSubLi);
 						}
 						newLi.appendChild(newUl);
@@ -1070,7 +1083,7 @@ async function versionControl() {
 	function lastVersion() {
 		const versionWindow = document.getElementById('last-update');
 		const match = patchnotes[0].title.match(/\d+\.\d+\.\d+/);
-		versionWindow.innerText = match;
+		versionWindow.textContent = match;
 		localStorage.setItem('version', JSON.stringify(match));
 	}
 	lastVersion();
@@ -1121,7 +1134,7 @@ async function handleKeyboard({ type, key, repeat, metaKey }) {
 				playheadSkipRange.dispatchEvent(new Event('input'));
    			};
    			if (key === 'p') {
-				playerPlayBtn.dispatchEvent(new Event('click'));
+				playerPlayBtn.dispatchEvent(new MouseEvent('click'));
    			};
 		};
    		if (keyLog.v) {
