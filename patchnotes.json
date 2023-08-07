@@ -1,5 +1,23 @@
 [	
 	{
+		"title":"Patch 1.1.0",
+		"date":"2023,7,7", 
+		"description": [
+			"Updated 'Rules/Tips' section",
+			"Fixed a sound bug"
+		], 
+		"subdescription": {
+			"0": [
+				"Minor changes to style.",
+				"Minor clarifications."
+			],
+			"1": [
+				"Previously sounds remained playing instead of restarting/stopping when a new note has been hit, creating unpleasant echo.",
+				"This required a rework of functions responsible for fetching audio and playing it, improving performance."
+			]
+		}		
+	},
+	{
 		"title":"Update 1.0.2",
 		"date":"2023,7,5", 
 		"description": [

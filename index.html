@@ -25,7 +25,7 @@
 	<h3>Rules/Tips:</h3>
 	<ul id='rules'>
 		<li>
-			App notes explanation:
+			<h4>App notes explanation:</h4> 
 			<ul>
 				<li>
 					The structure of the notes is such: (1-4096)+(A/B/C/D/E/F/G/H/I/J/K/L)?(+)(A/B/C/D/E/F/G/H/I/J/K/L).
@@ -54,7 +54,7 @@
 			</ul>
 		</li>
 		<li>
-			Shawzin explanation:
+			<h4>Shawzin explanation:</h4>
 			<ul>
 				<li>
 					Shawzin has a concrete set of notes for each scale, you cannot transition over to the other scale mid-play as you would do with a piano for example. Unless you don't use autoplay, then you can press tab a bunch of times at the right moment. <sub>(at that point you're better off fiddling with a midi bot)</sub>
@@ -63,10 +63,10 @@
 					Shawzin note spacing allows for 16 notes/s or 8 notes/s in slow mode, max length of the track is therefore 8min 32sec.<br>  
 				</li>
 				<li>
-					You cannot "stretch" the note out like a piano or a violin because of how shawzin codes work, if you don't use autoplay then you can use whammy but it will lower the notes by a semitone.
+					These are really small notes so if your music seems to run too fast try enabling slow mode in your shawzin.
 				</li>
 				<li>
-					These are really small notes so if your music seems to run too fast try enabling slow mode in your shawzin.
+					You cannot "stretch" the note out like a piano or a violin because of how shawzin codes work, if you don't use autoplay then you can use whammy but it will lower the notes by a semitone.
 				</li>
 				<li>
 					Note that while note spacing is small, the note sounds can be quite long, in particular the sounds of Void's song, Aristei prime, and Lonesome shawzins.
@@ -74,7 +74,7 @@
 			</ul>
 		</li>
 		<li>
-			Interactable note sheet explanation:
+			<h4>Interactable note sheet explanation:</h4>
 			<ul>
 				<li>
 					'Interactable note sheet' heat map:
@@ -117,7 +117,7 @@
 					</ul>
 				</li>
 				<li>
-					You can add notes to the 'Interactable note sheet' by clicking on cells, the small numbers below represent the timeline position of notes (1-4096) and position of a 4/4 bar(measure) in "{}" brackets, e.g. note n1213 bar n{82}.
+					You can add notes to the 'Interactable note sheet' by clicking on cells, the small numbers below represent the timeline position of notes (1-4096) and position of a 4/4 bar(measure) in "{}" brackets, e.g. note n1-n16 in bar n{1} note n17-n32 in bar n{2}.
 				</li>
 				<li>
 					The left and right skip buttons will skip 4 notes (columns) per click forwards or backwards, you can change the skip amount in the number field near the [Slow mode] toggle.
@@ -131,7 +131,7 @@
 			</ul>
 		</li>
 		<li>
-			Progress explanation:
+			<h4>Progress explanation:</h4>
 			<ul>
 				<li>
 					<p>All progress on the page is saved and can be reset(deleted).</p>
@@ -150,6 +150,9 @@
 					The page <u>doesn't</u> reload after you reset the progress, as your last failsafe, you can click and change the windows and selections you want to be saved again.
 				</li>
 				<li>
+					The new versions of the app should (most likely) be compatible with saved progress, unless the 'Patchnotes' section specifically mentions changes related to it.
+				</li>
+				<li>
 					This app uses <a href="https://en.wikipedia.org/wiki/Web_storage" target="_blank">localStorage</a> of your browser to save the progress as non-expiring data, with limited max size. If you get "QuotaExceededError" you might want to clear entries you received on other websites that you don't visit anymore.<br>
 				</li>
 				<li>
@@ -158,7 +161,7 @@
 			</ul>
 		</li>
 		<li>
-			Export/Import feature explanation:
+			<h4>Export/Import feature explanation:</h4>
 			<ul>
 				<li>
 					You can click [Export Progress] to save a file containing current app version number, and everything that is saved as "progress".
@@ -181,7 +184,7 @@
 			</ul>
 		</li>
 		<li>
-			Keyboard combinations: <sub>*(may lag when held down)</sub>
+			<h4>Keyboard combinations: <sub>*(may lag when held down)</sub></h4>
 			<ul>
 				<li><code>Hold[Shift]</code>+<code>Press/Hold[🡒]</code> skip forwards x notes.</li>
 				<li><code>Hold[Shift]</code>+<code>Press/Hold[🡐]</code> skip backwards x notes.</li>

@@ -59,13 +59,17 @@ const findNoteRegex = /\D+/i;
 const findDoubleNoteRegex = /[a-z]+[+]+[a-z]+/i;
 const findTripleNoteRegex = /[a-z]+[+]+[a-z]+[+]+[a-z]+/i;
 const missingSeparatorRegex = /[0-9]+[a-z]+[0-9]+[a-z]+/i;
-let finalCode = [];
-let audioContext = '';
-let audioSamples = [];
+const MusicManager = {
+	audioContext: '',
+	audioBuffers: [],
+	isSetup: false,
+	isSampled: false,
+	samplesArr: [],
+	volumeControl: ''
+};
+const finalCode = [];
 let showScaleClicks = 0;
 let WrongNote = false;
-let WasSetup = false;
-let WasSampled = false;
 
 // I cal this stuff 'rules', it translates input notes to shawzin code according to key - value pairs
 const linesForTransposition = 
@@ -146,9 +150,9 @@ databaseSearchBar.addEventListener('input', searchDatabase);
 playerPlayBtn.addEventListener('click', setupTrack);
 playerRightBtn.addEventListener('click', skipNotes);
 playerLeftBtn.addEventListener('click', skipNotes);
-scaleSelector.addEventListener('click', () => { WasSampled = false; changeScale(); sheetBinding.transpose_lines(); });
+scaleSelector.addEventListener('click', () => { MusicManager.isSampled = false; changeScale(); sheetBinding.transpose_lines(); });
 shawzinsSelect.addEventListener('click', updateShawzinPic);
-shawzinsSelect.addEventListener('click', () => { WasSampled = false; });
+shawzinsSelect.addEventListener('click', () => { MusicManager.isSampled = false; });
 shawzinPic.addEventListener('click', toggleShawzinModal);
 shawzinPicModal.addEventListener('click', toggleShawzinModal);
 progressResetBtn.addEventListener('click', progressClear);
@@ -353,7 +357,7 @@ function importProgressWarn(event) {
 
 // Translates notes and timings from the main input field
 function translateNotes(event) {
-	finalCode.splice(0, 999999);
+	finalCode.length = 0;
 	let notes;
 	if (event?.target?.id === translateBtn.id) {
 		notes = notesInput.value.split(',');
@@ -361,33 +365,36 @@ function translateNotes(event) {
 		notes = sheetBinding.noteSheetCollector();
 	} else if (event?.id === 'sheetBinding') {
 		notes = sheetBinding.noteSheetCollector();
-	}
-	if (notes == null) {
+	};
+
+	if (!notes.length || !notes[0]) { 
 		WrongNote = true;
 		errorStyle;
-		alert(`Error: The field is empty.`);
+		alert(`Note Error: The field/sheet is empty.`);
 		return;
-	}
+	};
+
 	for (let i=0; i<notes.length; i++) {
 		notes[i] = notes[i].replace(/\s+/gi, '');
 		notes[i] = notes[i].replace(/\n+/gi, '');
 		if (notes[i].match(missingSeparatorRegex) != null) {
 			WrongNote = true;
 			errorStyle;
-			alert(`Error: Missing separator for note №${i+1}.`);
+			alert(`Note Error: Missing separator for note №${i+1}.`);
 			return;
 		} else {
 			WrongNote = false;
 			errorStyle;
-		}
-	}
+		};
+	};
+
 	for (let i=0; i<notes.length; i++) {
 		let timing = false; 
 		let note = false; 
 		try {
 			timing = Number(notes[i].match(findTimingRegex)[0])-1;
 			note = notes[i].toLowerCase().match(findNoteRegex)[0];
-			console.log(`%cNote conversion check, timing: ${timing} notes: ${note}`, 'color:gold');
+			//console.log(`%cNote conversion check, timing: ${timing} notes: ${note}`, 'color:gold');
 		} finally {
 			if (timing !== false && note !== false) {
 				WrongNote = false;
@@ -395,15 +402,16 @@ function translateNotes(event) {
 			} else {
 				WrongNote = true;
 				errorStyle;
-				alert(`Error: Timing or note №${i+1} is incorrect/missing.`);
-			}
-		}
+				alert(`Note Error: Timing or note №${i+1} is incorrect/missing.`);
+				return;
+			};
+		};
 		convertNote(note, timing+1);
 		convertTiming(timing);
 		if (WrongNote === true) {
 			return;
-		}
-	}
+		};
+	};
 	finalCode.unshift(Number(scaleSelector.value) + 1);
 	console.log(finalCode);
 }
@@ -415,8 +423,8 @@ function convertTiming(position) {
 		if (position <= -1) {
 			WrongNote = true;
 			errorStyle;
-			alert(`Error: start first note position from 1+.`);
-			break;
+			alert(`Timing Error: start first note position from 1+.`);
+			return;
 		} else if (position < 64) {
 			finalCode.push(range+timingConvertRules[position]);
 			break;
@@ -426,8 +434,8 @@ function convertTiming(position) {
 		} else if (i>=64) { 
 			WrongNote = true;
 			errorStyle;
-			alert(`Error: Wrong timeline position, note #${position} range must be 1-4096.`)
-			break; 
+			alert(`Timing Error: Wrong timeline position, note #${position} range must be 1-4096.`)
+			return; 
 		};
 	};
 };
@@ -446,13 +454,14 @@ function convertNote(note, position) {
 				errorStyle;
 				matchedNoteKey = true;
 				break;
-			}
-    	}
+			};
+    	};
     	if (matchedNoteKey === false) {
 			WrongNote = true;
 			errorStyle;
-			alert(`Error: Combination #${position} is not valid.`);
-    	}
+			alert(`Note Error: combination #${position} is not valid.`);
+			return;
+    	};
 	} else {
 		let result = noteConvertRules[note];
 		if (result != null) {
@@ -462,10 +471,11 @@ function convertNote(note, position) {
 		} else {
 			WrongNote = true;
 			errorStyle;
-			alert(`Note #${position} doesn't exist on this scale.`);
-		}
-	}
-}
+			alert(`Note Error: note #${position} is not a valid note.`);
+			return;
+		};
+	};
+};
 
 //Style changes if translation error occurs
 function errorStyle() {
@@ -949,35 +959,36 @@ async function setupTrack(event, speed = 62.5, time = sheetBinding.startingTime)
 	if (event.target.src.includes(`images/player-buttons-play.png`)) {
 		event.target.src = `images/player-buttons-pause.png`;
 		sheetBinding.continuePlaying = true;
-		if (!WasSetup) {
+		if (!MusicManager.isSetup) {
 			try {
-				audioContext = new AudioContext();
+				MusicManager.audioContext = new AudioContext();
 				console.log(`%cAudio Context was set up.`, 'color:gold');
-				WasSetup = true;
+				MusicManager.isSetup = true;
 			} catch(err) {
-				console.log(`Something went wrong: ${err}`);
+				alert(`Unexpected Error: ${err}`);
+				return;
 			};
 		};
-		if (!WasSampled) {
+		if (!MusicManager.isSampled) {
 			try {
-				audioSamples = await setupAudioSamples(octaveNotes);
-				console.log(`%cAudio samples were loaded.`, 'color:gold')
-				WasSampled = true;
+				MusicManager.audioBuffers = await setupAudioBuffers(octaveNotes);
+				console.log(`%cAudio buffers were loaded.`, 'color:gold')
+				MusicManager.isSampled = true;
 			} catch(err) {
-				console.log(`Something went wrong: ${err}`);
+				alert(`Unexpected Error: ${err}`);
+				return;
 			};
 		};
 		for (let x=0||time; x<sheetBinding.noteSheetArr[0].length; x++) { //loop for columns to be played
-			let activeNotes = []; 
+			const activeNotes = []; 
 			for (let y=0; y<sheetBinding.noteSheetArr.length; y++) { //loop for rows to be played
 				if (sheetBinding.noteSheetArr[y][x] === 1) {
-					//console.log(audioSamples[y]);
-					activeNotes.push(audioSamples[y]);
+					activeNotes.push(MusicManager.audioBuffers[y]);
 				};
-				let currentCell = document.getElementById(`td-${x}-tr-${y}`);
+				const currentCell = document.getElementById(`td-${x}-tr-${y}`);
 				currentCell.classList.add('cell-playing');
 				if (x>0) {
-					let previousCell = document.getElementById(`td-${x-1}-tr-${y}`);
+					const previousCell = document.getElementById(`td-${x-1}-tr-${y}`);
 					previousCell.classList.remove('cell-playing');
 				};
 			};
@@ -997,6 +1008,12 @@ async function setupTrack(event, speed = 62.5, time = sheetBinding.startingTime)
 		event.target.src = `images/player-buttons-play.png`;
 		sheetBinding.continuePlaying = false;
 		sheetBinding.initPlayhead(...[,false,'']);
+		await Delay(speed+10);
+		for (let i=0; i<MusicManager.samplesArr.length; i++) { //old samples being stopped and deleted
+			MusicManager.samplesArr[i].stop();
+			MusicManager.samplesArr[i].disconnect();
+		};
+		MusicManager.samplesArr.length = 0;
 	};
 };
 
@@ -1004,40 +1021,49 @@ async function setupTrack(event, speed = 62.5, time = sheetBinding.startingTime)
 async function getAudio(filePath) { 
 	const response = await fetch(filePath);
 	const arrayBuffer = await response.arrayBuffer();
-	const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-	return audioBuffer;
+	const audioBuffer = await MusicManager.audioContext.decodeAudioData(arrayBuffer);
+	return audioBuffer;	
 };
 
 // Handle audio files
-async function setupAudioSamples(notes) {
-	let audioBuffers = [];
-	let selectedScale = scaleSelector.options[scaleSelector.selectedIndex].text.split(' ');
+async function setupAudioBuffers(notes) {
+	const audioBuffers = [];
+	const selectedScale = scaleSelector.options[scaleSelector.selectedIndex].text.split(' ');
 	for (let i=0; i<notes[0].length; i++) {			//what shawzin 												//what note (octave)
-		let sample = await getAudio(`audio/Octaves/${octavesShawzin[shawzinsSelect.selectedIndex]}ShawzinOct${notes[scaleSelector.selectedIndex][i]}.ogg`);
+		const sample = await getAudio(`audio/Octaves/${octavesShawzin[shawzinsSelect.selectedIndex]}ShawzinOct${notes[scaleSelector.selectedIndex][i]}.ogg`);
 		audioBuffers.push(sample);
 	};
 	return audioBuffers;
 };
 
 // Play columns of notes
-async function playTrack(audioBufferArr, time = 0) {
-	if (audioBufferArr == null || audioBufferArr.length<=0) {
+async function playTrack(audioBufferArr = MusicManager.audioBufferArr, time = 0) {
+	if (!audioBufferArr[0]) {
 		return;
-	}
-	let samplesArr = []; //arr to collect all samples before playing them
+	};
+
+	if (MusicManager.volumeControl == '') { //set up volume node
+		MusicManager.volumeControl = MusicManager.audioContext.createGain();
+		MusicManager.volumeControl.connect(MusicManager.audioContext.destination);
+	};
+
+	MusicManager.volumeControl.gain.value = volumeSlider.value / 400;
+	for (let i=0; i<MusicManager.samplesArr.length; i++) { //old samples being stopped and deleted
+		MusicManager.samplesArr[i].stop();
+		MusicManager.samplesArr[i].disconnect();
+	};
+	MusicManager.samplesArr.length = 0;
+
 	for (let i=0; i<audioBufferArr.length; i++) { //sample settings
-		let volumeControl = audioContext.createGain();
-		volumeControl.gain.value = volumeSlider.value / 400;
-		volumeControl.connect(audioContext.destination);
-		let sampleSource = audioContext.createBufferSource();
+		const sampleSource = MusicManager.audioContext.createBufferSource();
 		sampleSource.buffer = audioBufferArr[i];
-		sampleSource.connect(volumeControl);
-		samplesArr.push(sampleSource);
-	}
-	for (let i=0; i<samplesArr.length; i++) { //samples being played
-		samplesArr[i].start(time);
-	}
-}
+		sampleSource.connect(MusicManager.volumeControl);
+		MusicManager.samplesArr.push(sampleSource);
+	};
+	for (let i=0; i<MusicManager.samplesArr.length; i++) { //fresh samples being played
+		MusicManager.samplesArr[i].start(time);
+	};
+};
 
 // Version control
 async function versionControl() {
