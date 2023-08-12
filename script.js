@@ -14,6 +14,15 @@ window.START_TIME = () => {
 	console.log(JSON.parse(localStorage.getItem('starting_time')));
 };
 
+window.FULL_SHEET = () => {
+	for (let i=0; i<sheetBinding.noteSheetArr.length; i++) {
+		for (let x=0; x<sheetBinding.noteSheetArr[0].length; x++) {
+			sheetBinding.noteSheetArr[i][x] = 1;
+		};
+	};
+	console.log(sheetBinding.noteSheetArr);
+};
+
 // Global variables
 const translateBtn = document.getElementById('translate');
 const translateBtns = document.querySelectorAll('.translate-btns');
@@ -54,6 +63,10 @@ const progressImportInput = document.getElementById('import-progress');
 const versionCompatibilityToggle = document.getElementById('import-compatibility');
 const tooltipContainer = document.getElementById('tooltip-container');
 const scaleNotesTooltip = document.getElementById('scale-tooltip-container');
+const copyMoveBtn = document.getElementById('copy-move-button');
+const copyMoveChunk = document.getElementById('copy-move-chunk');
+const copyMovePosition = document.getElementById('copy-move-position');
+const codeImportBtn = document.getElementById('import-code'); 
 const findTimingRegex = /[0-9]+/;
 const findNoteRegex = /\D+/i;
 const findDoubleNoteRegex = /[a-z]+[+]+[a-z]+/i;
@@ -66,6 +79,9 @@ const MusicManager = {
 	isSampled: false,
 	samplesArr: [],
 	volumeControl: ''
+};
+const ImportManager = {
+	initiator: ''
 };
 const finalCode = [];
 let showScaleClicks = 0;
@@ -88,17 +104,17 @@ const timingConvertRules =
 Object.freeze(timingConvertRules);
 const noteConvertRules = 
 {
-	a:'B', b:'C', c:'E', d:'J', e:'K', f:'M',
-	g:'R', h:'S', i:'U', j:'h', k:'i', l:'k'
-}
+	a:'B',b:'C',c:'E',d:'J',e:'K',f:'M',
+	g:'R',h:'S',i:'U',j:'h',k:'i',l:'k'
+};
 Object.freeze(noteConvertRules);
 const multiNoteConvertRules = 
 { 
-	defghijkl: "/", deghjk: "7", efhikl: "+", dfgijl: "9", dgj: "5", ehk: "6", fil: "8", 
-	ghijkl: "3", hikl: "2", ghjk: "z", gijl: "1", il: "0", hk: "y", gj: "x", defjkl: "v", 
-	dejk: "r", dfjl: "t", efkl: "u", dj: "p", ek: "q", fl: "s", defghi: "f", efhi: "e", 
-	dfgi: "d", degh: "b", dg: "Z", eh: "a", fi: "c", jkl: "n", jk: "j", kl: "m", jl: "l", ghi: "X", 
-	hi: "W", gh: "T", gi: "V", def: "P", ef: "O", de: "L", df: "N", abc: "H", ab: "D", bc: "G", ac: "F"
+	defghijkl:'/',deghjk:'7',efhikl:'+',dfgijl:'9',dgj:'5',ehk:'6',fil:'8',
+	ghijkl:'3',hikl:'2',ghjk:'z',gijl:'1',il:'0',hk:'y',gj:'x',defjkl:'v',
+	dejk:'r',dfjl:'t',efkl:'u',dj:'p',ek:'q',fl:'s',defghi:'f',efhi:'e',
+	dfgi:'d',degh:'b',dg:'Z',eh:'a',fi:'c',jkl:'n',jk:'j',kl:'m',jl:'l',ghi:'X',
+	hi:'W',gh:'T',gi:'V',def:'P',ef:'O',de:'L',df:'N',abc:'H',ab:'D',bc:'G',ac:'F'
 };
 Object.freeze(multiNoteConvertRules);
 const notesAudioNames = 
@@ -123,7 +139,7 @@ const octavesShawzin = [ //leave empty string for vanila shawzin, it doesn't hav
 	'Zariman','Grineer','Narmer','Lotus','Sentient','ZarimanVoid','DuviriErsatz','Duviri','Prime',''
 ];
 Object.freeze(octavesShawzin);
-const noteRelations = [//absolute ass, not real
+const noteRelations = [
 	['C4','D#4','F4','G4','A#4','C5','D#5','F5','G5','A#5','C6','D#6'],
 	['C4','D4','E4','G4','A4','C5','D5','E5','G5','A5','C6','D6'],
 	['C4','C#4','D4','D#4','E4','F4','F#4','G4','G#4','A4','A#4','B4'],
@@ -168,6 +184,8 @@ importPrompt.addEventListener('keyup', importProgressWarn);
 progressImportBtn.addEventListener('click', importProgressWarn);
 progressImportModal.addEventListener('click', importProgressWarn);
 progressImportInput.addEventListener('input', function() { importProgress(Array.from(this.files)); });
+copyMoveBtn.addEventListener('click', function() { sheetBinding.copyMoveNotes(copyMoveChunk.value,copyMovePosition.value); });
+codeImportBtn.addEventListener('click', importProgressWarn);
 
 // Window/Document
 window.onload = () => {
@@ -189,7 +207,6 @@ window.onload = () => {
 	}
 	volumeOutput.value = `${volumeSlider.value}%`;
 	changeScale();
-	sheetBinding.transpose_lines();
 	//sheetBinding.generateNoteSheet(4097); //+1 for the note labels
 	updateShawzinPic();
 	versionControl();
@@ -271,7 +288,6 @@ function exportProgress(fileName, file) {
   	document.body.appendChild(elem);
   	elem.dispatchEvent(new MouseEvent('click'));     
   	document.body.removeChild(elem);
-  	console.log(window.URL.createObjectURL(fileBlob));
 };
 
 // Imports progress.json file
@@ -333,11 +349,65 @@ function importProgress(filesArr) {
 	};
 };
 
+// Interprets shawzin code as notes and overrides the app
+function importShawzinCode(input = notesInput.value) {
+	if (input == null) {
+		alert(`Code Import Error: empty input.`);
+		return;
+	};
+	if (input.includes(',') || input.includes(' ') || input.includes('\n')) {
+		alert(`Code Import Error: not a valid shawzin code structure.`);
+		return;
+	};
+	const finalArr = [];
+	const codeArr = input.split('');
+	const scaleNum = codeArr.shift();
+	if (isNaN(scaleNum) || scaleNum<1 || scaleNum>9) {
+		alert(`Code Import Error: first character must be a scale number 1-9.`);
+		return;
+	};
+	if (codeArr.length%3 !== 0 || codeArr.length > 12288 || codeArr.length < 3) {
+		alert(`Code Import Error: invalid shawzin code length.`);
+		return;
+	};
+	const notesArr = [];
+	while (codeArr.length) { //split code into bits of [note+timing, note+timing...]
+		notesArr.push(codeArr.splice(0,3).join(''));
+	};
+	//flip the rules backwards to now convert code into notes
+	const ruleObj = {};
+	for (const [key, value] of Object.entries(noteConvertRules)) {
+		ruleObj[value] = key;
+	};
+	for (const [key, value] of Object.entries(multiNoteConvertRules)) {
+		ruleObj[value] = key; 
+	};
+	for (let i=0; i<notesArr.length; i++) {
+		let note = ruleObj[notesArr[i][0]];
+		let timing = (timingConvertRules.indexOf(notesArr[i][1])*64)+(timingConvertRules.indexOf(notesArr[i][2]))+1;
+		if (note == null || timing == null) {
+			alert(`Code Import Error: invalid shawzin code, note/timing is incorrect/missing.`);
+			return;
+		};
+		if (note.length>1) {
+			note = note.split('').join('+');
+		};
+		finalArr.push(`${timing}${note}`);
+	};
+	notesInput.value = finalArr.join(',');
+	scaleSelector.value = scaleNum-1;
+
+	//save progress
+	scaleSelector.click();
+	notesInput.click();
+};
+
 // Asks for confirmation before importing progress
 function importProgressWarn(event) {
-	if (this.id === progressImportBtn.id) {
+	if (this.id === progressImportBtn.id || this.id === codeImportBtn.id) { //reusing the same modal for different functions
 		progressImportModal.style.display = "block";
 		importPrompt.focus();
+		ImportManager.initiator = this;
 	};
 
 	if (event.key === 'Escape' || event.target.id === progressImportModal.id) {
@@ -348,7 +418,13 @@ function importProgressWarn(event) {
 	if (this.value) {
 		if (this.value.toLowerCase() === 'override') {
 			alert(`All saved progress will be rewritten.`);
-			progressImportInput.click();
+			if (ImportManager.initiator.id === progressImportBtn.id) {
+				progressImportInput.click();
+				console.log(`iporting from ${ImportManager.initiator.id}`);
+			} else if (ImportManager.initiator.id === codeImportBtn.id) {
+				importShawzinCode();
+				console.log(`iporting from ${ImportManager.initiator.id}`);
+			};
 			progressImportModal.style.display = "none";
 			importPrompt.value = '';
 		};
@@ -427,10 +503,10 @@ function convertTiming(position) {
 			return;
 		} else if (position < 64) {
 			finalCode.push(range+timingConvertRules[position]);
-			break;
+			return;
 		} else if (position < (64*i)) {
 			finalCode.push(range+timingConvertRules[position-(64*(i-1))]);
-			break;
+			return;
 		} else if (i>=64) { 
 			WrongNote = true;
 			errorStyle;
@@ -700,30 +776,43 @@ class NoteTableBinding {
 		this.tableElement = table;
 		this.noteSheetArr = []; //2d array representation of the note sheet table
 		this.id = 'sheetBinding';
-		this.continuePlaying = true;
+		this.continuePlaying = false;
 		this.startingTime = 0;
 		this.skipSize = 4;
 	};
 
 	// Generates interactable note sheet
-	generateNoteSheet(noteLength, generate) {
-		//this.noteSheetArr.length = 0; // clear array
-		for (let y=0; y < 12; y++) {
+	generateNoteSheet(noteLength, isGenerating) {
+		if (isGenerating) { //clear array, table, label
+			this.noteSheetArr.length = 0;
+			this.tableElement.innerHTML = ''; 
+			this.labelElement.innerHTML = ''; 
+		}; 
+
+		for (let y=0; y<12; y++) {
 			const newTR = document.createElement('tr');
 			newTR.id = `tr-${y}`;
 			newTR.className = `sheet-table-rows`;
 			this.tableElement.appendChild(newTR);
-			if (generate) { this.noteSheetArr.push([]); };
+			if (isGenerating) { 
+				this.noteSheetArr.push([]); 
+			};
+
 			for (let x=0; x<noteLength; x++) {
 				const newTD = document.createElement('td');
 				newTD.id = `td-${x}-tr-${y}`;
 				newTD.className = `sheet-table-cells`;
 				const div = document.createElement('div'); //insert into cells for better control over size and content
 				div.classList.add('cell-divs-basic');
-				if (!generate && this.noteSheetArr[y][x-1] === 1) { div.classList.add('cell-on'); };
+				if (!isGenerating && this.noteSheetArr[y][x-1] === 1) { 
+					div.classList.add('cell-on'); 
+				};
+				
 				if (x !== 0) {
 					newTD.addEventListener('click', this.updateNoteCell.bind(this));// overwrite 'this' to be the class and not the source of the event.
-					if (generate) { this.noteSheetArr[y].push(0); };
+					if (isGenerating) { 
+						this.noteSheetArr[y].push(0); 
+					};
 					div.style.fontSize = "22px";
 					div.style.fontWeight = "bold";
 				};
@@ -745,7 +834,7 @@ class NoteTableBinding {
 				};
 				if (y === 11) {
 					div.style.padding = '5px 2px 0 2px';
-				};
+				};	
 				if (x === 0) {
 					const labelTR = document.createElement('tr');
 					labelTR.id = `tr-${y}`;
@@ -787,10 +876,10 @@ class NoteTableBinding {
 
 	// Updates note sheet cells
 	updateNoteCell(event) { 
-		let cell = event.currentTarget;
-		let div = cell.children[0];
-		let cellY = Number(cell.id.match(/(?<=tr-)\d+/i)[0]);
-		let cellX = Number(cell.id.match(/(?<=td-)\d+/i)[0]-1);
+		const cell = event.currentTarget;
+		const div = cell.children[0];
+		const cellY = Number(cell.id.match(/(?<=tr-)\d+/i)[0]);
+		const cellX = Number(cell.id.match(/(?<=td-)\d+/i)[0]-1);
 		if (this.noteSheetArr[cellY][cellX] !== 1) {
 			//Note ON
 			div.classList.remove(...['cell-on-err', 'cell-off-err']);
@@ -805,6 +894,26 @@ class NoteTableBinding {
 		};
 		//this.errorCell(div, {y: cellY, x: cellX});
 		this.combinationHint(undefined, {y: cellY, x: cellX});
+	};
+
+	// Checks the note sheet arr and compares to current state of cells
+	refreshSheet(chunkLength, newPosition) {
+		for (let y=0; y<12; y++) { //overwrite notes starting from newPosition
+			for (let x=0; x<chunkLength; x++) {
+				if (newPosition+x > this.noteSheetArr[0].length-1) { //don't overshoot
+					break;
+				};
+
+				const currentCell = document.getElementById(`td-${newPosition+x+1}-tr-${y}`);
+				if (this.noteSheetArr[y][newPosition+x] === 1){
+					currentCell.children[0].classList.add('cell-on');
+				} else {
+					currentCell.children[0].classList.remove('cell-on');
+				};
+				currentCell.classList.remove(`${currentCell.className.match(/(cell-heat-)+\d+/ig)}`); //clear the heat class
+				this.combinationHint(undefined, {y: y, x: x});
+			};	
+		};
 	};
 
 	// Make cell display an error 
@@ -839,7 +948,7 @@ class NoteTableBinding {
 			a:11,b:10,c:9,d:8,e:7,f:6,g:5,h:4,i:3,j:2,k:1,l:0
 		};
 		const entries = Object.entries(multiNoteConvertRules);
-		for (let n=0; n<notes.length; n++) { //iterate over notes ---needs reworking into an array-overlap instead of looking for a single value
+		for (let n=0; n<notes.length; n++) { //iterate over notes
 			const match = notes[n].match(/[a-z]+/gi).join('').toLowerCase();
 			let regexBuild = `.*`;
 			for (let s=0; s<match.length; s++) { //find all (match[0]|match[1]|......)characters in any order and space apart at least once
@@ -883,6 +992,55 @@ class NoteTableBinding {
 		interest.scrollTo(((noteSize*x)-4), 0); //put the playhead in view
 	};
 
+	// Copies notes chunk from startNote-endNote to another position
+	copyMoveNotes(noteChunk, newPosition) {
+		try {
+			if (noteChunk.match(/\D/gi).join('') !== '-') {
+				alert(`Copy-move Error: invalid 'from' structure, must be startingNote-endingNote.`);
+				return;
+			};
+		} catch (err) {
+			alert(`Unexpected Error: ${err}`);
+			return;
+		};
+		const chunkStart = Number(noteChunk.split('-')[0])-1;
+		const chunkEnd = Number(noteChunk.split('-')[1]);
+		if (chunkStart>chunkEnd) {
+			alert(`Copy-move Error: invalid 'from' number, startingNote must be <= endingNote.`);
+			return;
+		};
+		if (chunkStart<0 || chunkEnd<1 || chunkStart>4095 || chunkEnd>4096) {
+			alert(`Copy-move Error: invalid 'from' number, acceptable range is 1-4096.`);
+			return;
+		};
+		newPosition = Number(newPosition)-1;
+		if (newPosition > this.noteSheetArr[0].length-1 || newPosition<0) {
+			alert(`Copy-move Error: invalid 'to' number, acceptable range is 1-4096.`);
+			return;
+		};
+		const copiedArr = [];
+
+		for (let y=0; y<this.noteSheetArr.length; y++) { //copy chunk
+			copiedArr.push([]);
+			for (let x=chunkStart; x<chunkEnd; x++) {
+				copiedArr[y].push(this.noteSheetArr[y][x]);
+			};	
+		};
+		for (let y=0; y<copiedArr.length; y++) { //overwrite notes starting from newPosition
+			for (let x=0; x<copiedArr[y].length; x++) {
+				if (newPosition+x > this.noteSheetArr[0].length-1) { //don't overshoot
+					break;
+				};
+
+				this.noteSheetArr[y][newPosition+x] = copiedArr[y][x];
+			};	
+		};
+		progressSave.call(this.tableElement); //secure the new notes
+		this.refreshSheet(copiedArr[0].length, newPosition);
+		copyMoveBtn.classList.add('translation-success');
+		clearEfects(copyMoveBtn, 'translation-success', 2000);
+	};
+
 	// Updates line numbers near the note names
 	transpose_lines() {
 		const transposedLines = transposeNotes();
@@ -903,31 +1061,39 @@ class NoteTableBinding {
 			this.generateNoteSheet(4097, false);
 		} else {
 			this.generateNoteSheet(4097, true);
-			progressSave.call(noteSheet);
+			progressSave.call(this.tableElement);
 		};
 		if (loadB != null) {
 			this.startingTime = loadB;
 		} else {
 			progressSave.call(playerPlayBtn); //any player button will do
 		};
+		this.transpose_lines();
 		this.initPlayhead(...[,true,'fast']);
 	};
 };
 const sheetBinding = new NoteTableBinding(noteSheet, document.getElementById("notes-list"));
 
-
 // Deals with forward/backward skip buttons  
-function skipNotes(event, time = sheetBinding.startingTime, skipSize = sheetBinding.skipSize) {
+async function skipNotes(event, time, skipSize = sheetBinding.skipSize) {
+	if (sheetBinding.continuePlaying === true) {
+		playerPlayBtn.click();
+		await Delay(700);
+	};
+	time = time||sheetBinding.startingTime;
 	let x=0||time;
+
 	for (let y=0; y<sheetBinding.noteSheetArr.length; y++) { //loop for rows to be cleared
 		let currentCell = document.getElementById(`td-${x}-tr-${y}`);
 		currentCell.classList.remove('cell-playing');
 	};
-	if (event?.currentTarget?.id === playerRightBtn.id || event === 'right') { 
+
+	if (event?.target?.id === playerRightBtn.id || event === 'right') { 
 		sheetBinding.startingTime<=(4096-skipSize) ? sheetBinding.startingTime+=skipSize : sheetBinding.startingTime=4096;
 	} else {
 		sheetBinding.startingTime>=skipSize ? sheetBinding.startingTime-=skipSize : sheetBinding.startingTime=0;
 	};
+	
 	x = sheetBinding.startingTime;
 	for (let y=0; y<sheetBinding.noteSheetArr.length; y++) { //loop for rows to be colored
 		let currentCell = document.getElementById(`td-${x}-tr-${y}`);
@@ -1001,6 +1167,12 @@ async function setupTrack(event, speed = 62.5, time = sheetBinding.startingTime)
 				sheetBinding.startingTime = x;
 				sheetBinding.initPlayhead(...[,false,'']);
 				progressSave.call(this);
+				await Delay(speed+10);
+				for (let i=0; i<MusicManager.samplesArr.length; i++) { //old samples being stopped and deleted
+					MusicManager.samplesArr[i].stop();
+					MusicManager.samplesArr[i].disconnect();
+				};
+				MusicManager.samplesArr.length = 0;
 				return;
 			};
 		};
@@ -1055,8 +1227,7 @@ async function playTrack(audioBufferArr = MusicManager.audioBufferArr, time = 0)
 	MusicManager.samplesArr.length = 0;
 
 	for (let i=0; i<audioBufferArr.length; i++) { //sample settings
-		const sampleSource = MusicManager.audioContext.createBufferSource();
-		sampleSource.buffer = audioBufferArr[i];
+		const sampleSource = new AudioBufferSourceNode(MusicManager.audioContext, {buffer: audioBufferArr[i]});
 		sampleSource.connect(MusicManager.volumeControl);
 		MusicManager.samplesArr.push(sampleSource);
 	};

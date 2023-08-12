@@ -37,6 +37,9 @@
 					You must add number (1-4096) before each note to indicate it's position on the timeline, you can start from any position.
 				</li>
 				<li>
+					The notes positions must always be in ascending order (<u>25</u>A,2B,3C...) is not a valid structure.
+				</li>
+				<li>
 					The input field is case insensitive, you can write "A" or "a". Also you can use spaces and newlines, and you can resize it. 
 				</li>
 				<li>
@@ -60,7 +63,10 @@
 					Shawzin has a concrete set of notes for each scale, you cannot transition over to the other scale mid-play as you would do with a piano for example. Unless you don't use autoplay, then you can press tab a bunch of times at the right moment. <sub>(at that point you're better off fiddling with a midi bot)</sub>
 				</li>
 				<li>
-					Shawzin note spacing allows for 16 notes/s or 8 notes/s in slow mode, max length of the track is therefore 8min 32sec.<br>  
+					Shawzin note spacing allows for 16*1/16th notes/s (240bpm) or 8*1/16th notes/s (120bpm) in slow mode, max length of the track is therefore 8min 32sec.<br>  
+				</li>
+				<li>
+					You can use fast mode and just space the notes farther apart to have finer lever of control over timing, but that will cut max track length in half.
 				</li>
 				<li>
 					These are really small notes so if your music seems to run too fast try enabling slow mode in your shawzin.
@@ -117,7 +123,7 @@
 					</ul>
 				</li>
 				<li>
-					You can add notes to the 'Interactable note sheet' by clicking on cells, the small numbers below represent the timeline position of notes (1-4096) and position of a 4/4 bar(measure) in "{}" brackets, e.g. note n1-n16 in bar n{1} note n17-n32 in bar n{2}.
+					You can add notes to the 'Interactable note sheet' by clicking on cells, the small numbers below represent the timeline position of notes (1-4096) and position of a 4/4 bar(measure) in "{}" brackets, e.g. sixteenth notes n1-n16 in bar n{1} sixteenth notes n17-n32 in bar n{2}.
 				</li>
 				<li>
 					The left and right skip buttons will skip 4 notes (columns) per click forwards or backwards, you can change the skip amount in the number field near the [Slow mode] toggle.
@@ -127,6 +133,26 @@
 				</li> 
 				<li>
 					To scroll with your mouse wheel <code>Hold[Shift]</code> then <code>Scroll</code>.
+				</li>
+				<li>
+					Copy-paste note chunk:
+					<ul>
+						<li>
+							You can copy a chunk of notes from one timeline position to the other.
+						</li>
+						<li>
+							You have to define the chunk edges in the 'from' input, your chunk start and end can vary from 1-1 to 1-4096 to 4096-4096.
+						</li>
+						<li>
+							You have to define the new start of your chunk copy in the 'to' input, it can vary from 1 to 4096. In case your new start position doesn't leave enough space for pasting the full copy, it will be cut off when reaching the end of the note sheet.
+						</li>
+						<li>
+							The numbers are of 'including' type, so "from 23-27 to 34" means "copy notes (including)23, 24, 25, 26, (including)27 and paste them at (including)34, 35, 36, 37, 38".
+						</li>
+						<li>
+							e.g. (from 1-1 to 2)✔️|||(from 1-56 to 2)✔️|||(from 7-56 to 2)✔️|||(from 67-1 to 2)❌|||(from 0-14 to 2)❌|||(from 4090-4097 to 67000)❌.
+						</li>
+					</ul> 
 				</li>
 			</ul>
 		</li>
@@ -181,6 +207,15 @@
 				<li>
 					The name of the exported file is always "ShawzinMC_{date in your local format}.json", however you can rename them as there are no name restrictions for imported files (except for ".json" extention, don't touch that).
 				</li>
+				<li>
+					If you don't like the automatic download and want a dialogue window to appear - you should look in your browser's settings, it's unrelated to this app.
+				</li>
+				<li>
+					You can click [Import Shawzin Code] to interpret shawzin code as notes.
+				</li>
+				<li>
+					To import shawzin code you need to paste the code in the note field before clicking the button. This process will overwrite the note field and the scale selector. This feature does not work on the 'Interactable note sheet', <u>yet</u>.
+				</li>
 			</ul>
 		</li>
 		<li>
@@ -212,7 +247,7 @@
 		</li>
 	</ul>
 	<!-- Everything related to note input and translation parameters -->
-	<textarea name="notes-input" id="notes-input" class="saveable" placeholder="Write your notes here" cols="90" rows ="8" maxlength="200000" wrap="soft" autofocus required></textarea><br>
+	<textarea name="notes-input" id="notes-input" class="saveable" placeholder="Write your notes here" cols="90" rows ="8" maxlength="200000" wrap="soft" title="The note field to write music. Also used to import shawzin code." autofocus></textarea><br>
 	<!-- Progress reset and warning -->
 	<input type="button" name="reset progress" id="reset-progress" value="Reset Progress"/>
 	<div id="reset-modal" class="modal">
@@ -230,7 +265,7 @@
 		Import Progress
 	</label>
 	<input type="file" name="import" id="import-progress" value="Import Progress" accept=".json"
-	style="display: none;" multiple>
+	style="display: none;" multiple/>
 	<div id="import-modal" class="modal">
 		<div class="modal-caption">
 			<p>This action will rewrite all saveable values.<br>
@@ -258,8 +293,11 @@
 		<option value="8">Yo</option>
 	</select>
 	<!-- Everything related to note scale -->
-	<label for="transposition-index">Transpose notes:</label><input type="number" name="transposition-index" id="transposition-index" class="saveable" max="11" min="-11" step="1" value="0" title="Click on the field to move the notes up/down a position."/>
+	<label for="transposition-index">Transpose notes:</label>
+	<input type="number" name="transposition-index" id="transposition-index" class="saveable" 
+		max="11" min="-11" step="1" value="0" title="Click on the field to move the notes up/down a position."/>
 	<input type="button" name="show-scale" id="show-scale" value="Hide scale"/>
+	<input type="button" id="import-code" value="Import Shawzin Code" title="Turn shawzin code into notes"/>
 	<table id="scale-tooltip-container"></table>
 	<div id="note-displays">
 		<div  id="scale-display"> 
@@ -272,7 +310,8 @@
 	<!-- Everything related to database -->
 	<div class="database">
 		<p>Shawzin codes database:</p>
-		<input type="text" name="database-search-bar" id="database-search-bar" size="60" maxlength="100" placeholder="Search for name/band of the song" title="Click on the field to search"/>
+		<input type="text" name="database-search-bar" id="database-search-bar" size="60" 
+			maxlength="100" placeholder="Search for name/band of the song" title="Click on the field to search"/>
 		<input type="button" id="copy-database" value="Copy code"/><br>
 		<select name="Database selector" id="database-selector"></select>
 	</div>
@@ -280,7 +319,7 @@
 	<div class="sheet-music-1">
 		<p>Interactable note sheet:</p>
 		<div class="sheet-music-2">
-			<div id="player-buttons-container">
+			<div class="player-buttons-panel">
 				<!-- Buttons -->
 				<img src="images/player-buttons-skip-left.png" id="player-Left-button" class="player-buttons saveable"/>
 				<img src="images/player-buttons-play.png" id="player-Play-button" class="player-buttons saveable"/>
@@ -290,11 +329,14 @@
 						<label for="volume">Volume</label>
 						<output id=volume-value></output>
 					</div>
-					<input type="range" name="volume" id="volume" class="saveable" value="20" min="0" max="100"/>
+					<input type="range" name="volume" id="volume" class="saveable" value="20" 
+						min="0" max="100"/>
 					<div>
 						<label for="slow-mode">Slow mode</label>
-						<input type="checkbox" name="slow mode toggle" id="slow-mode" class="saveable" autocomplete="off" title="Click to toggle slow mode, playing shawzin in slow mode will let you play longer songs."/>
-						<input type="number" min="0" max="4096" placeholder="Skip x notes" id="column-skip-amount" class="saveable" title="Set the amount of notes(columns) to skip over.">
+						<input type="checkbox" name="slow mode toggle" id="slow-mode" 
+							class="saveable" autocomplete="off" title="Click to toggle slow mode, playing shawzin in slow mode will let you play longer songs."/>
+						<input type="number" min="0" max="4096" placeholder="Skip x notes" 
+							id="column-skip-amount" class="saveable" title="Set the amount of notes(columns) to skip over."/>
 					</div>
 				</div>
 				<!-- Shawzin selector -->
@@ -324,13 +366,27 @@
 					<table id="note-sheet" class="saveable"></table>
 				</div>
 			</div>
-			<sup>*All sound files are created&owned by Digital Extremes.</sup>
-			<div>
-				<input type="button" name="translate sheet" id="translate-sheet" 
-				class="translate-btns" value="Translate sheet"/>
-				<input type="button" name="copy code from sheet" value="Copy code" 
-				class="copy-code"/>
+			<div class="player-buttons-panel">
+				<div>
+					<input type="button" name="translate sheet" id="translate-sheet" 
+						class="translate-btns" value="Translate sheet"/>
+					<input type="button" name="copy code from sheet" value="Copy code" 
+						class="copy-code"/>
+				</div>
+				<div class="flex-div-column">
+					<div>
+						<input type="button" value="Copy-paste" id="copy-move-button"/> note chunk:
+					</div>
+					<div>
+						from <input type="text" placeholder="start-end" id="copy-move-chunk"
+							title="Select a chunk from note# to note#"/> to 
+						<input type="number" placeholder="new start" id="copy-move-position" 
+							min="1" max="4096" title="Select a note on which your chunk copy will start"/>
+					</div>
+				</div>
 			</div>
+			<sup>*All sound files are created&owned by Digital Extremes.</sup>
+			
 		</div>
 	</div>
 </article>

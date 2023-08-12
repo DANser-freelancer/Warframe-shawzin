@@ -1,5 +1,28 @@
 [	
 	{
+		"title":"Update 1.2.0",
+		"date":"2023,7,12", 
+		"description": [
+			"Upgraded the 'Interactable note sheet'",
+			"Implemented shawzin code import",
+			"Updated Rules/Tips section"
+		], 
+		"subdescription": {
+			"0": [
+				"Implemented a new feature called 'Copy-paste', more info in the 'Rules/Tips' section.",
+				"Changed the skip buttons functionality, now when skipping while playing the note sheet will stop and then skip."
+			],
+			"1": [
+				"It will be upgraded later.",
+				"You can now transform shawzin code into notes to change them and make a new code.",
+				"More info in the 'Rules/Tips' section."
+			],
+			"2": [
+				"Added new explanations."
+			]
+		}		
+	},
+	{
 		"title":"Patch 1.1.0",
 		"date":"2023,7,7", 
 		"description": [

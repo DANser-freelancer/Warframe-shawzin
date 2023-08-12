@@ -209,6 +209,14 @@ details[open] summary {
 	overflow: visible;
 	width: fit-content;
 }
+.flex-div-column {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	overflow: visible;
+	width: fit-content;
+}
 .translation-success {
 	border: 3px solid green;
 }
@@ -332,6 +340,7 @@ details[open] summary {
 .sheet-music-2 {
 	display: flex;
 	flex-direction: column;
+	align-items: center;
 }
 #note-sheet-container {
 	flex: 1;
@@ -461,7 +470,7 @@ details[open] summary {
 
 /* === Player block === */
 /* Buttons */
-#player-buttons-container {
+.player-buttons-panel {
 	width: fit-content;
 	min-height: 80px;
 	display: flex;
@@ -473,6 +482,18 @@ details[open] summary {
 	margin: 10px;
 	border-radius: 15px;
 	border: 3px solid black;
+}
+.player-buttons-panel > .flex-div-column > div > *, .player-buttons-panel > .flex-div-column > * {
+	margin: 3px;
+}
+.player-buttons-panel > .flex-div-column > div > input:not([type='button']), .player-buttons-panel > .flex-div-column > input:not([type='button']) {
+	width: 6em;
+}
+.player-buttons-panel > .flex-div-column > div {
+	margin: 0;
+}
+.player-buttons-panel > div {
+	margin: 0 10px;
 }
 #player-Play-button {
 	flex: 1;
@@ -633,7 +654,7 @@ details[open] summary {
 	max-height: 20rem;
 	padding: 1rem 2rem;
 	margin: 1rem 2rem;
-	background-image: linear-gradient(to right, rgba(0, 131, 131, 0.9) 0%, rgba(0, 131, 131, 0.1) 100%);
+	background-image: linear-gradient(to right, rgba(0, 131, 131, 0.8) 40%, rgba(0, 131, 131, 0.3) 100%);
 	background-size: cover;
 	background-repeat: no-repeat;
 	box-shadow: 0 0 20px 10px rgb(0, 131, 131);
