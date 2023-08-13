@@ -184,7 +184,7 @@ importPrompt.addEventListener('keyup', importProgressWarn);
 progressImportBtn.addEventListener('click', importProgressWarn);
 progressImportModal.addEventListener('click', importProgressWarn);
 progressImportInput.addEventListener('input', function() { importProgress(Array.from(this.files)); });
-copyMoveBtn.addEventListener('click', function() { sheetBinding.copyMoveNotes(copyMoveChunk.value,copyMovePosition.value); });
+copyMoveBtn.addEventListener('click', function() { sheetBinding.copyPasteNotes(copyMoveChunk.value,copyMovePosition.value); });
 codeImportBtn.addEventListener('click', importProgressWarn);
 
 // Window/Document
@@ -349,7 +349,7 @@ function importProgress(filesArr) {
 	};
 };
 
-// Interprets shawzin code as notes and overrides the app
+// Interprets shawzin code as notes and overwrites the app
 function importShawzinCode(input = notesInput.value) {
 	if (input == null) {
 		alert(`Code Import Error: empty input.`);
@@ -382,24 +382,46 @@ function importShawzinCode(input = notesInput.value) {
 	for (const [key, value] of Object.entries(multiNoteConvertRules)) {
 		ruleObj[value] = key; 
 	};
-	for (let i=0; i<notesArr.length; i++) {
-		let note = ruleObj[notesArr[i][0]];
-		let timing = (timingConvertRules.indexOf(notesArr[i][1])*64)+(timingConvertRules.indexOf(notesArr[i][2]))+1;
+	const noteRules = {
+		'11':'a','10':'b','9':'c','8':'d','7':'e','6':'f','5':'g','4':'h','3':'i','2':'j','1':'k','0':'l'
+	};
+	
+	//overwrite the note sheet aray with 0s\\
+	for (let y=0; y<12; y++) {
+		for (let x=0; x<sheetBinding.noteSheetArr[0].length; x++) {
+			sheetBinding.noteSheetArr[y][x] = 0;
+		};
+	};
+	//interpret code as notes\\
+	for (let x=0; x<notesArr.length; x++) { 
+		let note = ruleObj[notesArr[x][0]];
+		let timing = (timingConvertRules.indexOf(notesArr[x][1])*64)+(timingConvertRules.indexOf(notesArr[x][2]))+1;
 		if (note == null || timing == null) {
 			alert(`Code Import Error: invalid shawzin code, note/timing is incorrect/missing.`);
 			return;
 		};
+		//imprint the active notes onto the note sheet\\
+		for (let y=0; y<12; y++) {
+			if (note.includes(noteRules[y])) {
+				sheetBinding.noteSheetArr[y][timing-1] = 1;
+			};
+		};
+
 		if (note.length>1) {
 			note = note.split('').join('+');
 		};
 		finalArr.push(`${timing}${note}`);
 	};
+	
 	notesInput.value = finalArr.join(',');
 	scaleSelector.value = scaleNum-1;
-
+	sheetBinding.refreshSheet();
 	//save progress
+	progressSave.call(sheetBinding.tableElement);
 	scaleSelector.click();
 	notesInput.click();
+	codeImportBtn.classList.add('translation-success');
+	clearEfects(codeImportBtn, 'translation-success', 2000);
 };
 
 // Asks for confirmation before importing progress
@@ -420,10 +442,8 @@ function importProgressWarn(event) {
 			alert(`All saved progress will be rewritten.`);
 			if (ImportManager.initiator.id === progressImportBtn.id) {
 				progressImportInput.click();
-				console.log(`iporting from ${ImportManager.initiator.id}`);
 			} else if (ImportManager.initiator.id === codeImportBtn.id) {
 				importShawzinCode();
-				console.log(`iporting from ${ImportManager.initiator.id}`);
 			};
 			progressImportModal.style.display = "none";
 			importPrompt.value = '';
@@ -893,11 +913,12 @@ class NoteTableBinding {
 			div.textContent = div.textContent.replace('⚠️', '');
 		};
 		//this.errorCell(div, {y: cellY, x: cellX});
-		this.combinationHint(undefined, {y: cellY, x: cellX});
+		this.combinationHint(undefined, [cellX]);
 	};
 
 	// Checks the note sheet arr and compares to current state of cells
-	refreshSheet(chunkLength, newPosition) {
+	refreshSheet(chunkLength = 4096, newPosition = 0) {
+		const cellsToHint = [];
 		for (let y=0; y<12; y++) { //overwrite notes starting from newPosition
 			for (let x=0; x<chunkLength; x++) {
 				if (newPosition+x > this.noteSheetArr[0].length-1) { //don't overshoot
@@ -910,10 +931,10 @@ class NoteTableBinding {
 				} else {
 					currentCell.children[0].classList.remove('cell-on');
 				};
-				currentCell.classList.remove(`${currentCell.className.match(/(cell-heat-)+\d+/ig)}`); //clear the heat class
-				this.combinationHint(undefined, {y: y, x: x});
+				cellsToHint.push(x);
 			};	
 		};
+		this.combinationHint(undefined, cellsToHint);
 	};
 
 	// Make cell display an error 
@@ -932,14 +953,16 @@ class NoteTableBinding {
 				div.textContent = `${div.textContent}⚠️`;
 			};
 		};*/
-		this.combinationHint();
+		//this.combinationHint();
 	};
 
 	// Hint allowed combinations
 	combinationHint(notes = this.noteSheetCollector(), coords) {
-		for (let y=0; y<this.noteSheetArr.length; y++) { //iterate over cells on the note sheet 
-			const currentCell = document.getElementById(`td-${coords.x+1}-tr-${y}`);
-			currentCell.classList.remove(`${currentCell.className.match(/(cell-heat-)+\d+/ig)}`); //clear the heat class
+		for (let x=0; x<coords.length; x++) {
+			for (let y=0; y<this.noteSheetArr.length; y++) { //clear heat class for all note-columns provided
+				const currentCell = document.getElementById(`td-${coords[x]+1}-tr-${y}`);
+				currentCell.classList.remove(`${currentCell.className.match(/(cell-heat-)+\d+/ig)}`); //clear the heat class
+			};			
 		};
 		if (notes.length < 1) { //empty note sheet
 			return;
@@ -948,7 +971,7 @@ class NoteTableBinding {
 			a:11,b:10,c:9,d:8,e:7,f:6,g:5,h:4,i:3,j:2,k:1,l:0
 		};
 		const entries = Object.entries(multiNoteConvertRules);
-		for (let n=0; n<notes.length; n++) { //iterate over notes
+		for (let n=0; n<notes.length; n++) { //iterate over all notes provided, on the x-axis
 			const match = notes[n].match(/[a-z]+/gi).join('').toLowerCase();
 			let regexBuild = `.*`;
 			for (let s=0; s<match.length; s++) { //find all (match[0]|match[1]|......)characters in any order and space apart at least once
@@ -993,10 +1016,10 @@ class NoteTableBinding {
 	};
 
 	// Copies notes chunk from startNote-endNote to another position
-	copyMoveNotes(noteChunk, newPosition) {
+	copyPasteNotes(noteChunk, newPosition) {
 		try {
 			if (noteChunk.match(/\D/gi).join('') !== '-') {
-				alert(`Copy-move Error: invalid 'from' structure, must be startingNote-endingNote.`);
+				alert(`Copy-paste Error: invalid 'from' structure, must be startingNote-endingNote.`);
 				return;
 			};
 		} catch (err) {
@@ -1006,16 +1029,16 @@ class NoteTableBinding {
 		const chunkStart = Number(noteChunk.split('-')[0])-1;
 		const chunkEnd = Number(noteChunk.split('-')[1]);
 		if (chunkStart>chunkEnd) {
-			alert(`Copy-move Error: invalid 'from' number, startingNote must be <= endingNote.`);
+			alert(`Copy-paste Error: invalid 'from' number, startingNote must be <= endingNote.`);
 			return;
 		};
 		if (chunkStart<0 || chunkEnd<1 || chunkStart>4095 || chunkEnd>4096) {
-			alert(`Copy-move Error: invalid 'from' number, acceptable range is 1-4096.`);
+			alert(`Copy-paste Error: invalid 'from' number, acceptable range is 1-4096.`);
 			return;
 		};
 		newPosition = Number(newPosition)-1;
 		if (newPosition > this.noteSheetArr[0].length-1 || newPosition<0) {
-			alert(`Copy-move Error: invalid 'to' number, acceptable range is 1-4096.`);
+			alert(`Copy-paste Error: invalid 'to' number, acceptable range is 1-4096.`);
 			return;
 		};
 		const copiedArr = [];
@@ -1159,7 +1182,7 @@ async function setupTrack(event, speed = 62.5, time = sheetBinding.startingTime)
 				};
 			};
 			await Delay(speed); //16 notes(columns) per second max
-			playTrack(activeNotes);
+			playTrack(activeNotes, undefined, speed);
 			if (x%20 === 0) { //scroll every 20 cells
 				sheetBinding.initPlayhead(x, false, 'fast');
 			};
@@ -1167,12 +1190,14 @@ async function setupTrack(event, speed = 62.5, time = sheetBinding.startingTime)
 				sheetBinding.startingTime = x;
 				sheetBinding.initPlayhead(...[,false,'']);
 				progressSave.call(this);
+				/*
 				await Delay(speed+10);
 				for (let i=0; i<MusicManager.samplesArr.length; i++) { //old samples being stopped and deleted
 					MusicManager.samplesArr[i].stop();
 					MusicManager.samplesArr[i].disconnect();
 				};
 				MusicManager.samplesArr.length = 0;
+				*/
 				return;
 			};
 		};
@@ -1180,12 +1205,14 @@ async function setupTrack(event, speed = 62.5, time = sheetBinding.startingTime)
 		event.target.src = `images/player-buttons-play.png`;
 		sheetBinding.continuePlaying = false;
 		sheetBinding.initPlayhead(...[,false,'']);
+		/*
 		await Delay(speed+10);
 		for (let i=0; i<MusicManager.samplesArr.length; i++) { //old samples being stopped and deleted
 			MusicManager.samplesArr[i].stop();
 			MusicManager.samplesArr[i].disconnect();
 		};
 		MusicManager.samplesArr.length = 0;
+		*/
 	};
 };
 
@@ -1209,7 +1236,7 @@ async function setupAudioBuffers(notes) {
 };
 
 // Play columns of notes
-async function playTrack(audioBufferArr = MusicManager.audioBufferArr, time = 0) {
+async function playTrack(audioBufferArr = MusicManager.audioBufferArr, time = 0, speed) {
 	if (!audioBufferArr[0]) {
 		return;
 	};
@@ -1220,20 +1247,28 @@ async function playTrack(audioBufferArr = MusicManager.audioBufferArr, time = 0)
 	};
 
 	MusicManager.volumeControl.gain.value = volumeSlider.value / 400;
-	for (let i=0; i<MusicManager.samplesArr.length; i++) { //old samples being stopped and deleted
-		MusicManager.samplesArr[i].stop();
-		MusicManager.samplesArr[i].disconnect();
-	};
-	MusicManager.samplesArr.length = 0;
+	const oldLength = MusicManager.samplesArr.length;
 
 	for (let i=0; i<audioBufferArr.length; i++) { //sample settings
 		const sampleSource = new AudioBufferSourceNode(MusicManager.audioContext, {buffer: audioBufferArr[i]});
 		sampleSource.connect(MusicManager.volumeControl);
 		MusicManager.samplesArr.push(sampleSource);
 	};
-	for (let i=0; i<MusicManager.samplesArr.length; i++) { //fresh samples being played
+	for (let i=oldLength; i<MusicManager.samplesArr.length; i++) { //fresh samples being played
 		MusicManager.samplesArr[i].start(time);
 	};
+
+	await Delay(speed);
+	for (let i=0; i<oldLength; i++) { //old samples being stopped and deleted
+		MusicManager.samplesArr[i].stop();
+		MusicManager.samplesArr[i].disconnect();
+	};
+	MusicManager.samplesArr.splice(0,oldLength);
+	/*
+		I'm deleting old samples 1 note after adding and playing new ones	
+		so the program doesn't sound jerky, 
+		a little overlap will smooth out the note transitions
+	*/
 };
 
 // Version control

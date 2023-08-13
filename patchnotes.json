@@ -1,5 +1,27 @@
 [	
 	{
+		"title":"Update 1.3.0",
+		"date":"2023,7,13", 
+		"description": [
+			"Updated the 'Interactable note sheet'",
+			"Upgraded shawzin code import",
+			"Updated Rules/Tips section"
+		], 
+		"subdescription": {
+			"0": [
+				"Reworked 'Copy-paste' feature, improving performance.",
+				"Tweaked the sound playing function to have a little note overlap to sound smoother."
+			],
+			"1": [
+				"Now also imports into the 'Interactable note sheet'."
+			],
+			"2": [
+				"Added new explanations.",
+				"Reflected recent changes."
+			]
+		}		
+	},
+	{
 		"title":"Update 1.2.0",
 		"date":"2023,7,12", 
 		"description": [

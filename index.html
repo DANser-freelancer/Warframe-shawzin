@@ -20,7 +20,7 @@
 	<!-- Description and rules -->
 	<a href="https://discord.gg/VyjFwKn8AY"><img src="images/AristeiShawzinIcon.png" id="big-favicon" alt="Shawzin icon" title="Made by DANser-freelancer, click to check out discord server 'Warframe Musicians'" target="_blank"/></a>
 	<h1>Shawzin music compiler</h1>
-	<p>Hi, this app will translate musical notes into shawzin code that you can copy&paste to play your favourite shawzin.<br>
+	<p>Hi, this app will translate musical notes into shawzin code that you can copy&paste to play your favorite songs.<br>
 	<p>Made by <code>DANser-freelancer (github), danser.3_3 (discord).</code></p>
 	<h3>Rules/Tips:</h3>
 	<ul id='rules'>
@@ -176,6 +176,9 @@
 					The page <u>doesn't</u> reload after you reset the progress, as your last failsafe, you can click and change the windows and selections you want to be saved again.
 				</li>
 				<li>
+					Whenever I use the word "overwrite" it means <u>both the app inputs and the saved progress will be changed for good</u>, unless mentioned otherwise.
+				</li>
+				<li>
 					The new versions of the app should (most likely) be compatible with saved progress, unless the 'Patchnotes' section specifically mentions changes related to it.
 				</li>
 				<li>
@@ -196,7 +199,7 @@
 					You can click [Import Progress] to load your or someone else's saved file.
 				</li>
 				<li>
-					[Check version compatibility] toggle will stop the app from importing old save files, they can potentially break your progress completely. I recommend you first export your current progress before importing old or unknown files.
+					[Check version compatibility] toggle will stop the app from importing old save files, they can potentially break your progress completely. <b>I recommend you first export your current progress before importing anything.</b>
 				</li>
 				<li>	
 					The app only makes use of one file, in case you select multiple files it will use the one that has been created/changed most recently.
@@ -214,7 +217,36 @@
 					You can click [Import Shawzin Code] to interpret shawzin code as notes.
 				</li>
 				<li>
-					To import shawzin code you need to paste the code in the note field before clicking the button. This process will overwrite the note field and the scale selector. This feature does not work on the 'Interactable note sheet', <u>yet</u>.
+					To import shawzin code you need to paste the code in the note field before clicking the button. This process will overwrite the note field, the scale selector, and the 'Interactable note sheet'.
+				</li>
+				<li title="It has to read the code you provided (up to 49'152 notes), and then change 49'152 entries of an array, and then reflect that change in 49'152 html elements and their 49'152 total children.">
+					When importing the app will freeze for a few seconds, be patient.
+				</li>
+				<li>
+					After the import you will be able to change the notes to your liking and create a new shawzin code and a new progress export.
+				</li>
+			</ul>
+		</li>
+		<li>
+			<h4>Database explanation</h4>
+			<ul>
+				<li>
+					The database shows name of the song + name of the band + approximate length of the track.
+				</li>
+				<li>
+					The songs are automatically sorted in alphabetical order.
+				</li>
+				<li>
+					Length of the track may vary if you enable slow mode.
+				</li> 
+				<li>
+					When searching for a song - click on the field and write the song or band name.
+				</li>
+				<li>
+					"N/A" means "not available", it is used when I can't find the author of the song.
+				</li>
+				<li>
+					"Database" in this case is just a fancy word for "text file". Live servers cost money you know, so it will be updated with new versions of the app. If you want to add a code don't hesitate even if we already have the song you want to add, come over to the discord server (big logo, top of the page). 
 				</li>
 			</ul>
 		</li>
@@ -230,14 +262,13 @@
 				<li><code>Hold[V]</code>+<code>Press/Hold[-]</code> decrease volume.</li>
 				<li><code>Hold[T]</code>+<code>Press/Hold[+]</code> transpose notes up.</li>
 				<li><code>Hold[T]</code>+<code>Press/Hold[-]</code> transpose notes down.</li>
+				<li>
+					If something is broken or the version of this app changed you should refresh the page without cache, <code>Hold[Ctrl]</code>+<code>Press[F5]</code>.
+				</li>
+				<li>
+					To select all text in the note field click on it then <code>Hold[Ctrl]</code>+<code>Press[A]</code>.
+				</li>
 			</ul>
-		</li>
-		<li>
-			The database shows name of the song + name of the band + approximate length of the track.<sub>*(length may vary if you enable slow mode)</sub><br> 
-			When searching for a song - write song or band name and click on the field to search.
-		</li>
-		<li>
-			If something is broken or the version of this app changed you should refresh the page without cache, press <code>[Ctrl]+[F5]</code>.
 		</li>
 		<li>
 			Keep an eye on the 'Patchnotes' section, this app is still in development.
