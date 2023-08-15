@@ -83,6 +83,9 @@ const MusicManager = {
 const ImportManager = {
 	initiator: ''
 };
+const DatabaseManager = {
+	database: ''
+};
 const finalCode = [];
 let showScaleClicks = 0;
 let WrongNote = false;
@@ -159,10 +162,10 @@ translateBtn.addEventListener('click', translateNotes);
 translateSheetBtn.addEventListener('click', translateNotes);
 showScaleBtn.addEventListener('click', showScale);
 databaseCopyBtn.addEventListener('click', copyDatabase);
-transpositionIndex.addEventListener('click', () => {changeScale(); sheetBinding.transpose_lines();});
-transpositionIndex.addEventListener('input', () => {changeScale(); sheetBinding.transpose_lines();});
-databaseSearchBar.addEventListener('click', searchDatabase);
-databaseSearchBar.addEventListener('input', searchDatabase);
+transpositionIndex.addEventListener('click', () => { changeScale(); sheetBinding.transpose_lines(); });
+transpositionIndex.addEventListener('input', () => { changeScale(); sheetBinding.transpose_lines(); });
+databaseSearchBar.addEventListener('keyup', searchDatabase);
+databaseSelector.addEventListener('click', databaseComment);
 playerPlayBtn.addEventListener('click', setupTrack);
 playerRightBtn.addEventListener('click', skipNotes);
 playerLeftBtn.addEventListener('click', skipNotes);
@@ -282,12 +285,14 @@ function exportProgress(fileName, file) {
   	};
   	//fallback 🡓
  	const elem = window.document.createElement('a');
-  	elem.href = window.URL.createObjectURL(fileBlob);
+ 	const url = window.URL.createObjectURL(fileBlob)
+  	elem.href = url;
   	elem.download = `${fileName}.json`;
   	elem.style = 'display: none';        
   	document.body.appendChild(elem);
   	elem.dispatchEvent(new MouseEvent('click'));     
   	document.body.removeChild(elem);
+  	URL.revokeObjectURL(url);
 };
 
 // Imports progress.json file
@@ -691,12 +696,11 @@ function handleTooltip(event) {
 	};
 };
 
-let database;//has to be global because it's spread between 3 functions, should probably be a class
 //Fetch database
 async function fetchDatabase() {
 	const response = await fetch('database.json');
-	database = await response.json();
-	database.sort((a,b) => { //strings can be compared for alphabetical order in js and will give a boolean, hwat?????
+	DatabaseManager.database = await response.json();
+	DatabaseManager.database.sort((a,b) => { //strings can be compared for alphabetical order in js and will give a boolean, hwat?????
 		if (a.name.toLowerCase() < b.name.toLowerCase()) {
 			return -1;
 		}
@@ -705,56 +709,56 @@ async function fetchDatabase() {
 		}
 		return 0;
 	});
+	const database = DatabaseManager.database;
 	for (let i=0; i<database.length; i++) {
-		//Calculates length of the song
-		let lastTimingLetters = database[i].code.slice(-2).split('');
-		let beats = timingConvertRules.indexOf(lastTimingLetters[0])*64 + timingConvertRules.indexOf(lastTimingLetters[1]);
-		let seconds = Math.floor(beats/16);
-		let minutes = Math.floor(seconds/60);
-		let extraSeconds = seconds % 60;
-		extraSeconds = extraSeconds < 10 ? "0" + extraSeconds : extraSeconds;
- 		let runtime = `${minutes}:${extraSeconds}`;
- 		//For each song creates an option element and appends it to the database selector
-		let opt = document.createElement('option');
-		opt.value = i;
-		opt.textContent = `${database[i].name} - ${database[i].band} - ~${runtime}`;
-		databaseSelector.appendChild(opt);
-	}
-}
+		renderDatabaseOptions(i);
+	};
+};
 fetchDatabase();
 
 //Searches for a name/band of the songs in the database
-function searchDatabase() {
-	if (databaseSearchBar.value == '') {
-		return;
-	}
-	let matches = 0;
+function searchDatabase(event, database = DatabaseManager.database) {
 	databaseSelector.innerHTML = `<option></option>`;
 	databaseSelector.remove(0);
+	if (databaseSearchBar.value == '') {
+		for (let i=0; i<database.length; i++) {
+			renderDatabaseOptions(i);
+		};
+		return;
+	};
+	let matches = 0;
 	for (let i=0; i<database.length; i++) {
 		if (database[i].name.toLowerCase().includes(databaseSearchBar.value.toLowerCase()) || database[i].band.toLowerCase().includes(databaseSearchBar.value.toLowerCase())) {
 			matches++;
-			//Calculates length of the song
-			let lastTimingLetters = database[i].code.slice(-2).split('');
-			let beats = timingConvertRules.indexOf(lastTimingLetters[0])*64 + timingConvertRules.indexOf(lastTimingLetters[1]);
-			let seconds = Math.floor(beats/16);
-			let minutes = Math.floor(seconds/60);
-			let extraSeconds = seconds % 60;
-			extraSeconds = extraSeconds < 10 ? "0" + extraSeconds : extraSeconds;
- 			let runtime = `${minutes}:${extraSeconds}`;
- 			//For each song creates an option element and appends it to the database selector
-			let opt = document.createElement('option');
-			opt.value = i;
-			opt.textContent = `${database[i].name} - ${database[i].band} - ~${runtime}`;
-			databaseSelector.appendChild(opt);
-		}
-	}
-	if (matches<=0) {
+			renderDatabaseOptions(i);
+		};
+	};
+	if (matches<1) {
 		databaseSelector.innerHTML = `<option>No results</option>`;
-	} 
-}
+	};
+	databaseComment();
+};
 
-//Copies song code from database
+// Overwrites the database selector
+function renderDatabaseOptions(i, database = DatabaseManager.database) {
+	//calculates length of the song\\
+	const lastTimingLetters = database[i].code.slice(-2).split('');
+	const beats = (timingConvertRules.indexOf(lastTimingLetters[0])*64) + (timingConvertRules.indexOf(lastTimingLetters[1]));
+	const miliseconds = beats*62.5;
+	const seconds = Math.floor(miliseconds/1000);
+	const minutes = Math.floor(seconds/60);
+	let extraSeconds = seconds % 60;
+	extraSeconds = extraSeconds<10 ? `0${extraSeconds}` : extraSeconds;
+ 	const runtime = `${minutes}:${extraSeconds}`;
+ 	//for each song creates an option element and appends it to the database selector\\
+	const opt = document.createElement('option');
+	opt.value = i;
+	opt.textContent = `${database[i].name} - ${database[i].band} - ~${runtime}`;
+	opt.setAttribute('data-index', i);
+	databaseSelector.appendChild(opt);
+};
+
+// Copies song code from database
 function copyDatabase() {
 	let databaseCode;
 	try {
@@ -769,6 +773,21 @@ function copyDatabase() {
 			databaseCopyBtn.style.border = "3px dotted black";
 			databaseCopyBtn.style.background = "grey";
 		};
+	};
+};
+
+// Adds meta commentary to selected codes
+function databaseComment() {
+	const option = databaseSelector.options[databaseSelector.selectedIndex];
+	if (option.textContent === 'No results') {
+		databaseSelector.setAttribute('title', `well... maybe check in later?`);
+		return;
+	};
+	const index = Number(option.dataset.index);
+	if (DatabaseManager.database[index].message) {
+		databaseSelector.setAttribute('title', DatabaseManager.database[index].message);
+	} else {
+		databaseSelector.removeAttribute('title');
 	};
 };
 
@@ -1246,7 +1265,7 @@ async function playTrack(audioBufferArr = MusicManager.audioBufferArr, time = 0,
 		MusicManager.volumeControl.connect(MusicManager.audioContext.destination);
 	};
 
-	MusicManager.volumeControl.gain.value = volumeSlider.value / 400;
+	MusicManager.volumeControl.gain.value = volumeSlider.value / 200;
 	const oldLength = MusicManager.samplesArr.length;
 
 	for (let i=0; i<audioBufferArr.length; i++) { //sample settings

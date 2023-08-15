@@ -63,19 +63,25 @@
 					Shawzin has a concrete set of notes for each scale, you cannot transition over to the other scale mid-play as you would do with a piano for example. Unless you don't use autoplay, then you can press tab a bunch of times at the right moment. <sub>(at that point you're better off fiddling with a midi bot)</sub>
 				</li>
 				<li>
-					Shawzin note spacing allows for 16*1/16th notes/s (240bpm) or 8*1/16th notes/s (120bpm) in slow mode, max length of the track is therefore 8min 32sec.<br>  
+					Shawzin fast mode sets the play speed to 240bpm, slow mode sets the play speed to 120bpm, max amount of notes at any speed is always 4096, max length of the track is therefore 8min 32sec.
 				</li>
 				<li>
-					You can use fast mode and just space the notes farther apart to have finer lever of control over timing, but that will cut max track length in half.
+					Switching between fast and slow mode changes the max track length and the amount on notes you can shove into one second.
 				</li>
 				<li>
-					These are really small notes so if your music seems to run too fast try enabling slow mode in your shawzin.
+					Duration of a sixteenth note (in seconds) = (60 seconds) / (BPM) / 4, this formula will allow you to understand the available miminum distance between notes.
+				</li>
+				<li>
+					Ultimately all shawzin notes have the exact same duration of "hit the chord" moment, you only <u>think</u> that you seem to be playing notes of different durations, based on the empty space between them. Think of it like playing drums.
 				</li>
 				<li>
 					You cannot "stretch" the note out like a piano or a violin because of how shawzin codes work, if you don't use autoplay then you can use whammy but it will lower the notes by a semitone.
 				</li>
 				<li>
 					Note that while note spacing is small, the note sounds can be quite long, in particular the sounds of Void's song, Aristei prime, and Lonesome shawzins.
+				</li>
+				<li>
+					The shawzin codes can be used with autoplay for killing time in a defence mission for example. Or they can just be used as a guide, the notes will show up on the track and you can learn to play the song by hand.
 				</li>
 			</ul>
 		</li>
@@ -231,7 +237,7 @@
 			<h4>Database explanation</h4>
 			<ul>
 				<li>
-					The database shows name of the song + name of the band + approximate length of the track.
+					The database shows name of the song + name of the band + approximate length of the track in (minutes:seconds) format.
 				</li>
 				<li>
 					The songs are automatically sorted in alphabetical order.
@@ -241,9 +247,10 @@
 				</li> 
 				<li>
 					When searching for a song - click on the field and write the song or band name.
+					If you clear the search bar it will show every code we have.
 				</li>
 				<li>
-					"N/A" means "not available", it is used when I can't find the author of the song.
+					"N/A" means "not available", it is used when I can't find the author or the name of the song.
 				</li>
 				<li>
 					"Database" in this case is just a fancy word for "text file". Live servers cost money you know, so it will be updated with new versions of the app. If you want to add a code don't hesitate even if we already have the song you want to add, come over to the discord server (big logo, top of the page). 
@@ -432,7 +439,7 @@
 <!-- Credits section -->
 <footer>
 	<div class="foot">
-		<p>Version: <code id="last-update"></code> ©GNU Affero General Public License v3.0</p>
+		<p>Version: <code id="last-update"></code> ©2023 GNU Affero General Public License v3.0</p>
 		<p>Credit to <a href="https://www.youtube.com/@Buff00n/featured">Buff00n</a> for being the biggest.. 'involuntary contributor'.<sub>(that is for shawzin codes, not source code)</sub></p>
 		<p>Credit to everybody here for gathering <a href="https://docs.google.com/document/d/1VvlM4IQr8bfUV8pCJMVNRaG6piJTR9_t-xq7wQaxpho/edit" target="_blank">info</a>! Some of my own research, with more <a href="https://docs.google.com/spreadsheets/d/1Zd0L6b1W8ic7s9b8DKJHDBNRB-Z0tdwQEhvQl6axFCU/edit?usp=sharing" target="_blank">keys</a>. Do you wish to report a <a href="https://github.com/DANser-freelancer/Warframe-shawzin/issues/new" target="_blank">bug</a> or give some <a href="https://github.com/DANser-freelancer/Warframe-shawzin/issues/1" target="_blank">feedback</a>?</p>
 	</div>

@@ -1,5 +1,32 @@
 [	
 	{
+		"title":"Update 1.3.1",
+		"date":"2023,7,14", 
+		"description": [
+			"Updated the database",
+			"Updated Rules/Tips section",
+			"Updated the 'Interactable note sheet'",
+			"Minor changes to the app"
+		], 
+		"subdescription": {
+			"0": [
+				"Added new codes, a lot...",
+				"Minor changes to the functionality."
+			],
+			"1": [
+				"Added new explanations."
+			],
+			"2": [
+				"Doubled the base sound volume."
+			],
+			"3": [
+				"Added...t̶l̷a̷h̸ ̸j̸v̵t̴t̷l̴u̶a̷h̵y̷f̶...",
+				"...p̶̜̀a̸͇̋h̵̼̀f̸̜́l̸͚̋h̷̜͆x̵̬͊o̴̰̎x̸̫̿k̴̢̓ ̴̮̐z̸̓͜k̸̛̻t̷̻͑l̵̞͛ȋ̶͓x̷̰͐m̸̤͗a̶̲̽ ̵̱͌m̴̢̾ą̸̓ẍ̸͜ ̵̹͛f̷̹̓x̷̕ͅt̸̢́g̵̜̐ḅ̴̈́g̶͍̊z̶͖̏ ̵̝͒h̶͉͐y̸̼͝ ̵͈͐ḿ̴ͅà̸̞b̸̫͠l̴̫͛ ̸̖͘l̷̔ͅv̴͚̈k̷̙̐b̶̹̒i̵̯͗m̴̙̆n̴̛̞ḵ̵̚x̸̲͝ ̵̡͘l̷̜̅ḁ̶͆t̷̼̽e̵͗ͅè̸͖ ̷͘͜ṷ̷͗x̵͓̌ ̶̜̓z̶̪͂k̷̻̿t̶͍͆g̵̕͜m̴̯̀x̸̡̆w̶͈͘ ̴̳̈́t̶̻͌ ̷̡̋l̷̨̾x̵̥̆î̵͜ṃ̵̑x̶̡͋g̶̭̃t̸͉̓k̷͉̿r̸̞̍ ̷̠̈́ẍ̶̭g̶̩̍a̸͙͆t̸͔͌g̷̙̈v̷̰́x̴͔̾f̶͚̍x̶͚̍g̶̗̋m̴̘͘...",
+				"...barely noticeable."
+			]
+		}		
+	},
+	{
 		"title":"Update 1.3.0",
 		"date":"2023,7,13", 
 		"description": [
