@@ -1,5 +1,22 @@
 [	
 	{
+		"title":"Patch 1.3.2",
+		"date":"2023,7,19", 
+		"description": [
+			"Fixed the database copy button",
+			"Minor changes to the app"
+		], 
+		"subdescription": {
+			"0": [
+				"Minor oversight led to the function looking in the wrong place for the database."
+			],
+			"1": [
+				"Slightly changed styling and error handling for database [Copy] button.",
+				"Upon reloading the page the app will scroll to the text field."
+			]
+		}		
+	},
+	{
 		"title":"Update 1.3.1",
 		"date":"2023,7,15", 
 		"description": [

@@ -216,6 +216,7 @@ window.onload = () => {
 	setSkipAmount();
 	document.addEventListener('keyup', handleKeyboard);
 	document.addEventListener('keydown', handleKeyboard);
+	notesInput.scrollIntoView({ behavior: "instant", block: "center", inline: "nearest" });
 };
 
 // Loads progress from local storage (if empty -> save progress)
@@ -760,19 +761,16 @@ function renderDatabaseOptions(i, database = DatabaseManager.database) {
 
 // Copies song code from database
 function copyDatabase() {
-	let databaseCode;
 	try {
-		databaseCode = database[databaseSelector.value].code;
-	} finally {
-		if (databaseCode != null) {
-			navigator.clipboard.writeText(databaseCode);
-			databaseCopyBtn.style.border = "revert-layer";
-			databaseCopyBtn.style.background = "revert-layer";
-			databaseCopyBtn.style.border = "3px solid green";
-		} else {
-			databaseCopyBtn.style.border = "3px dotted black";
-			databaseCopyBtn.style.background = "grey";
-		};
+		const databaseCode = DatabaseManager.database[databaseSelector.value].code;
+		navigator.clipboard.writeText(databaseCode);
+		databaseCopyBtn.classList.add('translation-success');
+		databaseCopyBtn.classList.remove('translation-error');
+		clearEfects(databaseCopyBtn, 'translation-success', 2000);
+	} catch(err) {
+		databaseCopyBtn.classList.add('translation-error');
+		alert(`Database Error: ${err}.`);
+		return;
 	};
 };
 
