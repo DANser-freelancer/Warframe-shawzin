@@ -1,5 +1,21 @@
 [	
 	{
+		"title":"Update 1.4.2",
+		"date":"2023,7,29", 
+		"description": [
+			"Updated the 'Interactable note sheet'",
+			"Updated description"
+		], 
+		"subdescription": {
+			"0": [
+				"[Slow mode] toggle will now move the bars(measures) numbers depending on currently selected shawzin speed."
+			],
+			"1": [
+				"Added detail about [Slow mode] toggle."
+			]
+		}		
+	},
+	{
 		"title":"Patch 1.3.2",
 		"date":"2023,7,19", 
 		"description": [

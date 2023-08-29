@@ -189,6 +189,7 @@ progressImportModal.addEventListener('click', importProgressWarn);
 progressImportInput.addEventListener('input', function() { importProgress(Array.from(this.files)); });
 copyMoveBtn.addEventListener('click', function() { sheetBinding.copyPasteNotes(copyMoveChunk.value,copyMovePosition.value); });
 codeImportBtn.addEventListener('click', importProgressWarn);
+slowModeToggle.addEventListener('click', () => { sheetBinding.updateBarBrackets() });
 
 // Window/Document
 window.onload = () => {
@@ -212,6 +213,7 @@ window.onload = () => {
 	changeScale();
 	//sheetBinding.generateNoteSheet(4097); //+1 for the note labels
 	updateShawzinPic();
+	sheetBinding.updateBarBrackets();
 	versionControl();
 	setSkipAmount();
 	document.addEventListener('keyup', handleKeyboard);
@@ -856,7 +858,7 @@ class NoteTableBinding {
 				if (x%16 === 0) {
 					newTD.style.borderRight = "4px solid rgb(178, 51, 3)";
 					if (y === 11) {
-						div.textContent = `${x} {${x/16}}`;
+						div.textContent = `${x}`;
 					};
 				} else if (x%8 === 0) {
 					newTD.style.borderRight = "2px solid rgb(255, 95, 35)";
@@ -1079,6 +1081,19 @@ class NoteTableBinding {
 		this.refreshSheet(copiedArr[0].length, newPosition);
 		copyMoveBtn.classList.add('translation-success');
 		clearEfects(copyMoveBtn, 'translation-success', 2000);
+	};
+
+	// Updates bar numbers depending on the mode
+	updateBarBrackets() {
+		const increment = slowModeToggle.checked ? 16:32;
+		for (let i=16; i<=4096; i=i+16) {
+			const currentDiv = document.getElementById(`td-${i}-tr-11`).children[0];
+			if (i%increment === 0) {
+				currentDiv.textContent = `${i} {${(i/increment)}}`;
+			} else {
+				currentDiv.textContent = `${i}`;
+			};
+		};
 	};
 
 	// Updates line numbers near the note names
